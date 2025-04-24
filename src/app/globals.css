@@ -41,6 +41,18 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* EcoWallet teal theme */
+  --color-teal-50: #e6fffa;
+  --color-teal-700: #285e61;
+  --color-teal-800: #234e52;
+  --color-stone-50: #fafaf9;
+  --color-stone-100: #f5f5f4;
+  --color-stone-300: #d6d3d1;
+  --color-stone-500: #78716c;
+  --color-stone-600: #57534e;
+  --color-stone-800: #292524;
+  --color-stone-900: #1c1917;
 }
 
 :root {
@@ -76,6 +88,27 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* EcoWallet teal theme variables */
+  --eco-primary: #285e61;
+  /* teal-700 */
+  --eco-primary-hover: #234e52;
+  /* teal-800 */
+  --eco-accent: #e6fffa;
+  /* teal-50 */
+  --eco-background: #fafaf9;
+  /* stone-50 */
+  --eco-foreground: #1c1917;
+  /* stone-900 */
+  --eco-card: #ffffff;
+  --eco-card-foreground: #292524;
+  /* stone-800 */
+  --eco-muted: #f5f5f4;
+  /* stone-100 */
+  --eco-muted-foreground: #78716c;
+  /* stone-500 */
+  --eco-border: #d6d3d1;
+  /* stone-300 */
 }
 
 .dark {
@@ -110,13 +143,49 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* EcoWallet dark theme variables */
+  --eco-primary: #319795;
+  /* teal-500 */
+  --eco-primary-hover: #2c7a7b;
+  /* teal-600 */
+  --eco-accent: #234e52;
+  /* teal-800 */
+  --eco-background: #1c1917;
+  /* stone-900 */
+  --eco-foreground: #f5f5f4;
+  /* stone-100 */
+  --eco-card: #292524;
+  /* stone-800 */
+  --eco-card-foreground: #fafaf9;
+  /* stone-50 */
+  --eco-muted: #44403c;
+  /* stone-700 */
+  --eco-muted-foreground: #a8a29e;
+  /* stone-400 */
+  --eco-border: #57534e;
+  /* stone-600 */
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* EcoWallet styles */
+.eco-primary {
+  @apply bg-teal-700 hover:bg-teal-800 text-white;
+}
+
+.eco-card {
+  @apply bg-white border-0 shadow-md;
+}
+
+.eco-alert {
+  @apply bg-teal-50 border-teal-200;
 }
