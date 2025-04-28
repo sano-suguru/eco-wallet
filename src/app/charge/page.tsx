@@ -25,6 +25,7 @@ export default function ChargePage() {
   const router = useRouter();
   const { data: session, update } = useSession();
 
+  // 基本状態
   const [currentStep, setCurrentStep] = useState<ChargeStep>("input");
   const [paymentMethod, setPaymentMethod] = useState<"credit-card" | "bank">(
     "credit-card",
@@ -34,12 +35,23 @@ export default function ChargePage() {
   const [error, setError] = useState<string | null>(null);
   const [transactionId, setTransactionId] = useState<string>("");
 
-  const isValidAmount = amount && !isNaN(Number(amount)) && Number(amount) > 0;
+  // 銀行振込関連の状態
+  const [email, setEmail] = useState<string>("");
+  const [transferCode, setTransferCode] = useState<string>("");
+  const [emailSent, setEmailSent] = useState<boolean>(false);
+  const [processingVerification, setProcessingVerification] =
+    useState<boolean>(false);
 
+  // バリデーション
+  const isValidAmount = amount && !isNaN(Number(amount)) && Number(amount) > 0;
+  const isValidEmail = email && email.includes("@");
+
+  // 金額選択ハンドラー
   const handleSelectAmount = (value: string) => {
     setAmount(value);
   };
 
+  // 確認ステップへの移行
   const handleProceedToConfirm = () => {
     if (!isValidAmount) {
       setError("有効な金額を入力してください");
@@ -49,11 +61,12 @@ export default function ChargePage() {
     setCurrentStep("confirm");
   };
 
+  // 入力ステップに戻る
   const handleBackToInput = () => {
     setCurrentStep("input");
   };
 
-  // チャージ処理のモック実装
+  // クレジットカードチャージ処理のモック実装
   const handleConfirmCharge = async () => {
     setIsLoading(true);
     setError(null);
@@ -80,6 +93,75 @@ export default function ChargePage() {
       );
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // 振込情報取得処理（モック）
+  const handleSendBankTransferEmail = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // メール形式の簡易バリデーション
+      if (!isValidEmail) {
+        setError("有効なメールアドレスを入力してください");
+        return;
+      }
+
+      // 金額のバリデーション
+      if (!isValidAmount) {
+        setError("有効な金額を入力してください");
+        return;
+      }
+
+      // 振込コードの生成（実際はバックエンドで生成してDBに保存）
+      const generatedCode = Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase();
+      setTransferCode(generatedCode);
+
+      // メール送信をシミュレート
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // 送信完了状態に更新
+      setEmailSent(true);
+    } catch {
+      setError(
+        "メール送信中にエラーが発生しました。時間をおいて再度お試しください。",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 振込完了通知処理（モック）
+  const handleNotifyBankTransfer = async () => {
+    setProcessingVerification(true);
+    setError(null);
+
+    try {
+      // 振込確認をシミュレート（実際はバックエンドで照合）
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // モックのトランザクションID生成
+      const mockTransactionId = `BNK${Date.now().toString().slice(-8)}`;
+      setTransactionId(mockTransactionId);
+
+      // セッションの残高を更新（モック）
+      if (session?.user) {
+        const newBalance = (session.user.balance || 0) + Number(amount);
+        await update({ balance: newBalance });
+      }
+
+      // 完了ステップに進む
+      setCurrentStep("complete");
+    } catch {
+      setError(
+        "振込確認中にエラーが発生しました。時間をおいて再度お試しください。",
+      );
+    } finally {
+      setProcessingVerification(false);
     }
   };
 
@@ -121,15 +203,25 @@ export default function ChargePage() {
                 <Tabs
                   defaultValue={paymentMethod}
                   className="w-full"
-                  onValueChange={(value) =>
-                    setPaymentMethod(value as "credit-card" | "bank")
-                  }
+                  onValueChange={(value) => {
+                    if (!emailSent) {
+                      setPaymentMethod(value as "credit-card" | "bank");
+                    }
+                  }}
                 >
                   <TabsList className="grid w-full grid-cols-2 bg-stone-100">
-                    <TabsTrigger value="credit-card" className="text-sm">
+                    <TabsTrigger
+                      value="credit-card"
+                      className="text-sm"
+                      disabled={emailSent} // 振込情報取得後は無効化
+                    >
                       クレジットカード
                     </TabsTrigger>
-                    <TabsTrigger value="bank" className="text-sm">
+                    <TabsTrigger
+                      value="bank"
+                      className="text-sm"
+                      disabled={emailSent} // 振込情報取得後は無効化
+                    >
                       銀行振込
                     </TabsTrigger>
                   </TabsList>
@@ -184,31 +276,175 @@ export default function ChargePage() {
                   </TabsContent>
 
                   <TabsContent value="bank" className="space-y-4 pt-4">
-                    <div className="text-sm text-stone-700 space-y-2">
-                      <p>以下の口座へお振込みください:</p>
-                      <div className="bg-stone-100 p-3 rounded-md text-stone-800 font-mono text-xs">
-                        <div>銀行名: エコバンク</div>
-                        <div>支店名: 環境支店（001）</div>
-                        <div>口座番号: 12345678</div>
-                      </div>
-                      <p className="text-xs text-teal-600 mt-2 flex items-center">
-                        <Leaf className="h-3 w-3 mr-1" />
-                        振込時に「エコ寄付」を入れていただくと、金額の1%が環境保全に寄付されます
-                      </p>
-                    </div>
+                    {!emailSent ? (
+                      <>
+                        <div className="text-sm text-stone-700 space-y-2">
+                          <p>
+                            銀行振込の詳細を送信するメールアドレスを入力してください:
+                          </p>
+                          <div className="space-y-2">
+                            <Label htmlFor="email" className="text-sm">
+                              メールアドレス
+                            </Label>
+                            <Input
+                              id="email"
+                              type="email"
+                              placeholder="your@email.com"
+                              className="border-stone-300"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="bank-amount" className="text-sm">
+                              振込金額
+                            </Label>
+                            <div className="flex items-center space-x-2">
+                              <Input
+                                id="bank-amount"
+                                type="number"
+                                placeholder="5,000"
+                                className="border-stone-300"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                              />
+                              <span className="text-sm text-stone-600">円</span>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-between text-sm text-stone-600 px-1">
+                            <span>おすすめ金額:</span>
+                            <div className="space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 px-2 py-0 bg-stone-100 hover:bg-teal-50 border-stone-200"
+                                onClick={() => handleSelectAmount("5000")}
+                              >
+                                5,000円
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 px-2 py-0 bg-stone-100 hover:bg-teal-50 border-stone-200"
+                                onClick={() => handleSelectAmount("10000")}
+                              >
+                                10,000円
+                              </Button>
+                            </div>
+                          </div>
+
+                          {error && (
+                            <div className="text-red-600 text-sm bg-red-50 p-2 rounded-md">
+                              {error}
+                            </div>
+                          )}
+                        </div>
+
+                        <Button
+                          className="w-full bg-teal-700 hover:bg-teal-800 text-white"
+                          onClick={handleSendBankTransferEmail}
+                          disabled={
+                            isLoading || !isValidEmail || !isValidAmount
+                          }
+                        >
+                          {isLoading ? (
+                            <>
+                              <div className="animate-spin mr-2 h-4 w-4 border-t-2 border-white rounded-full"></div>
+                              送信中...
+                            </>
+                          ) : (
+                            "振込情報を取得する"
+                          )}
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="bg-green-50 p-3 rounded-md border border-green-100 mb-4">
+                          <div className="flex items-start">
+                            <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 mr-2" />
+                            <div className="text-sm text-green-700">
+                              メールを送信しました。以下の情報をもとに銀行振込を行ってください。
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-sm text-stone-700 space-y-2">
+                          <p>以下の口座へお振込みください:</p>
+                          <div className="bg-stone-100 p-3 rounded-md text-stone-800 font-mono text-xs">
+                            <div>銀行名: エコバンク</div>
+                            <div>支店名: 環境支店（001）</div>
+                            <div>口座番号: 12345678</div>
+                            <div>振込コード: {transferCode}</div>
+                            <div>
+                              振込金額: ¥{Number(amount).toLocaleString()}
+                            </div>
+                          </div>
+                          <p className="text-xs text-red-600 mt-2">
+                            ※振込時の「お客様情報」欄に必ず上記の振込コードをご入力ください
+                          </p>
+                          <p className="text-xs text-teal-600 mt-2 flex items-center">
+                            <Leaf className="h-3 w-3 mr-1" />
+                            振込時に「エコ寄付」と入れていただくと、金額の1%が環境保全に寄付されます
+                          </p>
+                        </div>
+
+                        <Separator className="my-4" />
+
+                        <div className="text-sm text-stone-700">
+                          <p>
+                            振込が完了したら下記ボタンを押して残高に反映させてください：
+                          </p>
+
+                          {error && (
+                            <div className="text-red-600 text-sm bg-red-50 p-2 rounded-md mt-2">
+                              {error}
+                            </div>
+                          )}
+                        </div>
+
+                        <Button
+                          className="w-full bg-teal-700 hover:bg-teal-800 text-white"
+                          onClick={handleNotifyBankTransfer}
+                          disabled={processingVerification}
+                        >
+                          {processingVerification ? (
+                            <>
+                              <div className="animate-spin mr-2 h-4 w-4 border-t-2 border-white rounded-full"></div>
+                              確認中...
+                            </>
+                          ) : (
+                            "振込完了を通知する"
+                          )}
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          className="w-full text-stone-600"
+                          onClick={() => {
+                            setEmailSent(false);
+                            setTransferCode("");
+                          }}
+                          disabled={processingVerification}
+                        >
+                          振込情報をやり直す
+                        </Button>
+                      </>
+                    )}
                   </TabsContent>
                 </Tabs>
               </CardContent>
               <CardFooter>
-                <Button
-                  className="w-full bg-teal-700 hover:bg-teal-800 text-white"
-                  onClick={handleProceedToConfirm}
-                  disabled={!isValidAmount && paymentMethod === "credit-card"}
-                >
-                  {paymentMethod === "credit-card"
-                    ? "次へ進む"
-                    : "振込案内をメールで受け取る"}
-                </Button>
+                {paymentMethod === "credit-card" && (
+                  <Button
+                    className="w-full bg-teal-700 hover:bg-teal-800 text-white"
+                    onClick={handleProceedToConfirm}
+                    disabled={!isValidAmount}
+                  >
+                    次へ進む
+                  </Button>
+                )}
               </CardFooter>
             </>
           )}
@@ -307,13 +543,16 @@ export default function ChargePage() {
           )}
 
           {currentStep === "complete" && (
-            // 完了ステップのUI
             <>
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl text-teal-800">
                   チャージ完了
                 </CardTitle>
-                <CardDescription>チャージが正常に完了しました</CardDescription>
+                <CardDescription>
+                  {paymentMethod === "credit-card"
+                    ? "チャージが正常に完了しました"
+                    : "振込確認が完了しました"}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 flex flex-col items-center">
                 <div className="bg-teal-50 rounded-full p-4 w-20 h-20 flex items-center justify-center">
@@ -322,7 +561,9 @@ export default function ChargePage() {
 
                 <div className="text-center">
                   <h3 className="text-lg font-medium text-stone-800">
-                    ¥{Number(amount).toLocaleString()}がチャージされました
+                    ¥{Number(amount).toLocaleString()}が
+                    {paymentMethod === "credit-card" ? "チャージ" : "振込確認"}
+                    されました
                   </h3>
                   <p className="text-sm text-stone-600 mt-1">
                     現在の残高: ¥
@@ -337,13 +578,20 @@ export default function ChargePage() {
                   <div className="text-xs text-stone-600">
                     日時: {new Date().toLocaleString("ja-JP")}
                   </div>
+                  {paymentMethod === "bank" && (
+                    <div className="text-xs text-stone-600">
+                      振込コード: {transferCode}
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-teal-50 p-3 rounded-md border border-teal-100 w-full">
                   <div className="flex items-start">
                     <Leaf className="h-4 w-4 text-teal-600 mt-0.5 mr-2" />
                     <div className="text-xs text-teal-700">
-                      このチャージにより、¥
+                      この
+                      {paymentMethod === "credit-card" ? "チャージ" : "振込"}
+                      により、¥
                       {Math.floor(Number(amount) * 0.005).toLocaleString()}が
                       環境保全活動に寄付されました。ご協力ありがとうございます。
                     </div>
