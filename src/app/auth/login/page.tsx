@@ -9,9 +9,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Leaf } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store/auth-store";
 
 export default function LoginPage() {
   const router = useRouter();
+  const login = useAuthStore((state) => state.login);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -24,16 +26,10 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // 実際の実装では、認証APIを呼び出す
-      // このモックでは、単に遅延を入れてからホーム画面にリダイレクト
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // 認証ストアのログイン関数を呼び出す
+      await login(email, password);
 
-      // 簡易的なバリデーション
-      if (!email || !password) {
-        throw new Error("メールアドレスとパスワードを入力してください");
-      }
-
-      // ログイン成功したとみなす
+      // ログイン成功時、ホームページへリダイレクト
       router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "認証に失敗しました");
@@ -104,7 +100,10 @@ export default function LoginPage() {
 
         <div className="text-center text-sm text-stone-600">
           アカウントをお持ちでない方は
-          <Link href="/auth/register" className="text-teal-700 hover:underline">
+          <Link
+            href="/auth/register"
+            className="text-teal-700 hover:underline ml-1"
+          >
             新規登録
           </Link>
         </div>
