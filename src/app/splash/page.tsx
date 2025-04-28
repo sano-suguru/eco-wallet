@@ -2,17 +2,17 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/store/auth-store";
+import { useSession } from "next-auth/react";
 import { Leaf } from "lucide-react";
 
 export default function SplashPage() {
   const router = useRouter();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { status } = useSession();
 
   useEffect(() => {
     // スプラッシュ画面を表示して少し待ってから適切な画面にリダイレクト
     const timer = setTimeout(() => {
-      if (isAuthenticated) {
+      if (status === "authenticated") {
         router.push("/");
       } else {
         router.push("/auth/login");
@@ -20,7 +20,7 @@ export default function SplashPage() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isAuthenticated, router]);
+  }, [status, router]);
 
   return (
     <div className="min-h-screen bg-teal-800 flex flex-col items-center justify-center">
