@@ -9,7 +9,8 @@
     "prepare": "husky",
     "start": "next start",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "collect-sources": "node tools/collect_sources.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
