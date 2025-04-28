@@ -28,13 +28,18 @@ import {
   Bell,
   Lock,
   CreditCard,
-  LogOut,
   ChevronRight,
   Upload,
   MapPin,
 } from "lucide-react";
+import { LogoutButton } from "@/components/auth/LogoutButton";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
-export default function AccountSettingsPage() {
+export default async function AccountSettingsPage() {
+  const session = await getServerSession(authOptions);
+  const user = session?.user;
+
   return (
     <div className="flex min-h-screen bg-stone-50 flex-col items-center p-4">
       <div className="w-full max-w-3xl space-y-6">
@@ -50,10 +55,7 @@ export default function AccountSettingsPage() {
               Eco Wallet
             </h1>
           </div>
-          <Button variant="ghost" size="sm" className="text-stone-600">
-            <LogOut className="h-4 w-4 mr-2" />
-            ログアウト
-          </Button>
+          <LogoutButton />
         </div>
 
         <div className="flex flex-col sm:flex-row gap-6">
@@ -63,11 +65,11 @@ export default function AccountSettingsPage() {
               <div className="flex flex-col items-center text-center">
                 <Avatar className="h-20 w-20 border-2 border-teal-100">
                   <AvatarImage
-                    src="/api/placeholder/100/100"
+                    src={user?.image || "/api/placeholder/100/100"}
                     alt="プロフィール画像"
                   />
                   <AvatarFallback className="bg-teal-100 text-teal-800">
-                    山田
+                    {user?.name ? user.name.slice(0, 2) : "山田"}
                   </AvatarFallback>
                 </Avatar>
                 <Button
@@ -79,14 +81,16 @@ export default function AccountSettingsPage() {
                   画像を変更
                 </Button>
                 <h2 className="mt-3 text-lg font-medium text-stone-900">
-                  山田 太郎
+                  {user?.name || "山田 太郎"}
                 </h2>
-                <p className="text-sm text-stone-600">eco_user@example.com</p>
+                <p className="text-sm text-stone-600">
+                  {user?.email || "eco_user@example.com"}
+                </p>
 
                 <div className="mt-4 w-full">
                   <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 w-full flex items-center py-1.5">
                     <Leaf className="h-3 w-3 mr-1" />
-                    エコマイスター
+                    {user?.ecoRank || "エコマイスター"}
                   </Badge>
                 </div>
 

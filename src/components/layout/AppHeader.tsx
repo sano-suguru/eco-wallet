@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Bell, Settings } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 interface AppHeaderProps {
   title?: string;
@@ -16,6 +19,9 @@ export function AppHeader({
   showSettings = true,
   showNotifications = true,
 }: AppHeaderProps) {
+  const { data: session } = useSession();
+  const user = session?.user;
+
   return (
     <div className="p-4 bg-teal-800 text-white">
       <div className="flex justify-between items-center">
@@ -54,12 +60,15 @@ export function AppHeader({
             </Link>
           )}
 
-          {showAvatar && (
+          {showAvatar && user && (
             <Link href="/settings">
               <Avatar className="h-8 w-8 border border-white/30">
-                <AvatarImage src="/api/placeholder/32/32" alt="ユーザー" />
+                <AvatarImage
+                  src={user.image || "/api/placeholder/32/32"}
+                  alt={user.name || "ユーザー"}
+                />
                 <AvatarFallback className="bg-teal-700 text-white">
-                  山田
+                  {user.name ? user.name.slice(0, 2) : "ユ"}
                 </AvatarFallback>
               </Avatar>
             </Link>

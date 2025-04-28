@@ -1,13 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, Send, Users, CreditCard, Plus } from "lucide-react";
+import { useSession } from "next-auth/react";
 
-interface BalanceCardProps {
-  balance: number;
-}
+export function BalanceCard() {
+  const { data: session } = useSession();
+  const balance = session?.user?.balance || 0;
 
-export function BalanceCard({ balance }: BalanceCardProps) {
   const formattedBalance = new Intl.NumberFormat("ja-JP", {
     style: "currency",
     currency: "JPY",

@@ -1,23 +1,32 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function middleware(request: NextRequest) {
-  // 実際の実装では、JWTやセッションクッキーを確認
-  const isAuthenticated = request.cookies.has("eco-wallet-auth");
+export async function middleware(request: NextRequest) {
+  // NextAuthのトークンを取得
+  const token = await getToken({ req: request });
+  const isAuthenticated = !!token;
 
-  // 認証が必要なパスかどうかを確認
-  const isAuthRequired = !request.nextUrl.pathname.startsWith("/auth/");
+  // 公開パス（認証不要なパス）
+  const publicPaths = [
+    "/auth/login",
+    "/auth/register",
+    "/auth/forgot-password",
+    "/splash",
+  ];
+  const isPublicPath = publicPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path),
+  );
+  const isAuthPath = request.nextUrl.pathname.startsWith("/auth/");
 
-  // 認証が必要だが認証されていない場合はログインページにリダイレクト
-  if (isAuthRequired && !isAuthenticated) {
-    const loginUrl = new URL("/auth/login", request.url);
-    return NextResponse.redirect(loginUrl);
+  // 認証済みユーザーが認証ページにアクセスした場合はホームにリダイレクト
+  if (isAuthenticated && isAuthPath) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // 既に認証済みでログインページなどにアクセスした場合はホームにリダイレクト
-  if (!isAuthRequired && isAuthenticated) {
-    const homeUrl = new URL("/", request.url);
-    return NextResponse.redirect(homeUrl);
+  // 未認証ユーザーが保護されたページにアクセスした場合はログインにリダイレクト
+  if (!isAuthenticated && !isPublicPath) {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 
   return NextResponse.next();

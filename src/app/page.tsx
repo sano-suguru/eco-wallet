@@ -1,26 +1,28 @@
-// src/app/page.tsx (更新版)
 import { BalanceCard } from "@/components/cards/BalanceCard";
 import { EcoImpactCard } from "@/components/cards/EcoImpactCard";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { RecentTransactions } from "@/components/transactions/RecentTransactions";
 import { NewsAndProjects } from "@/components/eco/NewsAndProjects";
 import { RecommendedAction } from "@/components/eco/RecommendedAction";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // モックデータをインポート
-import { userBalanceData } from "@/lib/mock-data/user-profile";
 import { ecoImpactData } from "@/lib/mock-data/eco-impact";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+
   return (
     <PageContainer activeTab="home">
-      <BalanceCard balance={userBalanceData.balance} />
+      <BalanceCard />
 
       <EcoImpactCard
         forestArea={ecoImpactData.forestArea}
         waterSaved={ecoImpactData.waterSaved}
         co2Reduction={ecoImpactData.co2Reduction}
         progressPercent={ecoImpactData.progressPercent}
-        ecoRank={userBalanceData.ecoRank}
+        ecoRank={session?.user?.ecoRank || "エコマイスター"}
       />
 
       <RecentTransactions limit={3} />
