@@ -4,11 +4,17 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, Send, Users, CreditCard, Plus } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useBalanceStore } from "@/stores/balanceStore";
 
 export function BalanceCard() {
-  const { data: session } = useSession();
-  const balance = session?.user?.balance || 0;
+  const balance = useBalanceStore((state) => state.balance);
+  const campaignBalances = useBalanceStore((state) => state.campaignBalances);
+
+  // キャンペーン残高の合計を計算
+  const campaignTotal = campaignBalances.reduce(
+    (sum, cb) => sum + cb.amount,
+    0,
+  );
 
   const formattedBalance = new Intl.NumberFormat("ja-JP", {
     style: "currency",
@@ -16,12 +22,26 @@ export function BalanceCard() {
     currencyDisplay: "symbol",
   }).format(balance);
 
+  // 期限が近い（7日以内）キャンペーン残高があるかチェック
+  const hasExpiringBalance = campaignBalances.some((cb) => cb.daysLeft <= 7);
+
   return (
     <Card className="border-0 shadow-md bg-white overflow-hidden">
       <div className="bg-gradient-to-r from-teal-800 to-teal-700 p-5 text-white">
         <p className="text-xs opacity-80">現在の残高</p>
         <div className="flex justify-between items-end">
-          <h2 className="text-3xl font-bold mt-1">{formattedBalance}</h2>
+          <div>
+            <h2 className="text-3xl font-bold mt-1">{formattedBalance}</h2>
+            {campaignTotal > 0 && (
+              <p className="text-xs opacity-90 mt-1">
+                うちキャンペーン残高:{" "}
+                {new Intl.NumberFormat("ja-JP").format(campaignTotal)}円
+                {hasExpiringBalance && (
+                  <span className="ml-1 text-amber-200">（期限間近あり）</span>
+                )}
+              </p>
+            )}
+          </div>
           <Link href="/charge">
             <Button
               variant="outline"
