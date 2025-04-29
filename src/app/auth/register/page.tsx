@@ -43,7 +43,7 @@ export default function RegisterPage() {
       }
 
       // 登録成功したとみなす
-      router.push("/auth/register-success");
+      router.push(`/auth/register-success?email=${encodeURIComponent(email)}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "登録に失敗しました");
     } finally {
@@ -141,7 +141,10 @@ export default function RegisterPage() {
 
         <div className="text-center text-sm text-stone-600">
           アカウントをお持ちの方は
-          <Link href="/auth/login" className="text-teal-700 hover:underline">
+          <Link
+            href="/auth/login"
+            className="text-teal-700 hover:underline ml-1"
+          >
             ログイン
           </Link>
         </div>
