@@ -1,24 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Leaf } from "lucide-react";
+import { Leaf, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [referrerInfo, setReferrerInfo] = useState<{ name: string } | null>(
+    null,
+  );
+
+  // URLからリファラルコードを取得
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      // 実際の実装ではAPIを呼び出して参照者情報を取得
+      console.log("Referral from:", ref);
+
+      // モック実装：リファラルコードがある場合の処理
+      if (ref.startsWith("ECO")) {
+        setReferralCode(ref);
+      } else {
+        // ユーザーIDからリファラル情報を取得する処理（モック）
+        setReferrerInfo({ name: "招待したユーザー" });
+      }
+    }
+  }, [searchParams]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +65,12 @@ export default function RegisterPage() {
         throw new Error("利用規約とプライバシーポリシーに同意してください");
       }
 
+      // 招待コードの処理（実際の実装ではAPIで検証）
+      if (referralCode) {
+        console.log("Referral code used:", referralCode);
+        // 招待コードの検証と処理
+      }
+
       // 登録成功したとみなす
       router.push(`/auth/register-success?email=${encodeURIComponent(email)}`);
     } catch (err) {
@@ -54,6 +83,21 @@ export default function RegisterPage() {
   return (
     <AuthLayout title="新規登録" subtitle="シンプルで環境に優しい決済サービス">
       <form onSubmit={handleRegister} className="space-y-4">
+        {referrerInfo && (
+          <div className="bg-teal-50 p-3 rounded-md border border-teal-100 mb-4 text-center">
+            <div className="flex items-center justify-center mb-2">
+              <Users className="h-5 w-5 text-teal-600 mr-2" />
+              <span className="text-sm font-medium text-teal-800">
+                友達からの招待
+              </span>
+            </div>
+            <p className="text-xs text-teal-700">
+              {referrerInfo.name}
+              さんから招待されました。登録すると、あなたも招待した方も1,000円分のエコポイントが獲得できます！
+            </p>
+          </div>
+        )}
+
         <div className="space-y-2 text-left">
           <Label htmlFor="name">お名前</Label>
           <Input
@@ -102,6 +146,24 @@ export default function RegisterPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
+        </div>
+
+        <div className="space-y-2 text-left">
+          <Label htmlFor="referralCode" className="text-sm">
+            招待コード（任意）
+          </Label>
+          <Input
+            id="referralCode"
+            placeholder="例：ECO1234"
+            value={referralCode}
+            onChange={(e) => setReferralCode(e.target.value)}
+            className="border-stone-200"
+          />
+          {referralCode && !referralCode.startsWith("ECO") && (
+            <p className="text-xs text-amber-600">
+              招待コードはECOから始まる英数字です
+            </p>
+          )}
         </div>
 
         <div className="flex items-start space-x-2 text-left">

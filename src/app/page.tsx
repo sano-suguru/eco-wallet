@@ -6,9 +6,34 @@ import { NewsAndProjects } from "@/components/eco/NewsAndProjects";
 import { RecommendedAction } from "@/components/eco/RecommendedAction";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { recommendedActions } from "@/lib/mock-data/recommended-actions";
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
+
+  // ランダムにアクションを選ぶ
+  const getRandomAction = () => {
+    // アクションの優先度に基づいた重み付け選択
+    // 優先度が高い（数値が小さい）アクションが選ばれる確率を高くする
+    const prioritySum = recommendedActions.reduce(
+      (sum, action) => sum + 10 / action.priority,
+      0,
+    );
+    let random = Math.random() * prioritySum;
+
+    for (const action of recommendedActions) {
+      random -= 10 / action.priority;
+      if (random <= 0) {
+        return action;
+      }
+    }
+
+    // フォールバック：最初のアクションを返す
+    return recommendedActions[0];
+  };
+
+  // ランダムに選択したアクション
+  const randomAction = getRandomAction();
 
   return (
     <PageContainer activeTab="home">
@@ -21,10 +46,11 @@ export default async function HomePage() {
       <NewsAndProjects />
 
       <RecommendedAction
-        title="今月のおすすめアクション"
-        description="決済額からの環境貢献を3%に増やすと、1ヶ月で森林保全面積を約2m²追加できます。"
-        actionLabel="環境貢献を増やす"
-        actionLink="/settings?tab=eco"
+        actionId={randomAction.id}
+        title={randomAction.title}
+        description={randomAction.description}
+        actionLabel={randomAction.actionLabel}
+        actionLink={randomAction.actionLink}
       />
     </PageContainer>
   );

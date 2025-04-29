@@ -1,4 +1,3 @@
-// src/lib/mock-data/recommended-actions.ts
 export interface RecommendedActionItem {
   id: string;
   title: string;
@@ -18,7 +17,7 @@ export const recommendedActions: RecommendedActionItem[] = [
     actionLabel: "環境貢献を増やす",
     actionLink: "/settings?tab=eco",
     icon: "leaf",
-    priority: 1,
+    priority: 3,
   },
   {
     id: "action_2",
@@ -38,6 +37,6 @@ export const recommendedActions: RecommendedActionItem[] = [
     actionLabel: "友達を招待する",
     actionLink: "/invite",
     icon: "users",
-    priority: 3,
+    priority: 1,
   },
 ];
