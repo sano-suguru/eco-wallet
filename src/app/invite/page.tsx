@@ -27,7 +27,7 @@ export default function InvitePage() {
   const [emailSent, setEmailSent] = useState(false);
 
   // 招待リンク（実際の実装ではAPIから取得するか、ユーザーIDに基づいて生成）
-  const inviteLink = `https://ecowallet.example.com/register?ref=${session?.user.id || "demo"}`;
+  const inviteLink = `${window.location.origin}/auth/register?ref=${session?.user.id || "demo"}`;
 
   // 招待コード（実際の実装ではAPIから取得）
   const inviteCode =
@@ -173,7 +173,7 @@ export default function InvitePage() {
                     </label>
                     <textarea
                       id="message"
-                      placeholder="Eco Walletを使ってみませんか？"
+                      placeholder="こんにちは！環境に優しいEco Walletを試してみませんか？登録すると私たち二人とも1,000円分のエコポイントがもらえて、一緒に環境保全に貢献できます。毎回の決済で自動的に森林保全や水資源保護に寄付される仕組みです。ぜひ一緒に始めましょう！"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       className="w-full p-2 text-sm border border-stone-200 rounded-md min-h-[100px]"
