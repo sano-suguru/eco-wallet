@@ -1,3 +1,6 @@
+"use client";
+
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -19,10 +22,11 @@ import {
   Gift,
   Info,
   ChevronRight,
-  ChevronDown,
   Tag,
   Zap,
 } from "lucide-react";
+import { useTransactionStore } from "@/stores/transactionStore";
+import { useBalanceStore } from "@/stores/balanceStore";
 
 // アイコンコンポーネント
 const CreditCard = ({ className }: { className?: string }) => (
@@ -44,129 +48,18 @@ const CreditCard = ({ className }: { className?: string }) => (
 );
 
 export default function TransactionHistoryPage() {
-  // サンプルデータ - 残高情報
-  const balances = [
-    {
-      id: 1,
-      type: "regular",
-      amount: 8500,
-      label: "通常残高",
-    },
-    {
-      id: 2,
-      type: "campaign",
-      amount: 2000,
-      label: "山の日キャンペーン",
-      expiryDate: "2025/05/11",
-      daysLeft: 21,
-      conditions: "環境に配慮した商品の購入のみ有効",
-    },
-    {
-      id: 3,
-      type: "campaign",
-      amount: 500,
-      label: "友達紹介ボーナス",
-      expiryDate: "2025/04/30",
-      daysLeft: 10,
-      conditions: "制限なし",
-    },
-  ];
+  // Zustand ストアからデータを取得
+  const transactions = useTransactionStore((state) => state.transactions);
+  const balances = useBalanceStore((state) => state.campaignBalances);
+  const regularBalance = useBalanceStore((state) => state.regularBalance);
 
   // 合計残高を計算
-  const totalBalance = balances.reduce(
-    (total, balance) => total + balance.amount,
-    0,
-  );
-
-  // サンプルデータ - 取引履歴
-  const transactions = [
-    {
-      id: 1,
-      date: "2025/04/19",
-      description: "エコ製品定期プラン",
-      category: "支払い",
-      amount: -4000,
-      balanceUsed: [
-        { type: "regular", amount: 2000 },
-        { type: "campaign", label: "山の日キャンペーン", amount: 2000 },
-      ],
-      ecoContribution: true,
-      ecoAmount: 200,
-    },
-    {
-      id: 2,
-      date: "2025/04/18",
-      description: "山の日キャンペーンボーナス",
-      category: "特典",
-      amount: 4000,
-      campaignName: "山の日キャンペーン",
-      expiryDate: "2025/05/11",
-      ecoContribution: false,
-    },
-    {
-      id: 3,
-      date: "2025/04/15",
-      description: "Eco Walletチャージ",
-      category: "入金",
-      amount: 10000,
-      ecoContribution: false,
-    },
-    {
-      id: 4,
-      date: "2025/04/10",
-      description: "オーガニックコットンTシャツ",
-      category: "支払い",
-      amount: -3200,
-      balanceUsed: [{ type: "regular", amount: 3200 }],
-      ecoContribution: true,
-      ecoAmount: 150,
-    },
-    {
-      id: 5,
-      date: "2025/04/05",
-      description: "リサイクルフリース",
-      category: "支払い",
-      amount: -12000,
-      balanceUsed: [
-        { type: "regular", amount: 11500 },
-        { type: "campaign", label: "友達紹介ボーナス", amount: 500 },
-      ],
-      ecoContribution: true,
-      ecoAmount: 500,
-    },
-    {
-      id: 6,
-      date: "2025/04/03",
-      description: "友達紹介ボーナス",
-      category: "特典",
-      amount: 1000,
-      campaignName: "友達紹介プログラム",
-      expiryDate: "2025/04/30",
-      ecoContribution: false,
-    },
-    {
-      id: 7,
-      date: "2025/04/02",
-      description: "エコポイント期限切れ",
-      category: "期限切れ",
-      amount: -500,
-      campaignName: "春の環境キャンペーン",
-      ecoContribution: false,
-    },
-    {
-      id: 8,
-      date: "2025/04/01",
-      description: "Eco Walletチャージ",
-      category: "入金",
-      amount: 20000,
-      ecoContribution: false,
-    },
-  ];
+  const totalBalance = useBalanceStore((state) => state.getTotalBalance());
 
   // 環境貢献額を計算
-  const totalEcoContribution = transactions
-    .filter((t) => t.ecoContribution)
-    .reduce((total, t) => total + (t.ecoAmount || 0), 0);
+  const totalEcoContribution = useTransactionStore((state) =>
+    state.getTotalEcoContribution(),
+  );
 
   return (
     <div className="flex min-h-screen bg-stone-50 flex-col items-center justify-center p-4">
@@ -200,31 +93,35 @@ export default function TransactionHistoryPage() {
             </div>
 
             <div className="mt-3 space-y-2">
+              <div className="flex justify-between items-center p-2 rounded-md bg-stone-50">
+                <div className="flex items-center">
+                  <CreditCard className="h-4 w-4 text-stone-500 mr-2" />
+                  <div>
+                    <div className="text-sm font-medium text-stone-800">
+                      通常残高
+                    </div>
+                  </div>
+                </div>
+                <div className="text-sm font-medium text-stone-800">
+                  ¥{regularBalance.toLocaleString()}
+                </div>
+              </div>
+
               {balances.map((balance) => (
                 <div
                   key={balance.id}
-                  className={`flex justify-between items-center p-2 rounded-md ${
-                    balance.type === "regular"
-                      ? "bg-stone-50"
-                      : "bg-amber-50 border border-amber-100"
-                  }`}
+                  className="flex justify-between items-center p-2 rounded-md bg-amber-50 border border-amber-100"
                 >
                   <div className="flex items-center">
-                    {balance.type === "regular" ? (
-                      <CreditCard className="h-4 w-4 text-stone-500 mr-2" />
-                    ) : (
-                      <Gift className="h-4 w-4 text-amber-500 mr-2" />
-                    )}
+                    <Gift className="h-4 w-4 text-amber-500 mr-2" />
                     <div>
                       <div className="text-sm font-medium text-stone-800">
                         {balance.label}
                       </div>
-                      {balance.type === "campaign" && (
-                        <div className="flex items-center text-xs text-amber-600">
-                          <Clock className="h-3 w-3 mr-1" />
-                          あと{balance.daysLeft}日（{balance.expiryDate}まで）
-                        </div>
-                      )}
+                      <div className="flex items-center text-xs text-amber-600">
+                        <Clock className="h-3 w-3 mr-1" />
+                        あと{balance.daysLeft}日（{balance.expiryDate}まで）
+                      </div>
                     </div>
                   </div>
                   <div className="text-sm font-medium text-stone-800">
@@ -288,160 +185,122 @@ export default function TransactionHistoryPage() {
 
             <div className="space-y-2">
               {transactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className={`bg-white border ${
-                    transaction.category === "特典"
-                      ? "border-amber-100"
-                      : transaction.category === "期限切れ"
-                        ? "border-red-100"
-                        : "border-stone-100"
-                  } rounded-md p-3 hover:bg-stone-50 transition-colors`}
-                >
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-start space-x-3">
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          transaction.category === "入金"
-                            ? "bg-blue-50 text-blue-500"
-                            : transaction.category === "特典"
-                              ? "bg-amber-50 text-amber-500"
-                              : transaction.category === "期限切れ"
-                                ? "bg-red-50 text-red-500"
-                                : "bg-stone-50 text-stone-500"
-                        }`}
-                      >
-                        {transaction.category === "入金" && (
-                          <ArrowDown className="h-4 w-4" />
-                        )}
-                        {transaction.category === "支払い" && (
-                          <ArrowUp className="h-4 w-4" />
-                        )}
-                        {transaction.category === "特典" && (
-                          <Gift className="h-4 w-4" />
-                        )}
-                        {transaction.category === "期限切れ" && (
-                          <Clock className="h-4 w-4" />
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center">
-                          <h4 className="text-sm font-medium text-stone-800">
-                            {transaction.description}
-                          </h4>
-                          {transaction.ecoContribution && (
-                            <Badge className="ml-2 bg-teal-100 text-teal-800 hover:bg-teal-200 text-xs">
-                              <Leaf className="h-3 w-3 mr-1" /> 環境貢献
-                            </Badge>
-                          )}
-                          {transaction.category === "特典" && (
-                            <Badge className="ml-2 bg-amber-100 text-amber-800 hover:bg-amber-200 text-xs">
-                              <Gift className="h-3 w-3 mr-1" /> 特典
-                            </Badge>
-                          )}
-                          {transaction.category === "期限切れ" && (
-                            <Badge className="ml-2 bg-red-100 text-red-800 hover:bg-red-200 text-xs">
-                              <AlertCircle className="h-3 w-3 mr-1" /> 期限切れ
-                            </Badge>
+                <Link href={`/history/${transaction.id}`} key={transaction.id}>
+                  <div
+                    className={`bg-white border ${
+                      transaction.badges?.includes("特典") ||
+                      transaction.type === "receive"
+                        ? "border-amber-100"
+                        : transaction.badges?.includes("期限切れ") ||
+                            transaction.type === "expired"
+                          ? "border-red-100"
+                          : "border-stone-100"
+                    } rounded-md p-3 hover:bg-stone-50 transition-colors`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-start space-x-3">
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            transaction.type === "charge" ||
+                            transaction.type === "receive"
+                              ? "bg-blue-50 text-blue-500"
+                              : transaction.badges?.includes("特典")
+                                ? "bg-amber-50 text-amber-500"
+                                : transaction.type === "expired" ||
+                                    transaction.badges?.includes("期限切れ")
+                                  ? "bg-red-50 text-red-500"
+                                  : "bg-stone-50 text-stone-500"
+                          }`}
+                        >
+                          {transaction.type === "charge" ||
+                          transaction.type === "receive" ? (
+                            <ArrowDown className="h-4 w-4" />
+                          ) : transaction.type === "payment" ? (
+                            <ArrowUp className="h-4 w-4" />
+                          ) : transaction.badges?.includes("特典") ? (
+                            <Gift className="h-4 w-4" />
+                          ) : transaction.type === "expired" ? (
+                            <Clock className="h-4 w-4" />
+                          ) : (
+                            <Info className="h-4 w-4" />
                           )}
                         </div>
-                        <p className="text-xs text-stone-500">
-                          {transaction.date}
-                        </p>
+                        <div>
+                          <div className="flex items-center">
+                            <h4 className="text-sm font-medium text-stone-800">
+                              {transaction.description}
+                            </h4>
+                            {transaction.ecoContribution?.enabled && (
+                              <Badge className="ml-2 bg-teal-100 text-teal-800 hover:bg-teal-200 text-xs">
+                                <Leaf className="h-3 w-3 mr-1" /> 環境貢献
+                              </Badge>
+                            )}
+                            {transaction.badges?.includes("特典") && (
+                              <Badge className="ml-2 bg-amber-100 text-amber-800 hover:bg-amber-200 text-xs">
+                                <Gift className="h-3 w-3 mr-1" /> 特典
+                              </Badge>
+                            )}
+                            {transaction.badges?.includes("期限切れ") && (
+                              <Badge className="ml-2 bg-red-100 text-red-800 hover:bg-red-200 text-xs">
+                                <AlertCircle className="h-3 w-3 mr-1" />{" "}
+                                期限切れ
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-stone-500">
+                            {transaction.date}
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className={`text-sm font-medium ${
+                          transaction.amount < 0
+                            ? "text-stone-800"
+                            : transaction.type === "receive" ||
+                                transaction.badges?.includes("特典")
+                              ? "text-amber-600"
+                              : "text-blue-600"
+                        }`}
+                      >
+                        {transaction.amount < 0 ? "-" : "+"}¥
+                        {Math.abs(transaction.amount).toLocaleString()}
                       </div>
                     </div>
-                    <div
-                      className={`text-sm font-medium ${
-                        transaction.amount < 0
-                          ? "text-stone-800"
-                          : transaction.category === "特典"
-                            ? "text-amber-600"
-                            : "text-blue-600"
-                      }`}
-                    >
-                      {transaction.amount < 0 ? "-" : "+"}¥
-                      {Math.abs(transaction.amount).toLocaleString()}
-                    </div>
-                  </div>
 
-                  {/* 特典情報 */}
-                  {transaction.category === "特典" && (
-                    <div className="mt-2 ml-11 text-xs bg-amber-50 rounded-md p-2 border border-amber-100">
-                      <div className="flex items-center text-amber-700">
-                        <Tag className="h-3 w-3 mr-1" />
-                        <span className="font-medium">
-                          {transaction.campaignName}
-                        </span>
-                      </div>
-                      <div className="flex items-center mt-1 text-amber-600">
-                        <Clock className="h-3 w-3 mr-1" />
-                        <span>有効期限: {transaction.expiryDate}</span>
-                      </div>
-                    </div>
-                  )}
+                    {transaction.type === "receive" &&
+                      transaction.badges?.includes("特典") && (
+                        <div className="mt-2 ml-11 text-xs bg-amber-50 rounded-md p-2 border border-amber-100">
+                          <div className="flex items-center text-amber-700">
+                            <Tag className="h-3 w-3 mr-1" />
+                            <span className="font-medium">
+                              友達紹介プログラム
+                            </span>
+                          </div>
+                          <div className="flex items-center mt-1 text-amber-600">
+                            <Clock className="h-3 w-3 mr-1" />
+                            <span>有効期限: 2025/04/30</span>
+                          </div>
+                        </div>
+                      )}
 
-                  {/* 期限切れ情報 */}
-                  {transaction.category === "期限切れ" && (
-                    <div className="mt-2 ml-11 text-xs bg-red-50 rounded-md p-2 border border-red-100">
-                      <div className="flex items-center text-red-700">
-                        <AlertCircle className="h-3 w-3 mr-1" />
-                        <span>
-                          {transaction.campaignName}の残高が期限切れになりました
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 複数残高使用情報 */}
-                  {transaction.balanceUsed &&
-                    transaction.balanceUsed.length > 1 && (
-                      <div className="mt-2 ml-11">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 p-0 text-xs text-stone-600 flex items-center"
-                        >
-                          <Info className="h-3 w-3 mr-1" />
-                          複数の残高を使用
-                          <ChevronDown className="h-3 w-3 ml-1" />
-                        </Button>
-                        <div className="text-xs mt-1 bg-stone-50 rounded-md p-2 space-y-1">
-                          {transaction.balanceUsed.map((balance, index) => (
-                            <div
-                              key={index}
-                              className="flex justify-between items-center"
-                            >
-                              <span
-                                className={
-                                  balance.type === "campaign"
-                                    ? "text-amber-600 flex items-center"
-                                    : "text-stone-600"
-                                }
-                              >
-                                {balance.type === "campaign" && (
-                                  <Gift className="h-3 w-3 mr-1" />
-                                )}
-                                {balance.type === "campaign"
-                                  ? balance.label
-                                  : "通常残高"}
-                              </span>
-                              <span className="font-medium text-stone-700">
-                                ¥{balance.amount.toLocaleString()}
-                              </span>
-                            </div>
-                          ))}
+                    {transaction.type === "expired" && (
+                      <div className="mt-2 ml-11 text-xs bg-red-50 rounded-md p-2 border border-red-100">
+                        <div className="flex items-center text-red-700">
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          <span>エコポイントの残高が期限切れになりました</span>
                         </div>
                       </div>
                     )}
 
-                  {transaction.ecoContribution && (
-                    <div className="mt-2 ml-11 text-xs text-teal-600 flex items-center">
-                      <Leaf className="h-3 w-3 mr-1" />
-                      うち環境保全寄付 ¥
-                      {(transaction.ecoAmount || 0).toLocaleString()}
-                    </div>
-                  )}
-                </div>
+                    {transaction.ecoContribution?.enabled && (
+                      <div className="mt-2 ml-11 text-xs text-teal-600 flex items-center">
+                        <Leaf className="h-3 w-3 mr-1" />
+                        うち環境保全寄付 ¥
+                        {transaction.ecoContribution.amount.toLocaleString()}
+                      </div>
+                    )}
+                  </div>
+                </Link>
               ))}
             </div>
 
