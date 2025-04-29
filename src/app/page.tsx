@@ -7,9 +7,6 @@ import { RecommendedAction } from "@/components/eco/RecommendedAction";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-// モックデータをインポート
-import { ecoImpactData } from "@/lib/mock-data/eco-impact";
-
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
 
@@ -17,13 +14,7 @@ export default async function HomePage() {
     <PageContainer activeTab="home">
       <BalanceCard />
 
-      <EcoImpactCard
-        forestArea={ecoImpactData.forestArea}
-        waterSaved={ecoImpactData.waterSaved}
-        co2Reduction={ecoImpactData.co2Reduction}
-        progressPercent={ecoImpactData.progressPercent}
-        ecoRank={session?.user?.ecoRank || "エコマイスター"}
-      />
+      <EcoImpactCard ecoRank={session?.user?.ecoRank || "エコマイスター"} />
 
       <RecentTransactions limit={3} />
 

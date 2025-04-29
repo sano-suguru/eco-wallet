@@ -1,25 +1,46 @@
+"use client";
+
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Leaf, TreePine, Droplets, Globe, ChevronRight } from "lucide-react";
+import { useEcoImpactStore } from "@/stores/ecoImpactStore";
+import { useTransactionStore } from "@/stores/transactionStore";
+import { useEffect } from "react";
 
 interface EcoImpactProps {
-  forestArea: number;
-  waterSaved: number;
-  co2Reduction: number;
-  progressPercent: number;
   ecoRank?: string;
 }
 
-export function EcoImpactCard({
-  forestArea,
-  waterSaved,
-  co2Reduction,
-  progressPercent,
-  ecoRank = "エコマイスター",
-}: EcoImpactProps) {
+export function EcoImpactCard({ ecoRank }: EcoImpactProps) {
+  // 環境貢献データをZustandストアから取得
+  const {
+    forestArea,
+    waterSaved,
+    co2Reduction,
+    progressPercent,
+    updateProgress,
+    getEcoRank,
+  } = useEcoImpactStore();
+
+  // 環境貢献合計額をトランザクションストアから取得
+  const getTotalEcoContribution = useTransactionStore(
+    (state) => state.getTotalEcoContribution,
+  );
+
+  // コンポーネントマウント時に進捗を更新
+  useEffect(() => {
+    updateProgress();
+  }, [updateProgress]);
+
+  // ランクが明示的に提供されなければ、ストアから取得
+  const displayEcoRank = ecoRank || getEcoRank();
+
+  // 本当は不要ですが、トランザクションストアの使用例としての実装
+  const totalEcoContribution = getTotalEcoContribution();
+
   return (
     <Card className="border-0 shadow-md bg-white p-4">
       <div className="flex justify-between items-center mb-3">
@@ -27,8 +48,8 @@ export function EcoImpactCard({
           <Leaf className="h-4 w-4 mr-1 text-teal-600" />
           あなたの環境貢献
         </h3>
-        {ecoRank && (
-          <Badge className="bg-teal-100 text-teal-800">{ecoRank}</Badge>
+        {displayEcoRank && (
+          <Badge className="bg-teal-100 text-teal-800">{displayEcoRank}</Badge>
         )}
       </div>
 
@@ -65,6 +86,12 @@ export function EcoImpactCard({
         </div>
         <Progress value={progressPercent} />
       </div>
+
+      {totalEcoContribution > 0 && (
+        <div className="mt-2 text-xs text-center text-teal-700">
+          累計環境貢献額: ¥{totalEcoContribution.toLocaleString()}
+        </div>
+      )}
 
       <Link href="/impact">
         <Button
