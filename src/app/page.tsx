@@ -8,6 +8,7 @@ import { RecommendedAction } from "@/components/eco/RecommendedAction";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { recommendedActions } from "@/lib/mock-data/recommended-actions";
+import { CampaignCard } from "@/components/cards/CampaignCard";
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
@@ -43,6 +44,11 @@ export default async function HomePage() {
       <InviteCard />
       <RecentTransactions limit={3} />
       <NewsAndProjects />
+      <CampaignCard
+        campaignId="camp_1"
+        title="山の日キャンペーン"
+        description="エコ製品購入で20%ポイント還元中！5月31日まで期間限定開催中です。"
+      />
       <RecommendedAction
         actionId={randomAction.id}
         title={randomAction.title}
