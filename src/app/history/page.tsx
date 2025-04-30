@@ -21,12 +21,11 @@ import {
   AlertCircle,
   Gift,
   Info,
-  ChevronRight,
   Tag,
-  Zap,
 } from "lucide-react";
 import { useTransactionStore } from "@/stores/transactionStore";
 import { useBalanceStore } from "@/stores/balanceStore";
+import { FeaturedCampaignSection } from "@/components/campaigns/FeaturedCampaignSection";
 
 // アイコンコンポーネント
 const CreditCard = ({ className }: { className?: string }) => (
@@ -313,26 +312,7 @@ export default function TransactionHistoryPage() {
           </CardContent>
         </Card>
 
-        {/* キャンペーン情報セクション */}
-        <Card className="border-0 shadow-md bg-gradient-to-r from-amber-50 to-amber-100 p-4">
-          <div className="flex items-start space-x-3">
-            <div className="bg-amber-500 text-white p-2 rounded-full">
-              <Zap className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-stone-800">
-                アクティブなキャンペーン
-              </h3>
-              <p className="text-xs text-stone-600 mt-1">
-                山の日キャンペーンでエコ製品購入時に20%ポイント還元中！
-              </p>
-              <Button className="mt-3 bg-amber-500 hover:bg-amber-600 text-white w-full">
-                キャンペーン詳細を見る
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-          </div>
-        </Card>
+        <FeaturedCampaignSection />
 
         <div className="bg-teal-50 border border-teal-100 rounded-md p-3">
           <div className="flex items-start space-x-3">
