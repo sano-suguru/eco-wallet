@@ -18,6 +18,7 @@ import {
 import { useSession } from "next-auth/react";
 import { SocialShareButtons } from "@/components/invite/SocialShareButtons";
 import { QRCodeDisplay } from "@/components/invite/QRCodeDisplay";
+import { ReferralCampaignCard } from "@/components/campaigns/ReferralCampaignCard";
 
 export default function InvitePage() {
   const { data: session } = useSession();
@@ -55,6 +56,7 @@ export default function InvitePage() {
   return (
     <PageContainer title="友達招待">
       <div className="space-y-6">
+        <ReferralCampaignCard />
         <Card className="border-0 shadow-md bg-white p-6">
           <div className="flex items-start space-x-4 mb-6">
             <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
