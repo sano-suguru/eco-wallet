@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 import { Session } from "next-auth";
 import {
   Select,
@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 interface ProfileTabProps {
   user?: Session["user"];
@@ -78,6 +79,27 @@ export function ProfileTab({ user }: ProfileTabProps) {
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      <div className="mt-6 pt-6 border-t border-stone-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Users className="h-4 w-4 text-teal-700 mr-2" />
+            <h3 className="text-sm font-medium text-stone-800">友達招待</h3>
+          </div>
+          <Link href="/invite">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs text-teal-700 border-teal-200"
+            >
+              友達を招待する
+            </Button>
+          </Link>
+        </div>
+        <p className="text-xs text-stone-600 mt-2">
+          友達を招待すると、あなたも友達も1,000円分のエコポイントがもらえます
+        </p>
       </div>
 
       <Button className="w-full bg-teal-700 hover:bg-teal-800 text-white mt-2">

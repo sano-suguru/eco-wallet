@@ -1,5 +1,6 @@
 import { BalanceCard } from "@/components/cards/BalanceCard";
 import { EcoImpactCard } from "@/components/cards/EcoImpactCard";
+import { InviteCard } from "@/components/cards/InviteCard";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { RecentTransactions } from "@/components/transactions/RecentTransactions";
 import { NewsAndProjects } from "@/components/eco/NewsAndProjects";
@@ -38,13 +39,10 @@ export default async function HomePage() {
   return (
     <PageContainer activeTab="home">
       <BalanceCard />
-
       <EcoImpactCard ecoRank={session?.user?.ecoRank || "エコマイスター"} />
-
+      <InviteCard />
       <RecentTransactions limit={3} />
-
       <NewsAndProjects />
-
       <RecommendedAction
         actionId={randomAction.id}
         title={randomAction.title}
