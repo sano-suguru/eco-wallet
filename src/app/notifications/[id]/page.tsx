@@ -18,6 +18,7 @@ import {
   Notification,
   NotificationType,
 } from "@/lib/mock-data/notifications";
+import { NotificationCampaignCard } from "@/components/campaigns/NotificationCampaignCard";
 
 interface NotificationDetailPageProps {
   params: Promise<{
@@ -191,17 +192,7 @@ export default function NotificationDetailPage({
 
             {notification.type === "campaign" && (
               <div className="mt-4 space-y-3">
-                <div className="bg-amber-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-amber-800 mb-2">
-                    キャンペーン詳細
-                  </h3>
-                  <p className="text-xs text-amber-700">
-                    山の日キャンペーン期間中（2025/5/1〜5/31）にエコ製品を購入すると、購入金額の20%がEcoポイントとして還元されます。
-                  </p>
-                  <Button className="w-full mt-3 bg-amber-600 hover:bg-amber-700 text-white text-xs">
-                    キャンペーン詳細を見る
-                  </Button>
-                </div>
+                <NotificationCampaignCard campaignId="camp_1" />
               </div>
             )}
 
