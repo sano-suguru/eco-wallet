@@ -10,13 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import {
   Leaf,
   Users,
-  Share2,
   Copy,
   Mail,
   MessageSquare,
   CheckCircle,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { SocialShareButtons } from "@/components/invite/SocialShareButtons";
+import { QRCodeDisplay } from "@/components/invite/QRCodeDisplay";
 
 export default function InvitePage() {
   const { data: session } = useSession();
@@ -131,21 +132,45 @@ export default function InvitePage() {
                 </Button>
               </div>
 
-              <div className="flex space-x-3 mt-6">
+              {/* QRコード表示を追加 */}
+              <div className="flex flex-col items-center py-3 border-t border-b border-stone-100">
+                <h4 className="text-sm font-medium text-stone-700 mb-3">
+                  QRコードで共有
+                </h4>
+                <QRCodeDisplay value={inviteLink} />
+              </div>
+
+              {/* 新しいSNS共有ボタンに置き換え */}
+              <SocialShareButtons
+                inviteLink={inviteLink}
+                inviteMessage="Eco Walletを試してみませんか？環境に優しい決済で、私たち二人とも1,000円分のエコポイントがもらえます！"
+              />
+
+              {/* 既存のSMS送信ボタンはそのまま残しておく */}
+              <div className="flex mt-4">
                 <Button
                   variant="outline"
-                  className="flex-1 text-stone-700 space-x-2 border-stone-200"
+                  className="w-full text-stone-700 space-x-2 border-stone-200"
                 >
                   <MessageSquare className="h-4 w-4" />
-                  <span>SMSで共有</span>
+                  <span>SMSで招待する</span>
                 </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 text-stone-700 space-x-2 border-stone-200"
-                >
-                  <Share2 className="h-4 w-4" />
-                  <span>共有</span>
-                </Button>
+              </div>
+
+              {/* 環境影響の可視化を追加 */}
+              <div className="mt-4 bg-teal-50 p-3 rounded-md border border-teal-100">
+                <div className="flex items-start space-x-3">
+                  <Leaf className="h-5 w-5 text-teal-600 mt-0.5" />
+                  <div>
+                    <h4 className="text-sm font-medium text-teal-800">
+                      友達招待の環境効果
+                    </h4>
+                    <p className="text-xs text-teal-700 mt-1">
+                      友達が1人参加すると、約0.5m²の森林保全に貢献できます。
+                      友達10人の招待で、年間約5kgのCO2削減につながります。
+                    </p>
+                  </div>
+                </div>
               </div>
             </TabsContent>
 
@@ -238,6 +263,21 @@ export default function InvitePage() {
                   )}
                   {copied ? "コピー済" : "コードをコピー"}
                 </Button>
+              </div>
+
+              <div className="mt-4 bg-teal-50 p-3 rounded-md border border-teal-100">
+                <div className="flex items-start space-x-3">
+                  <Leaf className="h-5 w-5 text-teal-600 mt-0.5" />
+                  <div>
+                    <h4 className="text-sm font-medium text-teal-800">
+                      コードの渡し方
+                    </h4>
+                    <p className="text-xs text-teal-700 mt-1">
+                      友達に登録時に「招待コード」欄に入力するよう伝えてください。
+                      コードを入力することで、お互いに1,000円分のエコポイントが付与されます。
+                    </p>
+                  </div>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
