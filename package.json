@@ -72,5 +72,8 @@
       "sharp",
       "unrs-resolver"
     ]
+  },
+  "volta": {
+    "node": "22.15.0"
   }
 }
