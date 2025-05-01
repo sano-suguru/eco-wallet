@@ -7,19 +7,25 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight, ArrowDownLeft, Leaf, Clock, Gift } from "lucide-react";
 import { Transaction, TransactionType } from "@/lib/mock-data/transactions";
 import { useTransactionStore } from "@/stores/transactionStore";
+import { CompactEcoImpact } from "@/components/eco/CompactEcoImpact";
+import { useEffect, useState } from "react";
 
 interface RecentTransactionsProps {
   limit?: number;
 }
 
 export function RecentTransactions({ limit = 3 }: RecentTransactionsProps) {
-  // Zustandストアから取引履歴データを取得
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
   const getRecentTransactions = useTransactionStore(
     (state) => state.getRecentTransactions,
   );
-  const transactions = getRecentTransactions(limit);
 
-  // 取引タイプに基づいてアイコンとスタイルを決定する関数
+  useEffect(() => {
+    const recentTransactions = getRecentTransactions(limit);
+    setTransactions(recentTransactions);
+  }, [getRecentTransactions, limit]);
+
   const getTransactionStyle = (type: TransactionType) => {
     switch (type) {
       case "payment":
@@ -55,13 +61,11 @@ export function RecentTransactions({ limit = 3 }: RecentTransactionsProps) {
     }
   };
 
-  // 取引金額のフォーマット
   const formatAmount = (amount: number) => {
     const isNegative = amount < 0;
     return `${isNegative ? "-" : "+"}¥${Math.abs(amount).toLocaleString()}`;
   };
 
-  // 取引アイコンの取得
   const getTransactionIcon = (transaction: Transaction) => {
     const style = getTransactionStyle(transaction.type);
 
@@ -105,56 +109,95 @@ export function RecentTransactions({ limit = 3 }: RecentTransactionsProps) {
                 key={transaction.id}
                 className="block hover:bg-stone-50 transition-colors"
               >
-                <div className="p-3 flex justify-between items-center">
-                  <div className="flex items-center space-x-3">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${style.bgColor}`}
-                    >
-                      {icon}
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-medium text-stone-800">
-                        {transaction.description}
-                      </h4>
-                      <div className="flex items-center">
-                        <p className="text-xs text-stone-500">
-                          {transaction.date}
-                        </p>
-                        {transaction.ecoContribution?.enabled && (
-                          <Badge className="ml-2 bg-teal-100 text-teal-800 text-[10px] py-0 h-4">
-                            <Leaf className="h-2 w-2 mr-0.5" />
-                            環境貢献
-                          </Badge>
-                        )}
-                        {transaction.badges?.map((badge, index) => (
-                          <Badge
-                            key={index}
-                            className={`ml-2 ${
-                              badge === "特典"
-                                ? "bg-amber-100 text-amber-800"
-                                : badge === "期限切れ"
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-stone-100 text-stone-800"
-                            } text-[10px] py-0 h-4`}
-                          >
-                            {badge}
-                          </Badge>
-                        ))}
+                <div className="p-3 flex flex-col">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center ${style.bgColor}`}
+                      >
+                        {icon}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-stone-800">
+                          {transaction.description}
+                        </h4>
+                        <div className="flex items-center">
+                          <p className="text-xs text-stone-500">
+                            {transaction.date}
+                          </p>
+                          {transaction.ecoContribution?.enabled && (
+                            <Badge className="ml-2 bg-teal-100 text-teal-800 text-[10px] py-0 h-4">
+                              <Leaf className="h-2 w-2 mr-0.5" />
+                              環境貢献
+                            </Badge>
+                          )}
+                          {transaction.badges?.map((badge, index) => (
+                            <Badge
+                              key={index}
+                              className={`ml-2 ${
+                                badge === "特典"
+                                  ? "bg-amber-100 text-amber-800"
+                                  : badge === "期限切れ"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-stone-100 text-stone-800"
+                              } text-[10px] py-0 h-4`}
+                            >
+                              {badge}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
                     </div>
+                    <div
+                      className={`text-sm font-medium ${
+                        isNegative
+                          ? "text-stone-800"
+                          : transaction.type === "receive" ||
+                              transaction.badges?.includes("特典")
+                            ? "text-amber-600"
+                            : "text-green-600"
+                      }`}
+                    >
+                      {formatAmount(transaction.amount)}
+                    </div>
                   </div>
-                  <div
-                    className={`text-sm font-medium ${
-                      isNegative
-                        ? "text-stone-800"
-                        : transaction.type === "receive" ||
-                            transaction.badges?.includes("特典")
-                          ? "text-amber-600"
-                          : "text-green-600"
-                    }`}
-                  >
-                    {formatAmount(transaction.amount)}
-                  </div>
+
+                  {/* 環境貢献表示 - 視覚的に強化された実装 */}
+                  {transaction.ecoContribution?.enabled && (
+                    <div className="mt-2 ml-11">
+                      <CompactEcoImpact
+                        contributionAmount={transaction.ecoContribution.amount}
+                        disableLink={true}
+                      />
+                    </div>
+                  )}
+
+                  {/* キャンペーン特典の表示 */}
+                  {transaction.type === "receive" &&
+                    transaction.badges?.includes("特典") && (
+                      <div className="mt-2 ml-11 text-xs bg-amber-50 rounded-md p-2 border border-amber-100">
+                        <div className="flex items-center text-amber-700">
+                          <Gift className="h-3 w-3 mr-1" />
+                          <span className="font-medium">
+                            友達紹介プログラム
+                          </span>
+                        </div>
+                        <div className="flex items-center mt-1 text-amber-600">
+                          <Clock className="h-3 w-3 mr-1" />
+                          <span>有効期限: 2025/04/30</span>
+                        </div>
+                      </div>
+                    )}
+
+                  {/* 期限切れの表示 */}
+                  {transaction.type === "expired" && (
+                    <div className="mt-2 ml-11 text-xs bg-red-50 rounded-md p-2 border border-red-100">
+                      <div className="flex items-center text-red-700">
+                        <Clock className="h-3 w-3 mr-1" />
+                        <span>エコポイントの残高が期限切れになりました</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Link>
             );

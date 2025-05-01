@@ -22,6 +22,8 @@ import {
 import { useTransactionStore } from "@/stores/transactionStore";
 import { useEcoImpactStore } from "@/stores/ecoImpactStore";
 import { Transaction, TransactionType } from "@/lib/mock-data/transactions";
+import { TransactionEcoImpact } from "@/components/eco/TransactionEcoImpact";
+import { TransactionDetailSection } from "@/components/transactions/TransactionDetailSection";
 
 export default function TransactionDetailPage() {
   const params = useParams();
@@ -197,8 +199,7 @@ export default function TransactionDetailPage() {
           {/* 取引詳細情報 */}
           <div className="space-y-4">
             {/* 取引情報 */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-stone-700">取引情報</h3>
+            <TransactionDetailSection title="取引情報">
               <div className="bg-stone-50 p-3 rounded-md space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-stone-600">取引ID</span>
@@ -221,58 +222,26 @@ export default function TransactionDetailPage() {
                   <span className="text-stone-800">{date}</span>
                 </div>
               </div>
-            </div>
+            </TransactionDetailSection>
 
             {/* 環境貢献情報 */}
             {transaction.ecoContribution?.enabled && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-stone-700">環境貢献</h3>
-                <div className="bg-teal-50 p-3 rounded-md border border-teal-100">
-                  <div className="flex items-start space-x-3">
-                    <Leaf className="h-5 w-5 text-teal-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-teal-800">
-                        環境保全への貢献
-                      </p>
-                      <p className="text-xs text-teal-700 mt-1">
-                        この取引により、¥
-                        {transaction.ecoContribution.amount.toLocaleString()}
-                        が環境保全プロジェクトに寄付されました。
-                      </p>
-                      <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-white bg-opacity-50 p-2 rounded">
-                          <p className="text-teal-700">森林保全への貢献</p>
-                          <p className="font-medium text-teal-800">
-                            約
-                            {(
-                              transaction.ecoContribution.amount * 0.0005
-                            ).toFixed(2)}
-                            m²
-                          </p>
-                        </div>
-                        <div className="bg-white bg-opacity-50 p-2 rounded">
-                          <p className="text-teal-700">CO2削減量</p>
-                          <p className="font-medium text-teal-800">
-                            約
-                            {(
-                              transaction.ecoContribution.amount * 0.0125
-                            ).toFixed(1)}
-                            kg
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <TransactionDetailSection
+                title="環境貢献"
+                icon={<Leaf className="h-4 w-4 text-teal-600" />}
+              >
+                <TransactionEcoImpact
+                  contributionAmount={transaction.ecoContribution.amount}
+                />
+              </TransactionDetailSection>
             )}
 
             {/* キャンペーン情報（該当する場合） */}
             {transaction.badges?.includes("特典") && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-stone-700">
-                  キャンペーン情報
-                </h3>
+              <TransactionDetailSection
+                title="キャンペーン情報"
+                icon={<Gift className="h-4 w-4 text-amber-600" />}
+              >
                 <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
                   <div className="flex items-start space-x-3">
                     <Gift className="h-5 w-5 text-amber-600 mt-0.5" />
@@ -294,7 +263,7 @@ export default function TransactionDetailPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </TransactionDetailSection>
             )}
           </div>
 
