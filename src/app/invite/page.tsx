@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { PageContainer } from "@/components/layout/PageContainer";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,6 +18,7 @@ import { useSession } from "next-auth/react";
 import { SocialShareButtons } from "@/components/invite/SocialShareButtons";
 import { QRCodeDisplay } from "@/components/invite/QRCodeDisplay";
 import { ReferralCampaignCard } from "@/components/campaigns/ReferralCampaignCard";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 export default function InvitePage() {
   const { data: session } = useSession();
@@ -27,9 +27,14 @@ export default function InvitePage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const [inviteLink, setInviteLink] = useState(""); // 初期値を空に設定
 
-  // 招待リンク（実際の実装ではAPIから取得するか、ユーザーIDに基づいて生成）
-  const inviteLink = `${window.location.origin}/auth/register?ref=${session?.user.id || "demo"}`;
+  // クライアントサイドでのみwindowオブジェクトを参照
+  useEffect(() => {
+    setInviteLink(
+      `${window.location.origin}/auth/register?ref=${session?.user?.id || "demo"}`,
+    );
+  }, [session]);
 
   // 招待コード（実際の実装ではAPIから取得）
   const inviteCode =
@@ -40,9 +45,11 @@ export default function InvitePage() {
 
   // リンクをコピーする関数
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(inviteLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (inviteLink) {
+      navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   // メール送信のシミュレーション
