@@ -13,12 +13,31 @@ import { NotificationsTab } from "./tabs/NotificationsTab";
 import { PaymentTab } from "./tabs/PaymentTab";
 import { SecurityTab } from "./tabs/SecurityTab";
 import { Session } from "next-auth";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface SettingsTabCardProps {
   user?: Session["user"];
 }
 
 export function SettingsTabCard({ user }: SettingsTabCardProps) {
+  // URLのクエリパラメータからタブを取得
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState("profile");
+
+  // URLにtabパラメータがある場合、そのタブを表示
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (
+      tabParam &&
+      ["profile", "eco", "notifications", "payment", "security"].includes(
+        tabParam,
+      )
+    ) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
   return (
     <Card className="sm:w-2/3 border-0 shadow-md bg-white">
       <CardHeader className="pb-0">
@@ -26,7 +45,7 @@ export function SettingsTabCard({ user }: SettingsTabCardProps) {
         <CardDescription>個人情報や環境設定を管理します</CardDescription>
       </CardHeader>
       <CardContent className="p-0">
-        <Tabs defaultValue="profile" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-5 bg-stone-100 rounded-none border-b border-stone-200">
             <TabsTrigger
               value="profile"

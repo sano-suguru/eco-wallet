@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SettingSection } from "../SettingSection";
 
 interface EcoTabProps {
   user?: Session["user"];
@@ -84,18 +85,11 @@ export function EcoTab({ user }: EcoTabProps) {
       )}
 
       {/* 環境貢献の優先順位セクション */}
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <TreePine className="h-4 w-4 text-teal-700" />
-          <h3 className="text-sm font-medium text-stone-800">
-            環境貢献の優先順位
-          </h3>
-        </div>
-
-        <div className="text-xs text-stone-600 mb-2">
-          貢献したい環境保全活動の優先順位を選択してください
-        </div>
-
+      <SettingSection
+        title="環境貢献の優先順位"
+        icon={<TreePine className="h-4 w-4 text-teal-700" />}
+        description="貢献したい環境保全活動の優先順位を選択してください"
+      >
         <RadioGroup defaultValue={defaultEcoOption} className="space-y-3">
           <Card className="border border-stone-200 p-4 hover:border-teal-200 transition-colors duration-200">
             <div className="flex items-start space-x-3">
@@ -172,19 +166,15 @@ export function EcoTab({ user }: EcoTabProps) {
             </div>
           </Card>
         </RadioGroup>
-      </div>
+      </SettingSection>
 
       <Separator className="my-6" />
 
       {/* 環境貢献オプションセクション */}
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Leaf className="h-4 w-4 text-teal-700" />
-          <h3 className="text-sm font-medium text-stone-800">
-            環境貢献オプション
-          </h3>
-        </div>
-
+      <SettingSection
+        title="環境貢献オプション"
+        icon={<Leaf className="h-4 w-4 text-teal-700" />}
+      >
         <Card className="border border-stone-200 p-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
@@ -206,7 +196,7 @@ export function EcoTab({ user }: EcoTabProps) {
           </div>
         </Card>
 
-        <Card className="border border-stone-200 p-4">
+        <Card className="border border-stone-200 p-4 mt-3">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label
@@ -227,7 +217,7 @@ export function EcoTab({ user }: EcoTabProps) {
           </div>
         </Card>
 
-        <Card className="border border-stone-200 p-4">
+        <Card className="border border-stone-200 p-4 mt-3">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label
@@ -248,7 +238,7 @@ export function EcoTab({ user }: EcoTabProps) {
           </div>
         </Card>
 
-        <Card className="border border-stone-200 p-4">
+        <Card className="border border-stone-200 p-4 mt-3">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label
@@ -268,7 +258,7 @@ export function EcoTab({ user }: EcoTabProps) {
             />
           </div>
         </Card>
-      </div>
+      </SettingSection>
 
       {/* 寄付比率設定セクション */}
       <Card className="bg-teal-50 border border-teal-100 p-4 mt-6">

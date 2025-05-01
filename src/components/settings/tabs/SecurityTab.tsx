@@ -1,3 +1,4 @@
+// src/components/settings/tabs/SecurityTab.tsx（リファクタリング版）
 "use client";
 
 import { useState } from "react";
@@ -9,7 +10,16 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Session } from "next-auth";
-import { Eye, EyeOff, Shield, Smartphone, Laptop, LogOut } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Shield,
+  Smartphone,
+  Laptop,
+  LogOut,
+  Fingerprint,
+} from "lucide-react";
+import { SettingSection } from "../SettingSection";
 
 interface SecurityTabProps {
   user?: Session["user"];
@@ -55,143 +65,143 @@ export function SecurityTab({ user }: SecurityTabProps) {
   return (
     <div className="space-y-6">
       {/* パスワード変更セクション */}
-      <form onSubmit={handlePasswordChange} className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Shield className="h-4 w-4 text-teal-700" />
-          <h3 className="text-sm font-medium text-stone-800">パスワード変更</h3>
-        </div>
-
-        <div className="text-xs text-stone-600 mb-3">
-          {user?.email || "eco_user@example.com"} アカウントのパスワード変更
-        </div>
-
-        <div className="space-y-3">
-          <div className="space-y-2">
-            <Label
-              htmlFor="current-password"
-              className="text-sm text-stone-700"
-            >
-              現在のパスワード
-            </Label>
-            <div className="relative">
-              <Input
-                id="current-password"
-                type={showPassword ? "text" : "password"}
-                className="border-stone-200 pr-10"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                aria-required="true"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-700"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={
-                  showPassword ? "パスワードを隠す" : "パスワードを表示"
-                }
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="new-password" className="text-sm text-stone-700">
-              新しいパスワード
-            </Label>
-            <div className="relative">
-              <Input
-                id="new-password"
-                type={showNewPassword ? "text" : "password"}
-                className="border-stone-200 pr-10"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                aria-required="true"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-700"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-                aria-label={
-                  showNewPassword ? "パスワードを隠す" : "パスワードを表示"
-                }
-              >
-                {showNewPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-            <p className="text-xs text-stone-500 mt-1">
-              8文字以上で、数字と記号を含めてください
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="confirm-password"
-              className="text-sm text-stone-700"
-            >
-              新しいパスワード（確認）
-            </Label>
-            <div className="relative">
-              <Input
-                id="confirm-password"
-                type={showConfirmPassword ? "text" : "password"}
-                className="border-stone-200 pr-10"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                aria-required="true"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-700"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label={
-                  showConfirmPassword ? "パスワードを隠す" : "パスワードを表示"
-                }
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {formError && (
-          <div
-            className="text-red-600 text-sm bg-red-50 p-2 rounded-md"
-            role="alert"
-          >
-            {formError}
-          </div>
-        )}
-
-        <Button
-          type="submit"
-          className="w-full bg-teal-700 hover:bg-teal-800 text-white"
+      <form onSubmit={handlePasswordChange}>
+        <SettingSection
+          title="パスワード変更"
+          icon={<Shield className="h-4 w-4 text-teal-700" />}
+          description={`${user?.email || "eco_user@example.com"} アカウントのパスワード変更`}
         >
-          パスワードを変更
-        </Button>
+          <div className="space-y-3">
+            {/* 現在のパスワード */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="current-password"
+                className="text-sm text-stone-700"
+              >
+                現在のパスワード
+              </Label>
+              <div className="relative">
+                <Input
+                  id="current-password"
+                  type={showPassword ? "text" : "password"}
+                  className="border-stone-200 pr-10"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  aria-required="true"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-700"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={
+                    showPassword ? "パスワードを隠す" : "パスワードを表示"
+                  }
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* 新しいパスワード */}
+            <div className="space-y-2">
+              <Label htmlFor="new-password" className="text-sm text-stone-700">
+                新しいパスワード
+              </Label>
+              <div className="relative">
+                <Input
+                  id="new-password"
+                  type={showNewPassword ? "text" : "password"}
+                  className="border-stone-200 pr-10"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  aria-required="true"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-700"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  aria-label={
+                    showNewPassword ? "パスワードを隠す" : "パスワードを表示"
+                  }
+                >
+                  {showNewPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-stone-500 mt-1">
+                8文字以上で、数字と記号を含めてください
+              </p>
+            </div>
+
+            {/* 新しいパスワード（確認） */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="confirm-password"
+                className="text-sm text-stone-700"
+              >
+                新しいパスワード（確認）
+              </Label>
+              <div className="relative">
+                <Input
+                  id="confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="border-stone-200 pr-10"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  aria-required="true"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-700"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={
+                    showConfirmPassword
+                      ? "パスワードを隠す"
+                      : "パスワードを表示"
+                  }
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {formError && (
+            <div
+              className="text-red-600 text-sm bg-red-50 p-2 rounded-md mt-3"
+              role="alert"
+            >
+              {formError}
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            className="w-full bg-teal-700 hover:bg-teal-800 text-white mt-3"
+          >
+            パスワードを変更
+          </Button>
+        </SettingSection>
       </form>
 
       <Separator className="my-6" />
 
       {/* 二段階認証セクション */}
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Shield className="h-4 w-4 text-teal-700" />
-          <h3 className="text-sm font-medium text-stone-800">二段階認証</h3>
-        </div>
-
+      <SettingSection
+        title="二段階認証"
+        icon={<Shield className="h-4 w-4 text-teal-700" />}
+      >
         <Card className="border border-stone-200 p-4 bg-stone-50">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
@@ -209,14 +219,17 @@ export function SecurityTab({ user }: SecurityTabProps) {
           </div>
         </Card>
 
-        <Card className="border border-stone-200 p-4 bg-stone-50">
+        <Card className="border border-stone-200 p-4 bg-stone-50 mt-3">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <Label
                 htmlFor="biometric"
                 className="text-sm font-medium text-stone-800"
               >
-                生体認証
+                <div className="flex items-center">
+                  <Fingerprint className="h-4 w-4 text-stone-600 mr-2" />
+                  生体認証
+                </div>
               </Label>
               <p className="text-xs text-stone-500">
                 指紋または顔認証でログインできます
@@ -229,17 +242,15 @@ export function SecurityTab({ user }: SecurityTabProps) {
             />
           </div>
         </Card>
-      </div>
+      </SettingSection>
 
       <Separator className="my-6" />
 
       {/* デバイス管理セクション */}
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Smartphone className="h-4 w-4 text-teal-700" />
-          <h3 className="text-sm font-medium text-stone-800">デバイス管理</h3>
-        </div>
-
+      <SettingSection
+        title="デバイス管理"
+        icon={<Smartphone className="h-4 w-4 text-teal-700" />}
+      >
         <Card className="border border-stone-200 p-4 shadow-sm">
           <div className="flex justify-between items-center">
             <div className="flex items-start space-x-3">
@@ -261,7 +272,7 @@ export function SecurityTab({ user }: SecurityTabProps) {
           </div>
         </Card>
 
-        <Card className="border border-stone-200 p-4 shadow-sm">
+        <Card className="border border-stone-200 p-4 shadow-sm mt-3">
           <div className="flex justify-between items-center">
             <div className="flex items-start space-x-3">
               <div className="mt-0.5 w-8 h-8 bg-stone-50 rounded-full flex items-center justify-center">
@@ -285,7 +296,7 @@ export function SecurityTab({ user }: SecurityTabProps) {
             </Button>
           </div>
         </Card>
-      </div>
+      </SettingSection>
 
       <Button
         variant="outline"
