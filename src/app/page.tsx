@@ -55,7 +55,6 @@ export default async function HomePage() {
       <BalanceCard />
       <EcoImpactCard ecoRank={session?.user?.ecoRank || "エコマイスター"} />
 
-      {/* 最新の環境貢献取引の詳細表示 - 視覚的に強化 */}
       {latestEcoTransaction && latestEcoTransaction.ecoContribution && (
         <div className="mb-4">
           <h3 className="text-sm font-medium text-stone-800 mb-2 flex items-center">
@@ -64,7 +63,7 @@ export default async function HomePage() {
           </h3>
           <TransactionEcoImpact
             contributionAmount={latestEcoTransaction.ecoContribution.amount}
-            showLink={true}
+            clickable={false}
           />
         </div>
       )}

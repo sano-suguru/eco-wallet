@@ -232,6 +232,7 @@ export default function TransactionDetailPage() {
               >
                 <TransactionEcoImpact
                   contributionAmount={transaction.ecoContribution.amount}
+                  clickable={false}
                 />
               </TransactionDetailSection>
             )}
