@@ -1,9 +1,15 @@
+export type EcoRank =
+  | "エコビギナー"
+  | "エコサポーター"
+  | "エコマイスター"
+  | "エコチャンピオン";
+
 /**
  * 環境貢献ランクを決定する
  * @param totalDonation 累計寄付額
  * @returns エコランク
  */
-export function determineEcoRank(totalDonation: number): string {
+export function determineEcoRank(totalDonation: number): EcoRank {
   if (totalDonation >= 50000) return "エコチャンピオン";
   if (totalDonation >= 20000) return "エコマイスター";
   if (totalDonation >= 5000) return "エコサポーター";
