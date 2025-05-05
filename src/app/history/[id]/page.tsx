@@ -10,20 +10,21 @@ import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   Leaf,
-  ArrowUp,
-  ArrowDown,
-  Clock,
-  Gift,
-  Info,
   Share2,
   Receipt,
   ExternalLink,
+  Clock,
+  Gift,
 } from "lucide-react";
 import { useTransactionStore } from "@/stores/transactionStore";
 import { useEcoImpactStore } from "@/stores/ecoImpactStore";
-import { Transaction, TransactionType } from "@/lib/mock-data/transactions";
+import { Transaction } from "@/lib/mock-data/transactions";
 import { TransactionEcoImpact } from "@/components/eco/TransactionEcoImpact";
 import { TransactionDetailSection } from "@/components/transactions/TransactionDetailSection";
+
+// 新しいユーティリティのインポート
+import { formatCurrency } from "@/lib/utils/format";
+import { getTransactionStyle } from "@/lib/utils/transaction";
 
 export default function TransactionDetailPage() {
   const params = useParams();
@@ -64,48 +65,6 @@ export default function TransactionDetailPage() {
     fetchData();
   }, [transactionId, getTransactionById]);
 
-  // 取引種類に応じたアイコンとスタイルを取得
-  const getTransactionStyle = (type: TransactionType) => {
-    switch (type) {
-      case "payment":
-        return {
-          icon: <ArrowUp className="h-6 w-6 text-stone-500" />,
-          bgColor: "bg-stone-50",
-          textColor: "text-stone-800",
-        };
-      case "charge":
-        return {
-          icon: <ArrowDown className="h-6 w-6 text-green-500" />,
-          bgColor: "bg-green-50",
-          textColor: "text-green-600",
-        };
-      case "receive":
-        return {
-          icon: <ArrowDown className="h-6 w-6 text-blue-500" />,
-          bgColor: "bg-blue-50",
-          textColor: "text-blue-600",
-        };
-      case "expired":
-        return {
-          icon: <Clock className="h-6 w-6 text-red-500" />,
-          bgColor: "bg-red-50",
-          textColor: "text-red-600",
-        };
-      case "donation":
-        return {
-          icon: <Leaf className="h-6 w-6 text-teal-500" />,
-          bgColor: "bg-teal-50",
-          textColor: "text-teal-600",
-        };
-      default:
-        return {
-          icon: <Info className="h-6 w-6 text-stone-500" />,
-          bgColor: "bg-stone-50",
-          textColor: "text-stone-800",
-        };
-    }
-  };
-
   if (loading) {
     return (
       <PageContainer title="取引詳細" activeTab="history">
@@ -138,9 +97,14 @@ export default function TransactionDetailPage() {
   }
 
   const { type, description, date, amount } = transaction;
-  const style = getTransactionStyle(type);
-  const isNegative = amount < 0;
-  const formattedAmount = `${isNegative ? "-" : "+"}¥${Math.abs(amount).toLocaleString()}`;
+  // ユーティリティ関数を使用してスタイルを取得
+  const style = getTransactionStyle(type, transaction.badges);
+
+  // ユーティリティ関数を使用して金額をフォーマット
+  const formattedAmount = formatCurrency(amount, {
+    withPlus: true,
+    withSymbol: false,
+  });
 
   return (
     <PageContainer title="取引詳細" activeTab="history">

@@ -10,6 +10,8 @@ import { useAuthForm } from "@/hooks/useAuthForm";
 import { useState } from "react";
 import { Button } from "../ui/button";
 
+import { isValidEmail, validatePassword } from "@/lib/utils/validation";
+
 export function LoginForm() {
   const router = useRouter();
 
@@ -24,6 +26,16 @@ export function LoginForm() {
         password: { required: true, minLength: 8 },
       },
       onSubmit: async (values) => {
+        // カスタムバリデーション
+        if (!isValidEmail(values.email)) {
+          throw new Error("有効なメールアドレスを入力してください");
+        }
+
+        const passwordValidation = validatePassword(values.password);
+        if (!passwordValidation.isValid) {
+          throw new Error(passwordValidation.reason || "パスワードが無効です");
+        }
+
         const result = await signIn("credentials", {
           redirect: false,
           email: values.email,

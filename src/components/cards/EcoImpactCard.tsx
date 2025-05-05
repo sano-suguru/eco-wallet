@@ -10,12 +10,13 @@ import { useEcoImpactStore } from "@/stores/ecoImpactStore";
 import { useTransactionStore } from "@/stores/transactionStore";
 import { useEffect } from "react";
 
+import { formatCurrency } from "@/lib/utils/format";
+
 interface EcoImpactProps {
   ecoRank?: string;
 }
 
 export function EcoImpactCard({ ecoRank }: EcoImpactProps) {
-  // 環境貢献データをZustandストアから取得
   const {
     forestArea,
     waterSaved,
@@ -38,7 +39,7 @@ export function EcoImpactCard({ ecoRank }: EcoImpactProps) {
   // ランクが明示的に提供されなければ、ストアから取得
   const displayEcoRank = ecoRank || getEcoRank();
 
-  // 本当は不要ですが、トランザクションストアの使用例としての実装
+  // トランザクションストアから合計貢献額を取得
   const totalEcoContribution = getTotalEcoContribution();
 
   return (
@@ -89,7 +90,7 @@ export function EcoImpactCard({ ecoRank }: EcoImpactProps) {
 
       {totalEcoContribution > 0 && (
         <div className="mt-2 text-xs text-center text-teal-700">
-          累計環境貢献額: ¥{totalEcoContribution.toLocaleString()}
+          累計環境貢献額: {formatCurrency(totalEcoContribution)}
         </div>
       )}
 

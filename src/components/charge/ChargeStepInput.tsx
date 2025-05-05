@@ -12,6 +12,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import { validateAmount } from "@/lib/utils/validation";
+import { isValidEmail } from "@/lib/utils/validation";
+
 interface ChargeStepInputProps {
   amount: string;
   setAmount: (value: string) => void;
@@ -51,10 +54,13 @@ export function ChargeStepInput({
   processingVerification,
   handleNotifyBankTransfer,
 }: ChargeStepInputProps) {
-  const isValidAmount: boolean = Boolean(
-    amount && !isNaN(Number(amount)) && Number(amount) > 0,
-  );
-  const isValidEmail: boolean = Boolean(email && email.includes("@"));
+  // ユーティリティ関数を使用したバリデーション
+  const amountValidation = validateAmount(amount);
+  const isValidAmount = amountValidation.isValid;
+
+  // メールアドレスのバリデーション
+  const isEmailValid = isValidEmail(email);
+
   return (
     <>
       <CardHeader className="pb-2">
@@ -150,7 +156,7 @@ export function ChargeStepInput({
               emailSent={emailSent}
               setEmailSent={setEmailSent}
               isLoading={isLoading}
-              isValidEmail={isValidEmail}
+              isValidEmail={isEmailValid}
               isValidAmount={isValidAmount}
               error={error}
               handleSelectAmount={handleSelectAmount}

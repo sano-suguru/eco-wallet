@@ -5,22 +5,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, Send, Users, CreditCard, Plus } from "lucide-react";
 import { useBalanceStore } from "@/stores/balanceStore";
+import { formatCurrency } from "@/lib/utils/format";
 
 export function BalanceCard() {
   const balance = useBalanceStore((state) => state.balance);
   const campaignBalances = useBalanceStore((state) => state.campaignBalances);
 
-  // キャンペーン残高の合計を計算
   const campaignTotal = campaignBalances.reduce(
     (sum, cb) => sum + cb.amount,
     0,
   );
 
-  const formattedBalance = new Intl.NumberFormat("ja-JP", {
-    style: "currency",
-    currency: "JPY",
-    currencyDisplay: "symbol",
-  }).format(balance);
+  const formattedBalance = formatCurrency(balance);
 
   // 期限が近い（7日以内）キャンペーン残高があるかチェック
   const hasExpiringBalance = campaignBalances.some((cb) => cb.daysLeft <= 7);
@@ -35,7 +31,7 @@ export function BalanceCard() {
             {campaignTotal > 0 && (
               <p className="text-xs opacity-90 mt-1">
                 うちキャンペーン残高:{" "}
-                {new Intl.NumberFormat("ja-JP").format(campaignTotal)}円
+                {formatCurrency(campaignTotal, { withSymbol: false })}
                 {hasExpiringBalance && (
                   <span className="ml-1 text-amber-200">（期限間近あり）</span>
                 )}

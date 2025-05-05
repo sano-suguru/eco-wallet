@@ -4,11 +4,15 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpRight, ArrowDownLeft, Leaf, Clock, Gift } from "lucide-react";
-import { Transaction, TransactionType } from "@/lib/mock-data/transactions";
+import { Clock, Gift, Leaf } from "lucide-react";
+import { Transaction } from "@/lib/mock-data/transactions";
 import { useTransactionStore } from "@/stores/transactionStore";
 import { CompactEcoImpact } from "@/components/eco/CompactEcoImpact";
 import { useEffect, useState } from "react";
+
+// 追加した新しいユーティリティのインポート
+import { formatCurrency } from "@/lib/utils/format";
+import { getTransactionStyle } from "@/lib/utils/transaction";
 
 interface RecentTransactionsProps {
   limit?: number;
@@ -25,61 +29,6 @@ export function RecentTransactions({ limit = 3 }: RecentTransactionsProps) {
     const recentTransactions = getRecentTransactions(limit);
     setTransactions(recentTransactions);
   }, [getRecentTransactions, limit]);
-
-  const getTransactionStyle = (type: TransactionType) => {
-    switch (type) {
-      case "payment":
-        return {
-          icon: <ArrowUpRight className="h-5 w-5 text-red-500" />,
-          bgColor: "bg-red-50",
-        };
-      case "charge":
-        return {
-          icon: <ArrowDownLeft className="h-5 w-5 text-green-500" />,
-          bgColor: "bg-green-50",
-        };
-      case "receive":
-        return {
-          icon: <ArrowDownLeft className="h-5 w-5 text-blue-500" />,
-          bgColor: "bg-blue-50",
-        };
-      case "donation":
-        return {
-          icon: <Leaf className="h-5 w-5 text-teal-500" />,
-          bgColor: "bg-teal-50",
-        };
-      case "expired":
-        return {
-          icon: <Clock className="h-5 w-5 text-red-500" />,
-          bgColor: "bg-red-50",
-        };
-      default:
-        return {
-          icon: <ArrowUpRight className="h-5 w-5 text-stone-500" />,
-          bgColor: "bg-stone-50",
-        };
-    }
-  };
-
-  const formatAmount = (amount: number) => {
-    const isNegative = amount < 0;
-    return `${isNegative ? "-" : "+"}¥${Math.abs(amount).toLocaleString()}`;
-  };
-
-  const getTransactionIcon = (transaction: Transaction) => {
-    const style = getTransactionStyle(transaction.type);
-
-    // バッジに基づくカスタマイズ（優先順位付け）
-    if (transaction.badges?.includes("期限切れ")) {
-      return <Clock className="h-5 w-5 text-red-500" />;
-    }
-
-    if (transaction.badges?.includes("特典")) {
-      return <Gift className="h-5 w-5 text-amber-500" />;
-    }
-
-    return style.icon;
-  };
 
   return (
     <div>
@@ -99,9 +48,11 @@ export function RecentTransactions({ limit = 3 }: RecentTransactionsProps) {
       <Card className="border-0 shadow-md bg-white divide-y divide-stone-100">
         {transactions.length > 0 ? (
           transactions.map((transaction) => {
-            const style = getTransactionStyle(transaction.type);
-            const isNegative = transaction.amount < 0;
-            const icon = getTransactionIcon(transaction);
+            // ユーティリティ関数を使用して取引スタイルを取得
+            const style = getTransactionStyle(
+              transaction.type,
+              transaction.badges,
+            );
 
             return (
               <Link
@@ -115,7 +66,7 @@ export function RecentTransactions({ limit = 3 }: RecentTransactionsProps) {
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center ${style.bgColor}`}
                       >
-                        {icon}
+                        {style.icon}
                       </div>
                       <div>
                         <h4 className="text-sm font-medium text-stone-800">
@@ -150,7 +101,7 @@ export function RecentTransactions({ limit = 3 }: RecentTransactionsProps) {
                     </div>
                     <div
                       className={`text-sm font-medium ${
-                        isNegative
+                        transaction.amount < 0
                           ? "text-stone-800"
                           : transaction.type === "receive" ||
                               transaction.badges?.includes("特典")
@@ -158,7 +109,11 @@ export function RecentTransactions({ limit = 3 }: RecentTransactionsProps) {
                             : "text-green-600"
                       }`}
                     >
-                      {formatAmount(transaction.amount)}
+                      {/* フォーマット関数を使用して金額を表示 */}
+                      {formatCurrency(transaction.amount, {
+                        withPlus: true,
+                        withSymbol: false,
+                      })}
                     </div>
                   </div>
 

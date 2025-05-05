@@ -24,6 +24,9 @@ import {
 import { useCampaignStore } from "@/stores/campaignStore";
 import { Campaign } from "@/lib/mock-data/campaigns";
 
+import { calculateDateDifference } from "@/lib/utils/format";
+import { calculateProgressPercent } from "@/lib/utils/eco-impact";
+
 export default function CampaignDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -49,25 +52,20 @@ export default function CampaignDetailPage() {
         if (data) {
           setCampaign(data);
 
-          // 残り日数を計算
-          const endDate = new Date(data.endDate);
-          const today = new Date();
-          const diffTime = endDate.getTime() - today.getTime();
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          // 残り日数を計算 - ユーティリティ関数を使用
+          const diffDays = calculateDateDifference(data.endDate);
           setDaysLeft(diffDays > 0 ? diffDays : 0);
 
-          // 進捗率を計算 (開始日から終了日までの間で現在がどの位置か)
-          const startDate = new Date(data.startDate);
-          const totalDays = Math.ceil(
-            (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+          // 進捗率を計算 - ユーティリティ関数を使用
+          const totalDays = calculateDateDifference(
+            data.endDate,
+            data.startDate,
           );
-          const passedDays = Math.ceil(
-            (today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+          const passedDays = calculateDateDifference(
+            new Date(),
+            data.startDate,
           );
-          const progress = Math.min(
-            100,
-            Math.max(0, (passedDays / totalDays) * 100),
-          );
+          const progress = calculateProgressPercent(passedDays, totalDays);
           setProgressPercent(progress);
         }
       } catch (error) {
