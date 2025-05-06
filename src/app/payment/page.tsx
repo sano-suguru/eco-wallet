@@ -18,11 +18,16 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CheckCircle } from "lucide-react";
+import { useTransactionStore } from "@/stores/transactionStore"; // トランザクションストアをインポート
 
 export default function PaymentPage() {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isDonateChecked, setIsDonateChecked] = useState(true);
+  const [isReceiptDisabled, setIsReceiptDisabled] = useState(false);
+
+  const addTransaction = useTransactionStore((state) => state.addTransaction);
 
   // キャンセルボタンのクリックハンドラー
   const handleCancel = () => {
@@ -39,18 +44,38 @@ export default function PaymentPage() {
       // 決済処理のモック - 実際のAPIコールの代わりにタイマーを使用
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
+      // 新しいトランザクションを作成してストアに追加
+      const newTransaction = {
+        type: "payment" as const,
+        description: "エコ製品定期プラン",
+        date: new Date()
+          .toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })
+          .replace(/\//g, "/"),
+        amount: -4000, // 金額は負の値（支払い）
+        ecoContribution: isDonateChecked
+          ? {
+              enabled: true,
+              amount: 200, // 環境保全負担金
+            }
+          : undefined,
+        badges: ["環境貢献"],
+      };
+
+      // トランザクションをストアに追加して、生成されたIDを取得
+      const transactionId = addTransaction(newTransaction);
+
       // 決済成功状態を設定
       setIsSuccess(true);
 
       // 成功表示を少し見せた後に遷移
       setTimeout(() => {
-        // 決済の詳細を取引履歴に記録したと仮定して、取引詳細ページへ
-        // トランザクションIDはモックとして生成
-        const mockTransactionId = `txn_${Date.now().toString(36)}`;
-        router.push(`/history/${mockTransactionId}`);
+        router.push(`/history/${transactionId}`);
       }, 1000);
     } catch (error) {
-      // エラー処理（実際のアプリではエラー状態を管理）
       console.error("決済処理中にエラーが発生しました", error);
       setIsProcessing(false);
     }
@@ -178,7 +203,13 @@ export default function PaymentPage() {
 
                 <div className="space-y-2">
                   <div className="flex items-start space-x-2">
-                    <Checkbox id="donate" defaultChecked />
+                    <Checkbox
+                      id="donate"
+                      checked={isDonateChecked}
+                      onCheckedChange={(checked) =>
+                        setIsDonateChecked(checked as boolean)
+                      }
+                    />
                     <div className="grid gap-1">
                       <Label
                         htmlFor="donate"
@@ -193,7 +224,13 @@ export default function PaymentPage() {
                   </div>
 
                   <div className="flex items-start space-x-2">
-                    <Checkbox id="receipt" />
+                    <Checkbox
+                      id="receipt"
+                      checked={isReceiptDisabled}
+                      onCheckedChange={(checked) =>
+                        setIsReceiptDisabled(checked as boolean)
+                      }
+                    />
                     <div className="grid gap-1">
                       <Label
                         htmlFor="receipt"
