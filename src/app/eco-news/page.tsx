@@ -198,6 +198,7 @@ export default function EcoNewsPage() {
                         variant="outline"
                         size="sm"
                         className={`w-full ${getButtonStyle(item)} eco-transition`}
+                        onClick={() => router.push("/donate")}
                       >
                         寄付する
                         <ArrowRight className="h-3 w-3 ml-1" />
