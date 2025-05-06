@@ -72,12 +72,12 @@ export const authOptions: NextAuthOptions = {
             avatarUrl: userBalanceData.avatarUrl,
             balance: userBalanceData.balance,
             ecoRank: userBalanceData.ecoRank,
-            passwordHash: hashPassword("password123"),
+            passwordHash: hashPassword("P@ssw0rd"),
           },
           {
             // eco_user@example.comはuserBalanceDataと一致するのでスプレッド使用
             ...userBalanceData,
-            passwordHash: hashPassword("password123"),
+            passwordHash: hashPassword("P@ssw0rd"),
           },
         ];
 
