@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +10,7 @@ import { Newspaper, ExternalLink, TreePine, Droplets } from "lucide-react";
 import { newsAndProjects, ContentItem } from "@/lib/mock-data/news-projects";
 
 export function NewsAndProjects() {
+  const router = useRouter();
   // 最新の2件を表示
   const latestItems = newsAndProjects.slice(0, 2);
 
@@ -35,6 +39,11 @@ export function NewsAndProjects() {
     } else {
       return "bg-green-100 text-green-800";
     }
+  };
+
+  // ニュース詳細ページへのナビゲーション
+  const navigateToNewsDetail = (id: string) => {
+    router.push(`/eco-news/${id}`);
   };
 
   return (
@@ -82,6 +91,7 @@ export function NewsAndProjects() {
                     variant="ghost"
                     size="sm"
                     className="w-full mt-2 text-xs text-teal-700"
+                    onClick={() => navigateToNewsDetail(item.id)}
                   >
                     詳細を読む
                     <ExternalLink className="h-3 w-3 ml-1" />

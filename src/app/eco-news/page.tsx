@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,7 @@ import { newsAndProjects, ContentItem } from "@/lib/mock-data/news-projects";
 
 export default function EcoNewsPage() {
   const [activeTab, setActiveTab] = useState<string>("all");
+  const router = useRouter();
 
   // フィルタリングされたコンテンツの取得
   const getFilteredContent = () => {
@@ -76,6 +78,11 @@ export default function EcoNewsPage() {
     } else {
       return "text-teal-700 border-teal-200 hover:bg-teal-50";
     }
+  };
+
+  // ニュース詳細ページへ遷移
+  const navigateToNewsDetail = (id: string) => {
+    router.push(`/eco-news/${id}`);
   };
 
   const filteredContent = getFilteredContent();
@@ -181,6 +188,7 @@ export default function EcoNewsPage() {
                         variant="outline"
                         size="sm"
                         className={`w-full ${getButtonStyle(item)} eco-transition`}
+                        onClick={() => navigateToNewsDetail(item.id)}
                       >
                         詳細を読む
                         <ExternalLink className="h-3 w-3 ml-1" />
