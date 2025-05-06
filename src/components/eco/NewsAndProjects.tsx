@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,13 +44,15 @@ export function NewsAndProjects() {
           <Newspaper className="h-4 w-4 mr-1 text-stone-600" />
           エコニュースとプロジェクト
         </h3>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 text-xs text-stone-500"
-        >
-          もっと見る
-        </Button>
+        <Link href="/eco-news">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs text-stone-500"
+          >
+            もっと見る
+          </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-3">
