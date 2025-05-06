@@ -53,6 +53,14 @@
   --color-stone-600: #57534e;
   --color-stone-800: #292524;
   --color-stone-900: #1c1917;
+
+  --eco-color-primary: var(--color-teal-700);
+  --eco-color-primary-hover: var(--color-teal-800);
+  --eco-color-secondary: var(--color-stone-600);
+  --eco-color-bg-contribution: var(--color-teal-50);
+  --eco-color-border-contribution: var(--color-teal-100);
+  --eco-color-text-contribution: var(--color-teal-800);
+  --eco-color-icon-contribution: var(--color-teal-600);
 }
 
 :root {
@@ -109,6 +117,10 @@
   /* stone-500 */
   --eco-border: #d6d3d1;
   /* stone-300 */
+
+  /* 追加: トランジション用変数 */
+  --eco-transition-duration: 200ms;
+  --eco-transition-timing: ease-in-out;
 }
 
 .dark {
@@ -188,4 +200,25 @@
 
 .eco-alert {
   @apply bg-teal-50 border-teal-200;
+}
+
+/* 追加: 共通ユーティリティクラス */
+.eco-contribution-container {
+  @apply bg-teal-50 border border-teal-100 rounded-md p-4;
+}
+
+.eco-contribution-container-compact {
+  @apply bg-teal-50 border border-teal-100 rounded-md p-2;
+}
+
+.eco-primary-button {
+  @apply bg-teal-700 hover:bg-teal-800 text-white h-10;
+}
+
+.eco-transition {
+  transition: all var(--eco-transition-duration) var(--eco-transition-timing);
+}
+
+.eco-hover-highlight:hover {
+  @apply bg-teal-100 border-teal-200;
 }

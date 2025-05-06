@@ -1,4 +1,3 @@
-// src/components/eco/CompactEcoImpact.tsx
 import { EcoImpactDisplay } from "@/components/eco/EcoImpactDisplay";
 
 interface CompactEcoImpactProps {
@@ -14,7 +13,7 @@ export function CompactEcoImpact({
   contributionAmount,
   showBorder = true,
   disableLink = false,
-  // clickable プロパティが明示的に指定されていれば優先、そうでなければ disableLink の反対を使用
+  // clickable プロパティが明示的に指定されていればそれを使用
   clickable,
 }: CompactEcoImpactProps) {
   // clickable が明示的に指定されていればそれを使い、

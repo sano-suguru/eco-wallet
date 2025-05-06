@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Zap, ChevronRight, Users, Leaf, Gift } from "lucide-react";
 import { Campaign } from "@/lib/mock-data/campaigns";
+import { cn } from "@/lib/utils";
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -78,7 +79,7 @@ export function CampaignCard({
     if (variant !== "notification") return null;
 
     return (
-      <div className="bg-amber-50 p-4 rounded-lg mt-3">
+      <div className="bg-amber-50 p-4 rounded-lg mt-3 eco-transition hover:bg-amber-100">
         <h3 className="text-sm font-medium text-amber-800 mb-2">
           キャンペーン詳細
         </h3>
@@ -94,15 +95,20 @@ export function CampaignCard({
 
   return (
     <Card
-      className={`border-0 shadow-md bg-gradient-to-r ${getGradientBg()} ${className}`}
+      className={cn(
+        `border-0 shadow-md bg-gradient-to-r ${getGradientBg()} eco-transition hover:shadow-lg`,
+        className,
+      )}
     >
       <div className="p-4 flex items-start space-x-3">
-        <div className={`p-2 rounded-full ${getIconBg()}`}>{getIcon()}</div>
+        <div className={`p-2 rounded-full ${getIconBg()} eco-transition`}>
+          {getIcon()}
+        </div>
         <div className="flex-1">
           <h3 className="text-sm font-medium text-stone-800">
             {campaign.title}
           </h3>
-          <p className="text-xs text-stone-600 mt-1">
+          <p className="text-xs text-stone-700 mt-1">
             {campaign.subtitle || campaign.description}
           </p>
 
@@ -111,7 +117,9 @@ export function CampaignCard({
 
           {showButton && (
             <Link href={`/campaigns/${campaign.id}`}>
-              <Button className={`mt-3 w-full ${getButtonStyle()}`}>
+              <Button
+                className={`mt-3 w-full ${getButtonStyle()} eco-transition h-10`}
+              >
                 {buttonText}
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>

@@ -73,7 +73,7 @@ export function RecentTransactions({ limit = 3 }: RecentTransactionsProps) {
                           {transaction.description}
                         </h4>
                         <div className="flex items-center">
-                          <p className="text-xs text-stone-500">
+                          <p className="text-xs text-stone-700">
                             {transaction.date}
                           </p>
                           {transaction.ecoContribution?.enabled && (

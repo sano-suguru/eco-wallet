@@ -28,30 +28,43 @@ export function EcoImpactDisplay({
   );
   const isCompact = variant === "compact";
 
+  // 視覚的に強化されたコンテンツ
   const ecoContent = (
     <>
       {isCompact ? (
-        <span className="flex items-center text-xs text-teal-600">
-          <Leaf className="h-3 w-3 mr-1 text-teal-600" />
-          <span>
-            寄付 ¥{contributionAmount} •
-            <TreePine className="h-3 w-3 ml-1 mr-0.5 inline text-teal-600" />
-            {forestArea}m² •
-            <Globe className="h-3 w-3 ml-1 mr-0.5 inline text-green-600" />
-            {co2Reduction}kg
-          </span>
-        </span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center text-xs">
+            <Leaf className="h-3 w-3 mr-1 text-teal-600" />
+            <span className="text-teal-700 font-medium">
+              環境貢献：¥{contributionAmount}
+            </span>
+          </div>
+          <div className="flex items-center text-xs text-teal-700 space-x-2">
+            <div className="flex items-center">
+              <TreePine className="h-3 w-3 mr-0.5 text-teal-600" />
+              <span>{forestArea}m²</span>
+            </div>
+            <div className="flex items-center">
+              <Globe className="h-3 w-3 mr-0.5 text-green-600" />
+              <span>{co2Reduction}kg</span>
+            </div>
+          </div>
+        </div>
       ) : (
         <>
-          <div className="flex items-center">
-            <Leaf className="h-4 w-4 text-teal-600 mr-2" />
-            <span className="text-sm font-medium text-teal-800">
-              環境への貢献
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <Leaf className="h-4 w-4 text-teal-600 mr-2" />
+              <span className="text-sm font-medium text-teal-800">
+                環境への貢献
+              </span>
+            </div>
+            <span className="text-xs bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full">
+              ¥{contributionAmount.toLocaleString()}
             </span>
           </div>
 
           <div className="mt-3 text-xs text-teal-700">
-            <p>寄付金額: ¥{contributionAmount.toLocaleString()}</p>
             <div className="mt-1">
               <div className="flex justify-between text-xs mb-1">
                 <span>環境貢献度</span>
@@ -98,11 +111,16 @@ export function EcoImpactDisplay({
     </>
   );
 
+  // コンテナクラスの設定
+  // ガイドラインに準拠した色とトランジション効果
   const containerClass = cn(
-    `${isCompact ? "flex items-center text-xs text-teal-600 p-1.5" : "p-4"} 
-        bg-teal-50 border border-teal-100 rounded-md ${className}`,
+    `${isCompact ? "p-2" : "p-4"} 
+    bg-teal-50 border border-teal-100 rounded-md 
+    eco-transition ${clickable ? "hover:bg-teal-100 hover:border-teal-200" : ""}`,
+    className,
   );
 
+  // クリック可能な場合はリンクでラップ
   if (clickable) {
     return (
       <Link href="/impact" className={containerClass}>
@@ -114,13 +132,13 @@ export function EcoImpactDisplay({
   return (
     <div className={containerClass}>
       {ecoContent}
-      {/* ボタンは clickable=false の時のみ表示 */}
+      {/* ボタンは詳細表示かつクリック不可の時のみ表示 */}
       {!isCompact && (
         <Link href="/impact" className="w-full block mt-3">
           <Button
             variant="outline"
             size="sm"
-            className="w-full text-teal-700 border-teal-200 bg-white hover:bg-teal-50"
+            className="w-full text-teal-700 border-teal-200 bg-white hover:bg-teal-50 eco-transition"
           >
             環境インパクト詳細を見る
             <ArrowRight className="h-3 w-3 ml-1" />
