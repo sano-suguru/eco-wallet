@@ -2,17 +2,18 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Leaf, Shield, Info, MapPin } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Leaf, Shield, Info, MapPin, ArrowLeft } from "lucide-react";
 import { QRCodeGenerator } from "./qr-code-generator";
 
 export default function QRCodePaymentPage() {
   return (
-    <div className="flex min-h-screen bg-white flex-col">
-      {/* ヘッダー部分 */}
-      <div className="p-4 bg-teal-800 text-white">
-        <div className="flex justify-between items-center">
+    <div className="flex min-h-screen bg-stone-50 flex-col">
+      {/* ヘッダー部分 - ティールカラーを適用 */}
+      <div className="p-4 bg-teal-700 text-white shadow-md">
+        <div className="flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center space-x-2">
-            <Link href="/">
+            <Link href="/" aria-label="ホームに戻る">
               <svg viewBox="0 0 100 40" className="h-8 w-auto fill-white">
                 <path d="M50,0 L75,20 L65,40 H35 L25,20 L50,0z" />
                 <path d="M45,15 L55,15 L55,25 L45,25 L45,15z" fill="teal" />
@@ -20,7 +21,17 @@ export default function QRCodePaymentPage() {
             </Link>
             <h1 className="text-lg font-bold">Eco Wallet</h1>
           </div>
-          <div className="text-xs font-medium">残高: ¥8,500</div>
+          <Link href="/" aria-label="戻る">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-teal-600 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              戻る
+            </Button>
+          </Link>
+          <div className="text-sm font-medium">残高: ¥8,500</div>
         </div>
       </div>
 
@@ -33,18 +44,21 @@ export default function QRCodePaymentPage() {
 
             <Separator />
 
-            {/* 環境配慮オプション */}
-            <div className="p-4 bg-teal-50 flex items-start space-x-3">
-              <div className="mt-0.5">
-                <Leaf className="h-5 w-5 text-teal-700" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-teal-800">
-                  環境保全オプション有効
-                </h3>
-                <p className="text-xs text-teal-700 mt-1">
-                  このお支払いの1%が山岳環境保全プロジェクトに寄付されます
-                </p>
+            <div className="eco-contribution-container mx-4 my-4">
+              <div className="flex items-start space-x-3">
+                <Leaf className="h-5 w-5 text-teal-700 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-medium text-teal-800">
+                    環境保全オプション有効
+                  </h3>
+                  <p className="text-xs text-teal-700 mt-1">
+                    このお支払いの1%が山岳環境保全プロジェクトに寄付されます。
+                    あなたの取引で年間約500gの紙資源を節約できます。
+                  </p>
+                  <Badge className="mt-2 bg-teal-100 text-teal-800 hover:bg-teal-200 text-xs">
+                    CO2削減: 約5kg/年
+                  </Badge>
+                </div>
               </div>
             </div>
 
@@ -55,7 +69,7 @@ export default function QRCodePaymentPage() {
               <p className="text-xs text-stone-600 mb-2">
                 バーコード (店舗によって異なります)
               </p>
-              <div className="bg-white py-2 px-4 w-full">
+              <div className="bg-white py-2 px-4 w-full border border-stone-100 rounded-md">
                 <svg viewBox="0 0 200 50" className="w-full h-12">
                   <rect x="10" y="5" width="2" height="40" fill="black" />
                   <rect x="15" y="5" width="1" height="40" fill="black" />
@@ -105,7 +119,7 @@ export default function QRCodePaymentPage() {
             <Button
               variant="outline"
               size="sm"
-              className="bg-white border-stone-200 text-stone-600"
+              className="border-stone-200 text-stone-600 hover:bg-stone-100"
             >
               <Shield className="h-4 w-4 mr-2" />
               取引履歴
@@ -114,7 +128,7 @@ export default function QRCodePaymentPage() {
           <Button
             variant="outline"
             size="sm"
-            className="bg-white border-stone-200 text-stone-600"
+            className="border-stone-200 text-stone-600 hover:bg-stone-100"
           >
             <MapPin className="h-4 w-4 mr-2" />
             近くの店舗
@@ -122,7 +136,7 @@ export default function QRCodePaymentPage() {
           <Button
             variant="outline"
             size="sm"
-            className="bg-white border-stone-200 text-stone-600"
+            className="border-stone-200 text-stone-600 hover:bg-stone-100"
           >
             <Info className="h-4 w-4 mr-2" />
             ヘルプ
