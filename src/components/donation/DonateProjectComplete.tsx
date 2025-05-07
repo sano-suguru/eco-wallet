@@ -10,36 +10,34 @@ import { CheckCircle, Leaf, Trophy } from "lucide-react";
 import { Session } from "next-auth";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { formatCurrency } from "@/lib/utils/format";
+import { ProjectItem } from "@/lib/mock-data/news-projects";
 
-interface DonateStepCompleteProps {
+interface DonateProjectCompleteProps {
+  project: ProjectItem;
   amount: string;
-  selectedProject: string;
   session: Session | null;
   transactionId: string;
   router: AppRouterInstance;
 }
 
-export function DonateStepComplete({
+export function DonateProjectComplete({
+  project,
   amount,
-  selectedProject,
   session,
   transactionId,
   router,
-}: DonateStepCompleteProps) {
-  const projectTitle =
-    selectedProject === "mountain"
-      ? "山岳環境保全プロジェクト"
-      : "海洋プラスチック削減イニシアチブ";
-
+}: DonateProjectCompleteProps) {
   const donationAmount = Number(amount);
 
   const estimatedImpact = {
     forestArea:
-      selectedProject === "mountain"
+      project.imageType === "mountain"
         ? donationAmount * 0.0007
         : donationAmount * 0.0003,
     waterSaved:
-      selectedProject === "ocean" ? donationAmount * 0.4 : donationAmount * 0.2,
+      project.imageType === "ocean"
+        ? donationAmount * 0.4
+        : donationAmount * 0.2,
     co2Reduction: donationAmount * 0.015,
   };
 
@@ -59,7 +57,7 @@ export function DonateStepComplete({
           <h3 className="text-lg font-medium text-stone-800">
             {formatCurrency(donationAmount)}を寄付しました
           </h3>
-          <p className="text-sm text-stone-600 mt-1">寄付先: {projectTitle}</p>
+          <p className="text-sm text-stone-600 mt-1">寄付先: {project.title}</p>
           <p className="text-sm text-stone-600">
             現在の残高: {formatCurrency(session?.user?.balance || 0)}
           </p>

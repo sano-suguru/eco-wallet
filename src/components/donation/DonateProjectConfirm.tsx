@@ -10,10 +10,12 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Leaf } from "lucide-react";
 import { Session } from "next-auth";
 import { formatCurrency } from "@/lib/utils/format";
+import { ProjectItem } from "@/lib/mock-data/news-projects";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-interface DonateStepConfirmProps {
+interface DonateProjectConfirmProps {
+  project: ProjectItem;
   amount: string;
-  selectedProject: string;
   session: Session | null;
   isLoading: boolean;
   error: string | null;
@@ -21,27 +23,24 @@ interface DonateStepConfirmProps {
   handleBackToInput: () => void;
 }
 
-export function DonateStepConfirm({
+export function DonateProjectConfirm({
+  project,
   amount,
-  selectedProject,
   session,
   isLoading,
   error,
   handleConfirmDonation,
   handleBackToInput,
-}: DonateStepConfirmProps) {
-  const projectTitle =
-    selectedProject === "mountain"
-      ? "山岳環境保全プロジェクト"
-      : "海洋プラスチック削減イニシアチブ";
-
+}: DonateProjectConfirmProps) {
   const estimatedImpact = {
     forestArea:
-      selectedProject === "mountain"
+      project.imageType === "mountain"
         ? Number(amount) * 0.0007
         : Number(amount) * 0.0003,
     waterSaved:
-      selectedProject === "ocean" ? Number(amount) * 0.4 : Number(amount) * 0.2,
+      project.imageType === "ocean"
+        ? Number(amount) * 0.4
+        : Number(amount) * 0.2,
     co2Reduction: Number(amount) * 0.015,
   };
 
@@ -69,7 +68,7 @@ export function DonateStepConfirm({
           <div className="flex justify-between mb-2">
             <span className="text-sm text-stone-600">寄付先:</span>
             <span className="text-sm font-medium text-stone-800">
-              {projectTitle}
+              {project.title}
             </span>
           </div>
           <div className="flex justify-between mb-2">
@@ -129,10 +128,10 @@ export function DonateStepConfirm({
           disabled={isLoading}
         >
           {isLoading ? (
-            <>
-              <div className="animate-spin mr-2 h-4 w-4 border-t-2 border-white rounded-full"></div>
+            <div className="flex items-center justify-center">
+              <LoadingSpinner size="sm" light className="mr-2" />
               処理中...
-            </>
+            </div>
           ) : (
             "寄付を確定する"
           )}

@@ -1,22 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { DonateStepInput } from "@/components/donation/DonateStepInput";
-import { DonateStepConfirm } from "@/components/donation/DonateStepConfirm";
-import { DonateStepComplete } from "@/components/donation/DonateStepComplete";
+import { DonateProjectConfirm } from "@/components/donation/DonateProjectConfirm";
+import { DonateProjectComplete } from "@/components/donation/DonateProjectComplete";
+import { DonateProjectInput } from "@/components/donation/DonateProjectInput";
 import { useTransactionStore } from "@/stores/transactionStore";
 import { useBalanceStore } from "@/stores/balanceStore";
 import { useEcoImpactStore } from "@/stores/ecoImpactStore";
 import { useSession } from "next-auth/react";
+import { newsAndProjects, ProjectItem } from "@/lib/mock-data/news-projects";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 type DonateStep = "input" | "confirm" | "complete";
 
-export default function DonatePage() {
+export default function DonateProjectPage() {
   const router = useRouter();
+  const params = useParams();
+  const projectId = params.id as string;
   const { data: session, update } = useSession();
+
   const addTransaction = useTransactionStore((state) => state.addTransaction);
   const subtractBalance = useBalanceStore((state) => state.subtractBalance);
   const addContribution = useEcoImpactStore((state) => state.addContribution);
@@ -27,7 +33,16 @@ export default function DonatePage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [transactionId, setTransactionId] = useState<string>("");
-  const [selectedProject, setSelectedProject] = useState<string>("mountain");
+  const [project, setProject] = useState<ProjectItem | null>(null);
+
+  // プロジェクト情報を取得
+  useEffect(() => {
+    const projectData = newsAndProjects.find(
+      (item) => item.id === projectId && item.type === "project",
+    ) as ProjectItem | undefined;
+
+    setProject(projectData || null);
+  }, [projectId]);
 
   // 金額選択ハンドラー
   const handleSelectAmount = (value: string) => {
@@ -57,6 +72,8 @@ export default function DonatePage() {
 
   // 寄付処理
   const handleConfirmDonation = async () => {
+    if (!project) return;
+
     setIsLoading(true);
     setError(null);
 
@@ -69,12 +86,7 @@ export default function DonatePage() {
       // 1. 新しいトランザクションを作成（donation タイプ）
       const newTransactionId = addTransaction({
         type: "donation",
-        description:
-          selectedProject === "mountain"
-            ? "山岳環境保全プロジェクト"
-            : selectedProject === "ocean"
-              ? "海洋プラスチック削減イニシアチブ"
-              : "環境保全プロジェクト",
+        description: project.title,
         date: new Date()
           .toLocaleDateString("ja-JP", {
             year: "numeric",
@@ -97,13 +109,15 @@ export default function DonatePage() {
       // 3. 環境貢献情報を更新
       addContribution({
         amount: donationAmount,
-        // オプションで詳細な環境貢献データを設定可能
+        // プロジェクトタイプに応じた環境貢献データ
         forestArea:
-          selectedProject === "mountain"
+          project.imageType === "mountain"
             ? donationAmount * 0.0007
-            : donationAmount * 0.0003,
+            : project.imageType === "ocean"
+              ? donationAmount * 0.0003
+              : donationAmount * 0.0005,
         waterSaved:
-          selectedProject === "ocean"
+          project.imageType === "ocean"
             ? donationAmount * 0.4
             : donationAmount * 0.2,
         co2Reduction: donationAmount * 0.015,
@@ -126,19 +140,45 @@ export default function DonatePage() {
     }
   };
 
+  // プロジェクトが見つからない場合のエラー表示
+  if (!project) {
+    return (
+      <PageContainer title="プロジェクト寄付" activeTab="eco">
+        <div className="space-y-6">
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              指定されたプロジェクトが見つかりませんでした。
+            </AlertDescription>
+          </Alert>
+          <Card className="border-0 shadow-md bg-white p-6 text-center">
+            <p className="text-sm text-stone-700 mb-4">
+              お探しのプロジェクトは存在しないか、削除された可能性があります。
+            </p>
+            <button
+              className="bg-teal-700 hover:bg-teal-800 text-white px-4 py-2 rounded-md text-sm"
+              onClick={() => router.push("/eco-news")}
+            >
+              プロジェクト一覧に戻る
+            </button>
+          </Card>
+        </div>
+      </PageContainer>
+    );
+  }
+
   return (
-    <PageContainer title="寄付" activeTab="eco">
+    <PageContainer title={`${project.title}への寄付`} activeTab="eco">
       <div className="space-y-6">
         <h2 className="text-xl font-semibold text-stone-800">
-          環境保全プロジェクトへの寄付
+          {project.title}への寄付
         </h2>
         <Card className="border-0 shadow-md bg-white">
           {currentStep === "input" && (
-            <DonateStepInput
+            <DonateProjectInput
+              project={project}
               amount={amount}
               setAmount={setAmount}
-              selectedProject={selectedProject}
-              setSelectedProject={setSelectedProject}
               error={error}
               handleSelectAmount={handleSelectAmount}
               handleProceedToConfirm={handleProceedToConfirm}
@@ -147,9 +187,9 @@ export default function DonatePage() {
           )}
 
           {currentStep === "confirm" && (
-            <DonateStepConfirm
+            <DonateProjectConfirm
+              project={project}
               amount={amount}
-              selectedProject={selectedProject}
               session={session}
               isLoading={isLoading}
               error={error}
@@ -159,9 +199,9 @@ export default function DonatePage() {
           )}
 
           {currentStep === "complete" && (
-            <DonateStepComplete
+            <DonateProjectComplete
+              project={project}
               amount={amount}
-              selectedProject={selectedProject}
               session={session}
               transactionId={transactionId}
               router={router}

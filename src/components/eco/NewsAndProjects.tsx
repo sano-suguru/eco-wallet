@@ -128,7 +128,7 @@ export function NewsAndProjects() {
                   variant="outline"
                   size="sm"
                   className="w-full mt-2 text-xs border-teal-200 text-teal-700"
-                  onClick={() => router.push("/donate")}
+                  onClick={() => router.push(`/donate/${item.id}`)}
                 >
                   寄付する
                 </Button>
