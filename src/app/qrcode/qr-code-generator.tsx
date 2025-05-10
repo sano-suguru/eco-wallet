@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, CheckCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import QRCode from "react-qr-code";
 
 export function QRCodeGenerator() {
   const [securityCode, setSecurityCode] = useState("287954");
@@ -74,36 +75,12 @@ export function QRCodeGenerator() {
       {/* QRコード表示エリア */}
       <div className="bg-white p-6 flex flex-col items-center justify-center">
         <div className="bg-white p-4 rounded-lg border-2 border-stone-200 w-64 h-64 flex items-center justify-center">
-          {/* ここでは代替テキストを表示 */}
-          <svg width="200" height="200" viewBox="0 0 200 200">
-            <rect x="0" y="0" width="200" height="200" fill="white" />
-            <rect x="20" y="20" width="40" height="40" fill="black" />
-            <rect x="140" y="20" width="40" height="40" fill="black" />
-            <rect x="20" y="140" width="40" height="40" fill="black" />
-            <rect x="70" y="70" width="60" height="60" fill="black" />
-            <rect x="70" y="20" width="10" height="40" fill="black" />
-            <rect x="120" y="70" width="10" height="40" fill="black" />
-            <rect x="20" y="70" width="40" height="10" fill="black" />
-            <rect x="70" y="140" width="40" height="10" fill="black" />
-            <rect x="140" y="90" width="10" height="90" fill="black" />
-            <rect x="160" y="140" width="20" height="20" fill="black" />
-
-            {/* セキュリティコードを表す模様を動的に変更（簡易的な実装） */}
-            <rect
-              x={((parseInt(securityCode[0]) * 10) % 100) + 50}
-              y={((parseInt(securityCode[1]) * 10) % 100) + 50}
-              width="15"
-              height="15"
-              fill="black"
-            />
-            <rect
-              x={(parseInt(securityCode[2]) * 10) % 150}
-              y={(parseInt(securityCode[3]) * 10) % 100}
-              width="10"
-              height="10"
-              fill="black"
-            />
-          </svg>
+          <QRCode
+            value={`ecowallet://payment/${securityCode}`}
+            size={200}
+            level="H"
+            fgColor="#0F766E"
+          />
         </div>
 
         <div className="mt-4 w-full">
