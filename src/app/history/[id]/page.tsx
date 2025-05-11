@@ -21,10 +21,10 @@ import { useEcoImpactStore } from "@/stores/ecoImpactStore";
 import { Transaction } from "@/lib/mock-data/transactions";
 import { TransactionEcoImpact } from "@/components/eco/TransactionEcoImpact";
 import { TransactionDetailSection } from "@/components/transactions/TransactionDetailSection";
-
-// 新しいユーティリティのインポート
 import { formatCurrency } from "@/lib/utils/format";
 import { getTransactionStyle } from "@/lib/utils/transaction";
+import { ElectronicReceipt } from "@/components/receipts/ElectronicReceipt";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 export default function TransactionDetailPage() {
   const params = useParams();
@@ -41,6 +41,8 @@ export default function TransactionDetailPage() {
   // 環境貢献データを取得
   const forestArea = useEcoImpactStore((state) => state.forestArea);
   const co2Reduction = useEcoImpactStore((state) => state.co2Reduction);
+
+  const [showReceipt, setShowReceipt] = useState(false);
 
   useEffect(() => {
     // 取引データの取得をシミュレート
@@ -105,6 +107,42 @@ export default function TransactionDetailPage() {
     withPlus: true,
     withSymbol: false,
   });
+
+  const getReceiptItems = () => {
+    // 取引タイプがpaymentの場合は商品情報を生成
+    if (transaction.type === "payment") {
+      return [
+        {
+          name: transaction.description,
+          quantity: 1,
+          price: Math.abs(transaction.amount),
+          isEco: transaction.badges?.includes("環境貢献") || false,
+        },
+      ];
+    }
+    return [];
+  };
+
+  // レシートの保存ハンドラー
+  const handleDownloadReceipt = () => {
+    // 実際の実装では、レシートのPDF生成やダウンロード処理を行う
+    console.log("レシートをダウンロード");
+  };
+
+  // レシートの共有ハンドラー
+  const handleShareReceipt = () => {
+    // 実際の実装では、レシートの共有機能を提供
+    if (navigator.share) {
+      navigator.share({
+        title: `${transaction.description}のレシート`,
+        text: `${transaction.date}の取引レシート`,
+        url: window.location.href,
+      });
+    } else {
+      // 共有APIがサポートされていない場合の代替処理
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
 
   return (
     <PageContainer title="取引詳細" activeTab="history">
@@ -289,6 +327,48 @@ export default function TransactionDetailPage() {
           </Card>
         </div>
       )}
+
+      <div className="flex justify-between mt-6">
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-stone-600 border-stone-200"
+          onClick={() => setShowReceipt(true)} // レシート表示ボタン
+        >
+          <Receipt className="h-4 w-4 mr-2" />
+          電子レシートを表示
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-stone-600 border-stone-200"
+        >
+          <Share2 className="h-4 w-4 mr-2" />
+          共有
+        </Button>
+      </div>
+
+      {/* 電子レシートダイアログ */}
+      <Dialog open={showReceipt} onOpenChange={setShowReceipt}>
+        <DialogTitle className="sr-only">電子レシート</DialogTitle>
+        <DialogContent className="max-w-md mx-auto p-0">
+          <ElectronicReceipt
+            transactionId={transactionId}
+            date={transaction.date}
+            storeName="Eco Wallet"
+            items={getReceiptItems()}
+            total={Math.abs(transaction.amount)}
+            paymentMethod="Eco Wallet残高"
+            ecoContribution={transaction.ecoContribution}
+            receiptSavings={{
+              paperSaved: "約5g",
+              co2Reduction: "約10g",
+            }}
+            onDownload={handleDownloadReceipt}
+            onShare={handleShareReceipt}
+          />
+        </DialogContent>
+      </Dialog>
     </PageContainer>
   );
 }
