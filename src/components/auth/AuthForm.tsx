@@ -30,7 +30,8 @@ export function AuthForm({
 
       <Button
         type="submit"
-        className="w-full bg-teal-700 hover:bg-teal-800 text-white"
+        variant="eco"
+        className="w-full h-10 font-medium"
         disabled={isLoading}
       >
         {isLoading ? (

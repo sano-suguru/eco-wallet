@@ -36,7 +36,10 @@ export function AuthField({
   return (
     <div className="space-y-2 text-left">
       <div className="flex justify-between">
-        <Label htmlFor={id} className="text-sm font-medium text-stone-800">
+        <Label
+          htmlFor={id}
+          className="text-sm font-medium text-stone-800 mb-1 inline-block"
+        >
           {label}
         </Label>
         {action}
@@ -44,7 +47,7 @@ export function AuthField({
 
       <div className="relative">
         {icon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-400">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-500">
             {icon}
           </div>
         )}
@@ -58,13 +61,15 @@ export function AuthField({
           onChange={onChange}
           disabled={disabled}
           required={required}
-          className={`${error ? "border-red-300" : ""} ${icon ? "pl-10" : ""}`}
+          className={`${error ? "border-red-300 ring-red-100" : "focus:border-teal-700 focus:ring-teal-100"} ${
+            icon ? "pl-10" : ""
+          } h-10 border-stone-300 bg-white`}
         />
       </div>
 
-      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+      {error && <p className="text-xs text-red-600 mt-1.5">{error}</p>}
       {description && (
-        <p className="text-xs text-stone-500 mt-1">{description}</p>
+        <p className="text-xs text-stone-500 mt-1.5">{description}</p>
       )}
     </div>
   );
