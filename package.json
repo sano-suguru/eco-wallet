@@ -10,7 +10,6 @@
     "start": "next start",
     "test": "vitest",
     "test:run": "vitest run",
-    "collect-sources": "node tools/collect_sources.mjs",
     "debug": "NODE_OPTIONS='--inspect=3000' next dev"
   },
   "dependencies": {
