@@ -1,53 +1,16 @@
-import { create } from "zustand";
-import { Campaign, campaignsData } from "@/lib/mock-data/campaigns";
-import {
-  findCampaignById,
-  filterActiveCampaigns,
-  filterPopularCampaigns,
-  filterCampaignsByType,
-} from "@/lib/utils/campaign-utils";
+/**
+ * @file campaignStore.ts
+ * @deprecated このファイルは後方互換性のためにのみ存在します。
+ * 今後は `src/stores/slices/campaign.ts` から直接インポートすることを推奨します。
+ */
 
-interface CampaignState {
-  // データ
-  campaigns: Campaign[];
+import { useCampaignStore as useStore } from "./slices/campaign";
 
-  // アクション
-  setCampaigns: (campaigns: Campaign[]) => void;
-  addCampaign: (campaign: Campaign) => void;
+// 後方互換性のためにそのまま再エクスポート
+export { useCampaignStore } from "./slices/campaign";
 
-  // クエリ
-  getCampaignById: (id: string) => Campaign | undefined;
-  getActiveCampaigns: () => Campaign[];
-  getPopularCampaigns: () => Campaign[];
-  getCampaignsByType: (type: string) => Campaign[];
-}
+// 型定義の再エクスポート
+export type { CampaignSlice as CampaignState } from "./slices/campaign";
 
-export const useCampaignStore = create<CampaignState>((set, get) => ({
-  // 初期状態
-  campaigns: campaignsData,
-
-  // アクション
-  setCampaigns: (campaigns) => set({ campaigns }),
-
-  addCampaign: (campaign) =>
-    set((state) => ({
-      campaigns: [...state.campaigns, campaign],
-    })),
-
-  // クエリ - ユーティリティ関数を使用
-  getCampaignById: (id) => {
-    return findCampaignById(get().campaigns, id);
-  },
-
-  getActiveCampaigns: () => {
-    return filterActiveCampaigns(get().campaigns);
-  },
-
-  getPopularCampaigns: () => {
-    return filterPopularCampaigns(get().campaigns);
-  },
-
-  getCampaignsByType: (type) => {
-    return filterCampaignsByType(get().campaigns, type);
-  },
-}));
+// 旧バージョンのAPIと完全な互換性を保証
+export { useStore };

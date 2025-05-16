@@ -1,70 +1,16 @@
-import { create } from "zustand";
-import { ecoImpactData } from "@/lib/mock-data/eco-impact";
-import { EcoRank } from "@/lib/utils/eco-impact";
-import {
-  ContributionParams,
-  calculateContribution,
-  calculateEcoProgress,
-  getEcoRankFromDonation,
-} from "@/lib/utils/eco-impact-utils";
+/**
+ * @file ecoImpactStore.ts
+ * @deprecated このファイルは後方互換性のためにのみ存在します。
+ * 今後は `src/stores/slices/ecoImpact.ts` から直接インポートすることを推奨します。
+ */
 
-interface EcoImpactState {
-  // 環境貢献データ
-  forestArea: number;
-  waterSaved: number;
-  co2Reduction: number;
-  progressPercent: number;
-  totalDonation: number;
-  monthlyDonation: number;
+import { useEcoImpactStore as useStore } from "./slices/ecoImpact";
 
-  // 目標値
-  targetForestArea: number;
-  targetWaterSaved: number;
-  targetCo2Reduction: number;
+// 後方互換性のためにそのまま再エクスポート
+export { useEcoImpactStore } from "./slices/ecoImpact";
 
-  // アクション
-  addContribution: (params: ContributionParams) => void;
-  updateProgress: () => void;
+// 型定義の再エクスポート
+export type { EcoImpactSlice as EcoImpactState } from "./slices/ecoImpact";
 
-  // 派生データ
-  getEcoRank: () => EcoRank;
-}
-
-export const useEcoImpactStore = create<EcoImpactState>((set, get) => ({
-  // 初期状態（モックデータから）
-  forestArea: ecoImpactData.forestArea,
-  waterSaved: ecoImpactData.waterSaved,
-  co2Reduction: ecoImpactData.co2Reduction,
-  progressPercent: ecoImpactData.progressPercent,
-  targetForestArea: ecoImpactData.targetForestArea,
-  targetWaterSaved: ecoImpactData.targetWaterSaved,
-  targetCo2Reduction: ecoImpactData.targetCo2Reduction,
-  totalDonation: ecoImpactData.totalDonation,
-  monthlyDonation: ecoImpactData.monthlyDonation,
-
-  // 環境貢献を追加 - ユーティリティ関数を使用
-  addContribution: (params) =>
-    set((state) => {
-      return calculateContribution(state, params);
-    }),
-
-  // 進捗率の更新 - ユーティリティ関数を使用
-  updateProgress: () =>
-    set((state) => {
-      const progress = calculateEcoProgress(
-        state.forestArea,
-        state.waterSaved,
-        state.co2Reduction,
-        state.targetForestArea,
-        state.targetWaterSaved,
-        state.targetCo2Reduction,
-      );
-
-      return { progressPercent: progress };
-    }),
-
-  // エコランクの取得 - ユーティリティ関数を使用
-  getEcoRank: () => {
-    return getEcoRankFromDonation(get().totalDonation);
-  },
-}));
+// 旧バージョンのAPIと完全な互換性を保証
+export { useStore };
