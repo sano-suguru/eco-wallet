@@ -24,7 +24,9 @@ export default function DonateProjectPage() {
   const { data: session, update } = useSession();
 
   const addTransaction = useTransactionStore((state) => state.addTransaction);
-  const subtractBalance = useBalanceStore((state) => state.subtractBalance);
+  const subtractFromRegularBalance = useBalanceStore(
+    (state) => state.subtractFromRegularBalance,
+  );
   const addContribution = useEcoImpactStore((state) => state.addContribution);
 
   // 基本状態
@@ -104,7 +106,7 @@ export default function DonateProjectPage() {
       setTransactionId(newTransactionId);
 
       // 2. ユーザーの残高を更新
-      subtractBalance(donationAmount);
+      subtractFromRegularBalance(donationAmount);
 
       // 3. 環境貢献情報を更新
       addContribution({

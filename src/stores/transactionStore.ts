@@ -4,17 +4,26 @@ import {
   Transaction,
   TransactionType,
 } from "@/lib/mock-data/transactions";
+import {
+  filterTransactionsByDateRange,
+  filterTransactionsByType,
+  getRecentTransactions,
+  filterTransactionsWithEcoContribution,
+  calculateTotalEcoContribution,
+} from "@/lib/utils/transaction-utils";
 
 interface TransactionState {
-  // 取引履歴データ
+  // データ
   transactions: Transaction[];
 
   // アクション
   addTransaction: (transaction: Omit<Transaction, "id">) => string;
+
+  // クエリ
   getTransactionById: (id: string) => Transaction | undefined;
   getTransactionsByType: (type: TransactionType) => Transaction[];
   getRecentTransactions: (limit?: number) => Transaction[];
-  filterTransactionsByDateRange: (
+  getTransactionsByDateRange: (
     startDate: string,
     endDate: string,
   ) => Transaction[];
@@ -43,47 +52,32 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
     return get().transactions.find((transaction) => transaction.id === id);
   },
 
-  // タイプで取引をフィルタリング
+  // タイプで取引をフィルタリング - ユーティリティ関数を使用
   getTransactionsByType: (type) => {
-    return get().transactions.filter(
-      (transaction) => transaction.type === type,
-    );
+    return filterTransactionsByType(get().transactions, type);
   },
 
-  // 最近の取引を取得
+  // 最近の取引を取得 - ユーティリティ関数を使用
   getRecentTransactions: (limit = 5) => {
-    return get().transactions.slice(0, limit);
+    return getRecentTransactions(get().transactions, limit);
   },
 
-  // 日付範囲で取引をフィルタリング
-  filterTransactionsByDateRange: (startDate, endDate) => {
-    // 日付文字列をDateオブジェクトに変換
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    return get().transactions.filter((transaction) => {
-      const transactionDate = new Date(transaction.date);
-      return transactionDate >= start && transactionDate <= end;
-    });
-  },
-
-  // 環境貢献のある取引を取得
-  getTransactionsWithEcoContribution: () => {
-    return get().transactions.filter(
-      (transaction) => transaction.ecoContribution?.enabled,
+  // 日付範囲で取引をフィルタリング - ユーティリティ関数を使用
+  getTransactionsByDateRange: (startDate, endDate) => {
+    return filterTransactionsByDateRange(
+      get().transactions,
+      startDate,
+      endDate,
     );
   },
 
-  // 環境貢献の合計を計算
+  // 環境貢献のある取引を取得 - ユーティリティ関数を使用
+  getTransactionsWithEcoContribution: () => {
+    return filterTransactionsWithEcoContribution(get().transactions);
+  },
+
+  // 環境貢献の合計を計算 - ユーティリティ関数を使用
   getTotalEcoContribution: () => {
-    return get()
-      .transactions.filter(
-        (transaction) => transaction.ecoContribution?.enabled,
-      )
-      .reduce(
-        (total, transaction) =>
-          total + (transaction.ecoContribution?.amount || 0),
-        0,
-      );
+    return calculateTotalEcoContribution(get().transactions);
   },
 }));

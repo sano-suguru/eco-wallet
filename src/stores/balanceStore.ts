@@ -1,35 +1,28 @@
 import { create } from "zustand";
 import { userBalanceData } from "@/lib/mock-data/user-profile";
+import {
+  CampaignBalance,
+  calculateTotalBalance,
+} from "@/lib/utils/balance-utils";
 
 interface BalanceState {
   // 基本残高情報
-  balance: number;
   regularBalance: number;
-  campaignBalances: Array<{
-    id: number;
-    amount: number;
-    label: string;
-    expiryDate: string;
-    daysLeft: number;
-    conditions?: string;
-  }>;
+  campaignBalances: CampaignBalance[];
 
   // アクション
-  addBalance: (amount: number) => void;
-  subtractBalance: (amount: number) => void;
-  setCampaignBalances: (
-    campaignBalances: BalanceState["campaignBalances"],
-  ) => void;
-  addCampaignBalance: (
-    campaignBalance: Omit<BalanceState["campaignBalances"][0], "id">,
-  ) => void;
+  addToRegularBalance: (amount: number) => void;
   subtractFromRegularBalance: (amount: number) => void;
+  setCampaignBalances: (campaignBalances: CampaignBalance[]) => void;
+  addCampaignBalance: (campaignBalance: Omit<CampaignBalance, "id">) => void;
   subtractFromCampaignBalance: (id: number, amount: number) => void;
+
+  // 派生データ
   getTotalBalance: () => number;
 }
 
 // 初期キャンペーン残高データ
-const initialCampaignBalances = [
+const initialCampaignBalances: CampaignBalance[] = [
   {
     id: 1,
     amount: 2000,
@@ -50,20 +43,20 @@ const initialCampaignBalances = [
 
 export const useBalanceStore = create<BalanceState>((set, get) => ({
   // 初期状態
-  balance: userBalanceData.balance || 8500,
-  regularBalance: 6000, // 通常残高の初期値
+  regularBalance: userBalanceData.balance
+    ? userBalanceData.balance - 2500
+    : 6000, // キャンペーン残高を除いた通常残高
   campaignBalances: initialCampaignBalances,
 
   // アクション
-  addBalance: (amount) =>
+  addToRegularBalance: (amount) =>
     set((state) => ({
-      balance: state.balance + amount,
       regularBalance: state.regularBalance + amount,
     })),
 
-  subtractBalance: (amount) =>
+  subtractFromRegularBalance: (amount) =>
     set((state) => ({
-      balance: state.balance - amount,
+      regularBalance: Math.max(0, state.regularBalance - amount),
     })),
 
   setCampaignBalances: (campaignBalances) => set({ campaignBalances }),
@@ -73,22 +66,9 @@ export const useBalanceStore = create<BalanceState>((set, get) => ({
       const newId =
         Math.max(0, ...state.campaignBalances.map((cb) => cb.id)) + 1;
       const newCampaignBalance = { id: newId, ...campaignBalance };
-      const newBalance = state.balance + campaignBalance.amount;
 
       return {
         campaignBalances: [...state.campaignBalances, newCampaignBalance],
-        balance: newBalance,
-      };
-    }),
-
-  subtractFromRegularBalance: (amount) =>
-    set((state) => {
-      const newRegularBalance = Math.max(0, state.regularBalance - amount);
-      const deducted = state.regularBalance - newRegularBalance;
-
-      return {
-        regularBalance: newRegularBalance,
-        balance: state.balance - deducted,
       };
     }),
 
@@ -102,29 +82,13 @@ export const useBalanceStore = create<BalanceState>((set, get) => ({
         return cb;
       });
 
-      // 実際に引かれた金額を計算
-      const oldTotal = state.campaignBalances.reduce(
-        (sum, cb) => sum + cb.amount,
-        0,
-      );
-      const newTotal = updatedCampaignBalances.reduce(
-        (sum, cb) => sum + cb.amount,
-        0,
-      );
-      const deducted = oldTotal - newTotal;
-
       return {
         campaignBalances: updatedCampaignBalances,
-        balance: state.balance - deducted,
       };
     }),
 
+  // 派生データ - ユーティリティ関数を使用
   getTotalBalance: () => {
-    const regularBalance = get().regularBalance;
-    const campaignTotal = get().campaignBalances.reduce(
-      (sum, cb) => sum + cb.amount,
-      0,
-    );
-    return regularBalance + campaignTotal;
+    return calculateTotalBalance(get().regularBalance, get().campaignBalances);
   },
 }));

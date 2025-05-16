@@ -1,11 +1,21 @@
 import { create } from "zustand";
 import { Campaign, campaignsData } from "@/lib/mock-data/campaigns";
+import {
+  findCampaignById,
+  filterActiveCampaigns,
+  filterPopularCampaigns,
+  filterCampaignsByType,
+} from "@/lib/utils/campaign-utils";
 
 interface CampaignState {
-  // キャンペーンデータ
+  // データ
   campaigns: Campaign[];
 
   // アクション
+  setCampaigns: (campaigns: Campaign[]) => void;
+  addCampaign: (campaign: Campaign) => void;
+
+  // クエリ
   getCampaignById: (id: string) => Campaign | undefined;
   getActiveCampaigns: () => Campaign[];
   getPopularCampaigns: () => Campaign[];
@@ -16,23 +26,28 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   // 初期状態
   campaigns: campaignsData,
 
-  // IDでキャンペーンを検索
+  // アクション
+  setCampaigns: (campaigns) => set({ campaigns }),
+
+  addCampaign: (campaign) =>
+    set((state) => ({
+      campaigns: [...state.campaigns, campaign],
+    })),
+
+  // クエリ - ユーティリティ関数を使用
   getCampaignById: (id) => {
-    return get().campaigns.find((campaign) => campaign.id === id);
+    return findCampaignById(get().campaigns, id);
   },
 
-  // アクティブなキャンペーンを取得
   getActiveCampaigns: () => {
-    return get().campaigns.filter((campaign) => campaign.isActive);
+    return filterActiveCampaigns(get().campaigns);
   },
 
-  // 人気のキャンペーンを取得
   getPopularCampaigns: () => {
-    return get().campaigns.filter((campaign) => campaign.isPopular);
+    return filterPopularCampaigns(get().campaigns);
   },
 
-  // タイプでキャンペーンをフィルタリング
   getCampaignsByType: (type) => {
-    return get().campaigns.filter((campaign) => campaign.type === type);
+    return filterCampaignsByType(get().campaigns, type);
   },
 }));

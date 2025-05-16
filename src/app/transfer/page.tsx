@@ -69,7 +69,9 @@ export default function TransferSplitPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const addTransaction = useTransactionStore((state) => state.addTransaction);
-  const subtractBalance = useBalanceStore((state) => state.subtractBalance);
+  const subtractFromRegularBalance = useBalanceStore(
+    (state) => state.subtractFromRegularBalance,
+  );
 
   // 送金関連のstate
   const [activeTab, setActiveTab] = useState<"transfer" | "split">("transfer");
@@ -214,7 +216,7 @@ export default function TransferSplitPage() {
       });
 
       // 残高の更新
-      subtractBalance(totalDeduction);
+      subtractFromRegularBalance(totalDeduction);
 
       // 成功状態にする
       setIsSuccess(true);
@@ -329,7 +331,7 @@ export default function TransferSplitPage() {
       }
 
       // 残高の更新（立替分）
-      subtractBalance(Number(totalAmount));
+      subtractFromRegularBalance(Number(totalAmount));
 
       // 成功状態にする
       setIsSplitSuccess(true);

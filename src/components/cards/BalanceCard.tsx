@@ -8,7 +8,7 @@ import { useBalanceStore } from "@/stores/balanceStore";
 import { formatCurrency } from "@/lib/utils/format";
 
 export function BalanceCard() {
-  const balance = useBalanceStore((state) => state.balance);
+  const getTotalBalance = useBalanceStore((state) => state.getTotalBalance);
   const campaignBalances = useBalanceStore((state) => state.campaignBalances);
 
   const campaignTotal = campaignBalances.reduce(
@@ -16,7 +16,8 @@ export function BalanceCard() {
     0,
   );
 
-  const formattedBalance = formatCurrency(balance);
+  const totalBalance = getTotalBalance();
+  const formattedBalance = formatCurrency(totalBalance);
 
   // 期限が近い（7日以内）キャンペーン残高があるかチェック
   const hasExpiringBalance = campaignBalances.some((cb) => cb.daysLeft <= 7);
