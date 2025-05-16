@@ -16,8 +16,8 @@ import {
   Clock,
   Gift,
 } from "lucide-react";
-import { useTransactionStore } from "@/stores/transactionStore";
-import { useEcoImpactStore } from "@/stores/ecoImpactStore";
+import { useTransactionStore } from "@/stores/slices/transaction";
+import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
 import { Transaction } from "@/lib/mock-data/transactions";
 import { TransactionEcoImpact } from "@/components/eco/TransactionEcoImpact";
 import { TransactionDetailSection } from "@/components/transactions/TransactionDetailSection";

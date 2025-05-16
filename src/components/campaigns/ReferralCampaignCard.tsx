@@ -1,6 +1,6 @@
 "use client";
 
-import { useCampaignStore } from "@/stores/campaignStore";
+import { useCampaignStore } from "@/stores/slices/campaign";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
 
 export function ReferralCampaignCard() {

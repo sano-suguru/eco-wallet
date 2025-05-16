@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Gift, Leaf } from "lucide-react";
 import { Transaction } from "@/lib/mock-data/transactions";
-import { useTransactionStore } from "@/stores/transactionStore";
+import { useTransactionStore } from "@/stores/slices/transaction";
 import { CompactEcoImpact } from "@/components/eco/CompactEcoImpact";
 import { useEffect, useState } from "react";
 

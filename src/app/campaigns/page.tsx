@@ -16,7 +16,7 @@ import {
   Tag,
   Gift,
 } from "lucide-react";
-import { useCampaignStore } from "@/stores/campaignStore";
+import { useCampaignStore } from "@/stores/slices/campaign";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Campaign } from "@/lib/mock-data/campaigns";
 

@@ -1,7 +1,7 @@
 /**
  * 招待機能関連のユーティリティ関数
  */
-import { Invitation, InvitationStatus } from "@/stores/invitationStore";
+import { Invitation, InvitationStatus } from "@/stores/slices/invitation";
 
 /**
  * 招待コードを生成する

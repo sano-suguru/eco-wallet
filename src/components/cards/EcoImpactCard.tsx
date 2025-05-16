@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Leaf, TreePine, Droplets, Globe, ChevronRight } from "lucide-react";
-import { useEcoImpactStore } from "@/stores/ecoImpactStore";
-import { useTransactionStore } from "@/stores/transactionStore";
+import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
+import { useTransactionStore } from "@/stores/slices/transaction";
 import { useEffect } from "react";
 
 import { formatCurrency } from "@/lib/utils/format";

@@ -21,7 +21,7 @@ import {
   Users,
   Gift,
 } from "lucide-react";
-import { useCampaignStore } from "@/stores/campaignStore";
+import { useCampaignStore } from "@/stores/slices/campaign";
 import { Campaign } from "@/lib/mock-data/campaigns";
 
 import { calculateDateDifference } from "@/lib/utils/format";

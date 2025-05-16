@@ -18,7 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CheckCircle } from "lucide-react";
-import { useTransactionStore } from "@/stores/transactionStore"; // トランザクションストアをインポート
+import { useTransactionStore } from "@/stores/slices/transaction"; // トランザクションストアをインポート
 
 export default function PaymentPage() {
   const router = useRouter();

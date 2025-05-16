@@ -23,8 +23,8 @@ import {
   Info,
   Tag,
 } from "lucide-react";
-import { useTransactionStore } from "@/stores/transactionStore";
-import { useBalanceStore } from "@/stores/balanceStore";
+import { useTransactionStore } from "@/stores/slices/transaction";
+import { useBalanceStore } from "@/stores/slices/balance";
 import { FeaturedCampaignSection } from "@/components/campaigns/FeaturedCampaignSection";
 
 // アイコンコンポーネント

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Zap, ChevronRight } from "lucide-react";
-import { useCampaignStore } from "@/stores/campaignStore";
+import { useCampaignStore } from "@/stores/slices/campaign";
 
 export function FeaturedCampaignSection() {
   const getPopularCampaigns = useCampaignStore(
