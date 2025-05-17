@@ -1,6 +1,10 @@
-import { TransactionType } from "@/lib/mock-data/transactions";
+/**
+ * トランザクションのUIスタイリングに関する関数
+ */
+import React from "react";
 import { ArrowUp, ArrowDown, Leaf, Clock, Gift, Info } from "lucide-react";
-import { getTransactionStyleConfig } from "./transaction";
+import { TransactionType, TransactionStyle } from "./types";
+import { getTransactionStyleConfig } from "./styling";
 
 /**
  * トランザクションタイプに基づいたスタイルとアイコンを取得する
@@ -8,11 +12,14 @@ import { getTransactionStyleConfig } from "./transaction";
  * @param badges オプションのバッジ配列
  * @returns スタイル設定とアイコンを含むオブジェクト
  */
-export function getTransactionStyle(type: TransactionType, badges?: string[]) {
+export function getTransactionStyle(
+  type: TransactionType,
+  badges?: string[],
+): TransactionStyle {
   const styleConfig = getTransactionStyleConfig(type, badges);
 
   // スタイル設定に基づいてアイコンを生成
-  let icon;
+  let icon: React.ReactNode;
 
   switch (styleConfig.iconType) {
     case "arrow-up":

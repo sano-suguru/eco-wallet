@@ -7,7 +7,7 @@ import {
   calculateContribution,
   calculateEcoProgress,
   getEcoRankFromDonation,
-} from "@/lib/utils/eco-impact";
+} from "@/lib/utils/eco";
 
 /**
  * EcoImpact スライスの型定義

@@ -1,30 +1,13 @@
 /**
- * 環境貢献に関するすべてのユーティリティ関数
+ * 環境貢献計算に関する関数
  */
-
-export type EcoRank =
-  | "エコビギナー"
-  | "エコサポーター"
-  | "エコマイスター"
-  | "エコチャンピオン";
-
-/**
- * 環境指標の型定義
- */
-export interface EcoIndicator {
-  current: number;
-  target: number;
-}
-
-/**
- * 貢献パラメータの型定義
- */
-export interface ContributionParams {
-  amount: number;
-  forestArea?: number;
-  waterSaved?: number;
-  co2Reduction?: number;
-}
+import {
+  EcoRank,
+  ContributionParams,
+  EcoState,
+  EcoIndicator,
+  EcoImpact,
+} from "./types";
 
 /**
  * 環境貢献ランクを決定する
@@ -57,7 +40,7 @@ export function calculateProgressPercent(
  * @returns 平均進捗率
  */
 export function calculateAverageProgress(
-  indicators: Array<{ current: number; target: number }>,
+  indicators: Array<EcoIndicator>,
 ): number {
   if (indicators.length === 0) return 0;
 
@@ -73,7 +56,7 @@ export function calculateAverageProgress(
  * @param amount 金額
  * @returns 環境貢献データ
  */
-export function calculateEcoImpact(amount: number) {
+export function calculateEcoImpact(amount: number): EcoImpact {
   return {
     forestArea: Number((amount * 0.0005).toFixed(2)), // 1000円で0.5m²
     waterSaved: Math.round(amount * 0.25), // 1000円で250L
@@ -83,17 +66,14 @@ export function calculateEcoImpact(amount: number) {
 
 /**
  * 貢献データを計算する
+ * @param state 現在の環境貢献状態
+ * @param params 追加貢献のパラメータ
+ * @returns 更新された環境貢献状態
  */
-export const calculateContribution = (
-  state: {
-    forestArea: number;
-    waterSaved: number;
-    co2Reduction: number;
-    totalDonation: number;
-    monthlyDonation: number;
-  },
+export function calculateContribution(
+  state: EcoState,
   params: ContributionParams,
-) => {
+): Partial<EcoState> {
   const impact = calculateEcoImpact(params.amount);
 
   const newForestArea =
@@ -114,19 +94,19 @@ export const calculateContribution = (
     totalDonation: newTotalDonation,
     monthlyDonation: newMonthlyDonation,
   };
-};
+}
 
 /**
  * 環境貢献の進捗を計算する
  */
-export const calculateEcoProgress = (
+export function calculateEcoProgress(
   forestArea: number,
   waterSaved: number,
   co2Reduction: number,
   targetForestArea: number,
   targetWaterSaved: number,
   targetCo2Reduction: number,
-): number => {
+): number {
   // 指標の配列を作成
   const indicators = [
     { current: forestArea, target: targetForestArea },
@@ -135,11 +115,11 @@ export const calculateEcoProgress = (
   ];
 
   return calculateAverageProgress(indicators);
-};
+}
 
 /**
  * 環境ランクを取得する
  */
-export const getEcoRankFromDonation = (totalDonation: number): EcoRank => {
+export function getEcoRankFromDonation(totalDonation: number): EcoRank {
   return determineEcoRank(totalDonation);
-};
+}

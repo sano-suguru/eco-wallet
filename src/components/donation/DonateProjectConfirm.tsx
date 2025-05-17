@@ -9,7 +9,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Leaf } from "lucide-react";
 import { Session } from "next-auth";
-import { formatCurrency } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/common";
 import { ProjectItem } from "@/lib/mock-data/news-projects";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 

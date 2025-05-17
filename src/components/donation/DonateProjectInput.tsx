@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/common";
 import { Leaf } from "lucide-react";
 import { ProjectItem } from "@/lib/mock-data/news-projects";
 import { Progress } from "@/components/ui/progress";

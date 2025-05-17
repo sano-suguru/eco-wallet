@@ -1,4 +1,7 @@
-import { TransactionType } from "@/lib/mock-data/transactions";
+/**
+ * トランザクションのスタイリングに関する関数
+ */
+import { TransactionType, TransactionStyleConfig } from "./types";
 
 /**
  * トランザクションタイプに基づいたスタイル設定を取得する(アイコンなし)
@@ -9,7 +12,7 @@ import { TransactionType } from "@/lib/mock-data/transactions";
 export function getTransactionStyleConfig(
   type: TransactionType,
   badges?: string[],
-) {
+): TransactionStyleConfig {
   // 期限切れや特典バッジがある場合、優先的に特別スタイルを適用
   if (badges?.includes("期限切れ")) {
     return {

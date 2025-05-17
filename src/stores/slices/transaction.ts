@@ -11,7 +11,7 @@ import {
   getRecentTransactions,
   filterTransactionsWithEcoContribution,
   calculateTotalEcoContribution,
-} from "@/lib/utils/transaction-utils";
+} from "@/lib/utils/transactions/filtering";
 
 /**
  * Transaction スライスの型定義

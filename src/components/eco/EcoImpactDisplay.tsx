@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Leaf, TreePine, Droplets, Globe, ArrowRight } from "lucide-react";
-import { calculateEcoImpact } from "@/lib/utils/eco-impact";
+import { calculateEcoImpact } from "@/lib/utils/eco";
 
 type EcoImpactVariant = "compact" | "detailed" | "transaction";
 

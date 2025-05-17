@@ -24,8 +24,8 @@ import {
 import { useCampaignStore } from "@/stores/slices/campaign";
 import { Campaign } from "@/lib/mock-data/campaigns";
 
-import { calculateDateDifference } from "@/lib/utils/format";
-import { calculateProgressPercent } from "@/lib/utils/eco-impact";
+import { calculateDateDifference } from "@/lib/utils/common";
+import { calculateProgressPercent } from "@/lib/utils/eco";
 
 export default function CampaignDetailPage() {
   const params = useParams();

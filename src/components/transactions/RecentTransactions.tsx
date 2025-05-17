@@ -11,8 +11,8 @@ import { CompactEcoImpact } from "@/components/eco/CompactEcoImpact";
 import { useEffect, useState } from "react";
 
 // 追加した新しいユーティリティのインポート
-import { formatCurrency } from "@/lib/utils/format";
-import { getTransactionStyle } from "@/lib/utils/transaction-ui";
+import { formatCurrency } from "@/lib/utils/common";
+import { getTransactionStyle } from "@/lib/utils/transactions/ui";
 
 interface RecentTransactionsProps {
   limit?: number;
