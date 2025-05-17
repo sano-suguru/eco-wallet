@@ -1,5 +1,4 @@
 import { TransactionType } from "@/lib/mock-data/transactions";
-import { calculateEcoImpact as newCalculateEcoImpact } from "@/lib/utils/eco-impact";
 
 /**
  * トランザクションタイプに基づいたスタイル設定を取得する(アイコンなし)
@@ -75,18 +74,4 @@ export function getTransactionStyleConfig(
         borderColor: "border-stone-100",
       };
   }
-}
-
-/**
- * 環境貢献インパクトの計算は eco-impact.ts に移動しました
- * @deprecated eco-impact.ts の calculateEcoImpact を使用してください
- */
-export function calculateEcoImpact(amount: number) {
-  // 互換性のために残していますが、警告メッセージをコンソールに表示
-  console.warn(
-    "transaction.tsx の calculateEcoImpact は非推奨です。代わりに eco-impact.ts の同名関数を使用してください。",
-  );
-
-  // トップレベルでインポートした関数を使用
-  return newCalculateEcoImpact(amount);
 }
