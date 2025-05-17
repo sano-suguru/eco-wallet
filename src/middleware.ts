@@ -1,38 +1,36 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { getRouteType, authRedirects } from "@/lib/auth-config";
 
 export async function middleware(request: NextRequest) {
   // NextAuthのトークンを取得
   const token = await getToken({ req: request });
   const isAuthenticated = !!token;
 
-  // 公開パス（認証不要なパス）
-  const publicPaths = [
-    "/auth/login",
-    "/auth/register",
-    "/auth/forgot-password",
-    "/splash",
-  ];
-  const isPublicPath = publicPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path),
-  );
-  const isAuthPath = request.nextUrl.pathname.startsWith("/auth/");
+  // パスのタイプを判定
+  const path = request.nextUrl.pathname;
+  const routeType = getRouteType(path);
 
-  // 認証済みユーザーが認証ページにアクセスした場合はホームにリダイレクト
-  if (isAuthenticated && isAuthPath) {
-    return NextResponse.redirect(new URL("/", request.url));
+  // 認証ロジックの適用
+  if (isAuthenticated && routeType === "auth") {
+    // 認証済みユーザーが認証ページにアクセスした場合はホームにリダイレクト
+    return NextResponse.redirect(
+      new URL(authRedirects.authenticatedVisitingAuthPage, request.url),
+    );
   }
 
-  // 未認証ユーザーが保護されたページにアクセスした場合はログインにリダイレクト
-  if (!isAuthenticated && !isPublicPath) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+  if (!isAuthenticated && routeType === "protected") {
+    // 未認証ユーザーが保護されたページにアクセスした場合はログインにリダイレクト
+    return NextResponse.redirect(
+      new URL(authRedirects.unauthenticatedVisitingProtectedPage, request.url),
+    );
   }
 
   return NextResponse.next();
 }
 
-// 特定のパスに対してのみミドルウェアを適用
+// 特定のパスに対してのみミドルウェアを適用（静的アセットは除外）
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
