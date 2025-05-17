@@ -1,13 +1,13 @@
 import { StateCreator } from "zustand";
 import { create } from "zustand";
 import { ecoImpactData } from "@/lib/mock-data/eco-impact";
-import { EcoRank } from "@/lib/utils/eco-impact";
 import {
+  EcoRank,
   ContributionParams,
   calculateContribution,
   calculateEcoProgress,
   getEcoRankFromDonation,
-} from "@/lib/utils/eco-impact-utils";
+} from "@/lib/utils/eco-impact";
 
 /**
  * EcoImpact スライスの型定義

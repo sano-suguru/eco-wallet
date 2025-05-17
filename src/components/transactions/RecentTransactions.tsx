@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 // 追加した新しいユーティリティのインポート
 import { formatCurrency } from "@/lib/utils/format";
-import { getTransactionStyle } from "@/lib/utils/transaction";
+import { getTransactionStyle } from "@/lib/utils/transaction-ui";
 
 interface RecentTransactionsProps {
   limit?: number;

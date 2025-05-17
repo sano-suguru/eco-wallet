@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Leaf, TreePine, Droplets, Globe, ArrowRight } from "lucide-react";
+import { calculateEcoImpact } from "@/lib/utils/eco-impact";
 
 type EcoImpactVariant = "compact" | "detailed" | "transaction";
 
@@ -19,9 +20,8 @@ export function EcoImpactDisplay({
   clickable = false,
   className = "",
 }: EcoImpactDisplayProps) {
-  const forestArea = Number((contributionAmount * 0.0005).toFixed(2));
-  const waterSaved = Math.round(contributionAmount * 0.25);
-  const co2Reduction = Number((contributionAmount * 0.0125).toFixed(1));
+  const { forestArea, waterSaved, co2Reduction } =
+    calculateEcoImpact(contributionAmount);
   const impactPercent = Math.min(
     100,
     Math.round((contributionAmount / 1000) * 100),

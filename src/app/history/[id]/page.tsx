@@ -22,7 +22,7 @@ import { Transaction } from "@/lib/mock-data/transactions";
 import { TransactionEcoImpact } from "@/components/eco/TransactionEcoImpact";
 import { TransactionDetailSection } from "@/components/transactions/TransactionDetailSection";
 import { formatCurrency } from "@/lib/utils/format";
-import { getTransactionStyle } from "@/lib/utils/transaction";
+import { getTransactionStyle } from "@/lib/utils/transaction-ui";
 import { ElectronicReceipt } from "@/components/receipts/ElectronicReceipt";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
