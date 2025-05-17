@@ -4,7 +4,7 @@
  * トランザクションフィルタリング用カスタムフック
  */
 import { useState, useMemo, useCallback } from "react";
-import { useTransactionStore } from "@/stores";
+import { useTransactionStore } from "@/stores/slices/transaction";
 import { TransactionType, Transaction } from "@/lib/utils/transactions/types";
 
 interface DateRange {

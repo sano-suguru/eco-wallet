@@ -4,7 +4,7 @@
  * 環境インパクト計算と管理に関するカスタムフック
  */
 import { useMemo } from "react";
-import { useEcoImpactStore } from "@/stores";
+import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
 import {
   calculateEcoImpact,
   getEcoRankFromDonation,
