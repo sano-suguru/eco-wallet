@@ -1,20 +1,10 @@
 /**
- * Zustandのストア関連コンポーネントをエクスポート
+ * Zustandのストア関連コンポーネント
+ *
+ * アプリケーション全体から使用するZustandストアの
+ * 単一のエントリポイントとして機能します。
  */
 
-// スライス
+// すべてのZustandスライスと型をエクスポート
 export * from "./slices";
-
-// 個別のストアエクスポート（後方互換性のため）
-export { useBalanceStore } from "./slices/balance";
-export { useCampaignStore } from "./slices/campaign";
-export { useEcoImpactStore } from "./slices/ecoImpact";
-export {
-  useInvitationStore,
-  type Invitation,
-  type InvitationStatus,
-} from "./slices/invitation";
-export { useTransactionStore } from "./slices/transaction";
-
-// 型定義
 export * from "./types";
