@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -47,6 +48,9 @@ const CreditCard = ({ className }: { className?: string }) => (
 );
 
 export default function TransactionHistoryPage() {
+  // タブの選択状態
+  const [selectedTab, setSelectedTab] = useState<string>("all");
+
   // Zustand ストアからデータを取得
   const transactions = useTransactionStore((state) => state.transactions);
   const balances = useBalanceStore((state) => state.campaignBalances);
@@ -59,6 +63,37 @@ export default function TransactionHistoryPage() {
   const totalEcoContribution = useTransactionStore((state) =>
     state.getTotalEcoContribution(),
   );
+
+  // タブの変更ハンドラ
+  const handleTabChange = (value: string) => {
+    setSelectedTab(value);
+  };
+
+  // フィルタリングされた取引リストを計算
+  const filteredTransactions = useMemo(() => {
+    switch (selectedTab) {
+      case "in":
+        // 入金: charge と receive タイプの取引
+        return transactions.filter(
+          (tx) => tx.type === "charge" || tx.type === "receive",
+        );
+      case "out":
+        // 支払い: payment タイプの取引
+        return transactions.filter((tx) => tx.type === "payment");
+      case "campaign":
+        // 特典: 特典バッジを持つ取引
+        return transactions.filter(
+          (tx) => tx.badges && tx.badges.includes("特典"),
+        );
+      case "eco":
+        // 環境貢献: 環境貢献のある取引
+        return transactions.filter((tx) => tx.ecoContribution?.enabled);
+      case "all":
+      default:
+        // すべて: フィルタリングなし
+        return transactions;
+    }
+  }, [transactions, selectedTab]);
 
   return (
     <div className="flex min-h-screen bg-stone-50 flex-col items-center justify-center p-4">
@@ -141,7 +176,11 @@ export default function TransactionHistoryPage() {
 
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
-              <Tabs defaultValue="all" className="w-full">
+              <Tabs
+                defaultValue="all"
+                className="w-full"
+                onValueChange={handleTabChange}
+              >
                 <TabsList className="grid grid-cols-5 h-8 bg-stone-100">
                   <TabsTrigger value="all" className="text-xs">
                     すべて
@@ -183,7 +222,7 @@ export default function TransactionHistoryPage() {
             </div>
 
             <div className="space-y-2">
-              {transactions.map((transaction) => (
+              {filteredTransactions.map((transaction) => (
                 <Link href={`/history/${transaction.id}`} key={transaction.id}>
                   <div
                     className={`bg-white border ${
