@@ -21,8 +21,7 @@ import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
 import { Transaction } from "@/lib/mock-data/transactions";
 import { TransactionEcoImpact } from "@/components/eco/TransactionEcoImpact";
 import { TransactionDetailSection } from "@/components/transactions/TransactionDetailSection";
-import { formatCurrency } from "@/lib/utils/common";
-import { getTransactionStyle } from "@/lib/utils/transactions/ui";
+import { useFormattedCurrency, useTransactionStyling } from "@/hooks";
 import { ElectronicReceipt } from "@/components/receipts/ElectronicReceipt";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
@@ -67,6 +66,17 @@ export default function TransactionDetailPage() {
     fetchData();
   }, [transactionId, getTransactionById]);
 
+  // スタイルとフォーマットを設定（トランザクションがnullの場合でも処理可能）
+  const style = useTransactionStyling(
+    transaction?.type || "payment",
+    transaction?.badges || [],
+  );
+
+  const formattedAmount = useFormattedCurrency(transaction?.amount || 0, {
+    withPlus: true,
+    withSymbol: false,
+  });
+
   if (loading) {
     return (
       <PageContainer title="取引詳細" activeTab="history">
@@ -98,15 +108,7 @@ export default function TransactionDetailPage() {
     );
   }
 
-  const { type, description, date, amount } = transaction;
-  // ユーティリティ関数を使用してスタイルを取得
-  const style = getTransactionStyle(type, transaction.badges);
-
-  // ユーティリティ関数を使用して金額をフォーマット
-  const formattedAmount = formatCurrency(amount, {
-    withPlus: true,
-    withSymbol: false,
-  });
+  const { type, description, date } = transaction;
 
   const getReceiptItems = () => {
     // 取引タイプがpaymentの場合は商品情報を生成
@@ -162,9 +164,9 @@ export default function TransactionDetailPage() {
         <div className="p-6">
           <div className="flex items-center space-x-4 mb-6">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center ${style.bgColor}`}
+              className={`w-12 h-12 rounded-full flex items-center justify-center ${style?.bgColor || ""}`}
             >
-              {style.icon}
+              {style?.icon}
             </div>
             <div>
               <h1 className="text-lg font-semibold text-stone-800">
@@ -191,7 +193,9 @@ export default function TransactionDetailPage() {
 
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm text-stone-600">金額</span>
-            <span className={`text-xl font-bold ${style.textColor}`}>
+            <span
+              className={`text-xl font-bold ${style?.textColor || "text-stone-800"}`}
+            >
               {formattedAmount}
             </span>
           </div>

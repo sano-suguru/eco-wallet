@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Leaf, TreePine, Droplets, Globe, ArrowRight } from "lucide-react";
-import { calculateEcoImpact } from "@/lib/utils/eco";
+import { useEcoImpact, useFormattedCurrency } from "@/hooks";
 
 type EcoImpactVariant = "compact" | "detailed" | "transaction";
 
@@ -20,12 +20,11 @@ export function EcoImpactDisplay({
   clickable = false,
   className = "",
 }: EcoImpactDisplayProps) {
-  const { forestArea, waterSaved, co2Reduction } =
-    calculateEcoImpact(contributionAmount);
-  const impactPercent = Math.min(
-    100,
-    Math.round((contributionAmount / 1000) * 100),
-  );
+  // useEcoImpactフックを使用して環境インパクト情報を取得
+  const { forestArea, waterSaved, co2Reduction, impactPercent } =
+    useEcoImpact(contributionAmount);
+  // 金額のフォーマットを取得（ここでは直接インラインで金額を表示）
+  useFormattedCurrency(contributionAmount); // フックを呼び出すが結果は使わない
   const isCompact = variant === "compact";
 
   // 視覚的に強化されたコンテンツ

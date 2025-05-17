@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, FormEvent } from "react";
 import { useFormValidation, ValidationRules } from "@/hooks/useFormValidation";
 
