@@ -20,6 +20,30 @@ export interface Transaction {
 
 export const transactionsData: Transaction[] = [
   {
+    id: "split-camp-123",
+    type: "payment",
+    description: "キャンプ用品費用（立替）",
+    date: "2025/04/10",
+    amount: -18600,
+    ecoContribution: {
+      enabled: true,
+      amount: 186,
+    },
+    badges: ["割り勘", "完了"],
+  },
+  {
+    id: "split-fuji-456",
+    type: "payment",
+    description: "富士山登山費用（立替）",
+    date: "2025/03/15",
+    amount: -24000,
+    ecoContribution: {
+      enabled: true,
+      amount: 240,
+    },
+    badges: ["割り勘", "進行中"],
+  },
+  {
     id: "txn_1",
     type: "payment",
     description: "エコ製品定期プラン",

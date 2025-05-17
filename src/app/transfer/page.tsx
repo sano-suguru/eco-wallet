@@ -892,40 +892,46 @@ export default function TransferSplitPage() {
             過去の割り勘
           </h3>
           <div className="space-y-3">
-            <div className="bg-white rounded-md p-3 border border-stone-200 flex justify-between items-center">
-              <div>
-                <h4 className="text-sm font-medium text-stone-800">
-                  キャンプ用品費用
-                </h4>
-                <p className="text-xs text-stone-500">2025/04/10 • 3人</p>
+            <Link href="/history/split-camp-123">
+              <div className="bg-white rounded-md p-3 border border-stone-200 flex justify-between items-center hover:bg-stone-50 transition-colors cursor-pointer">
+                <div>
+                  <h4 className="text-sm font-medium text-stone-800">
+                    キャンプ用品費用
+                  </h4>
+                  <p className="text-xs text-stone-500">2025/04/10 • 3人</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-stone-800">¥18,600</p>
+                  <Badge className="bg-green-100 text-green-800">完了</Badge>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-stone-800">¥18,600</p>
-                <Badge className="bg-green-100 text-green-800">完了</Badge>
-              </div>
-            </div>
+            </Link>
 
-            <div className="bg-white rounded-md p-3 border border-stone-200 flex justify-between items-center">
-              <div>
-                <h4 className="text-sm font-medium text-stone-800">
-                  富士山登山費用
-                </h4>
-                <p className="text-xs text-stone-500">2025/03/15 • 4人</p>
+            <Link href="/history/split-fuji-456">
+              <div className="bg-white rounded-md p-3 border border-stone-200 flex justify-between items-center hover:bg-stone-50 transition-colors cursor-pointer">
+                <div>
+                  <h4 className="text-sm font-medium text-stone-800">
+                    富士山登山費用
+                  </h4>
+                  <p className="text-xs text-stone-500">2025/03/15 • 4人</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-stone-800">¥24,000</p>
+                  <Badge className="bg-amber-100 text-amber-800">進行中</Badge>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-stone-800">¥24,000</p>
-                <Badge className="bg-amber-100 text-amber-800">進行中</Badge>
-              </div>
-            </div>
+            </Link>
           </div>
 
-          <Button
-            variant="ghost"
-            className="w-full text-stone-600 mt-2 text-sm"
-          >
-            すべての履歴を見る
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </Button>
+          <Link href="/history">
+            <Button
+              variant="ghost"
+              className="w-full text-stone-600 mt-2 text-sm"
+            >
+              すべての履歴を見る
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
         </div>
 
         <p className="text-xs text-center text-stone-500">
