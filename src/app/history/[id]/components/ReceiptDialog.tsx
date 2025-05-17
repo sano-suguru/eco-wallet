@@ -1,0 +1,62 @@
+"use client";
+
+import React from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { ElectronicReceipt } from "@/components/receipts/ElectronicReceipt";
+import { ReceiptItem, ReceiptSavings } from "./TransactionDetailContainer";
+
+interface ReceiptDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  transactionId: string;
+  date: string;
+  items: ReceiptItem[];
+  total: number;
+  ecoContribution?: {
+    enabled: boolean;
+    amount: number;
+  };
+  receiptSavings: ReceiptSavings;
+  onDownload: () => void;
+  onShare: () => void;
+}
+
+// 電子レシート表示用のダイアログコンポーネント
+const ReceiptDialog = React.memo(
+  ({
+    open,
+    onOpenChange,
+    transactionId,
+    date,
+    items,
+    total,
+    ecoContribution,
+    receiptSavings,
+    onDownload,
+    onShare,
+  }: ReceiptDialogProps) => {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogTitle className="sr-only">電子レシート</DialogTitle>
+        <DialogContent className="max-w-md mx-auto p-0">
+          <ElectronicReceipt
+            transactionId={transactionId}
+            date={date}
+            storeName="Eco Wallet"
+            items={items}
+            total={total}
+            paymentMethod="Eco Wallet残高"
+            ecoContribution={ecoContribution}
+            receiptSavings={receiptSavings}
+            onDownload={onDownload}
+            onShare={onShare}
+          />
+        </DialogContent>
+      </Dialog>
+    );
+  },
+);
+
+ReceiptDialog.displayName = "ReceiptDialog";
+
+export default ReceiptDialog;
