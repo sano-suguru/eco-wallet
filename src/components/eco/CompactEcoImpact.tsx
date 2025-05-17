@@ -1,4 +1,4 @@
-import { EcoImpactDisplay } from "@/components/eco/EcoImpactDisplay";
+import EcoImpactContainer from "@/components/eco/EcoImpact";
 
 interface CompactEcoImpactProps {
   contributionAmount: number;
@@ -21,7 +21,7 @@ export function CompactEcoImpact({
   const isClickable = clickable !== undefined ? clickable : !disableLink;
 
   return (
-    <EcoImpactDisplay
+    <EcoImpactContainer
       contributionAmount={contributionAmount}
       variant="compact"
       // 新しいプロパティ

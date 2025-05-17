@@ -1,4 +1,4 @@
-import { EcoImpactDisplay } from "@/components/eco/EcoImpactDisplay";
+import EcoImpactContainer from "@/components/eco/EcoImpact";
 
 interface TransactionEcoImpactProps {
   contributionAmount: number;
@@ -14,7 +14,7 @@ export function TransactionEcoImpact({
   className = "",
 }: TransactionEcoImpactProps) {
   return (
-    <EcoImpactDisplay
+    <EcoImpactContainer
       contributionAmount={contributionAmount}
       variant={compact ? "compact" : "transaction"}
       clickable={clickable}
