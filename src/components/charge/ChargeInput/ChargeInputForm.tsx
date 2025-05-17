@@ -138,7 +138,7 @@ const ChargeInputForm = React.memo(
             <Button
               className="w-full bg-teal-700 hover:bg-teal-800 text-white"
               onClick={handleProceedToConfirm}
-              disabled={!isValidAmount}
+              disabled={!isValidAmount || !amount}
             >
               次へ進む
             </Button>

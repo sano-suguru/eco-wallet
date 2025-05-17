@@ -38,21 +38,28 @@ export default function ChargeInputContainer({
 
   // フォーム送信ハンドラー
   const handleProceedToConfirm = () => {
+    console.log("handleProceedToConfirm called with amount:", amount);
+
     // バリデーション
     if (!isValidAmount) {
       setError(amountValidation.reason || "金額を正しく入力してください");
+      console.log("Amount validation failed:", amountValidation);
       return;
     }
 
     const numAmount = parseFloat(amount);
     if (numAmount <= 0) {
       setError("0より大きい金額を入力してください");
+      console.log("Amount is zero or negative");
       return;
     }
 
     // 入力が有効であれば次のステップに進む
     if (onProceedToConfirm) {
+      console.log("Calling onProceedToConfirm with numAmount:", numAmount);
       onProceedToConfirm(numAmount);
+    } else {
+      console.log("onProceedToConfirm is not defined");
     }
   };
 

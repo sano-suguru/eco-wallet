@@ -37,8 +37,18 @@ export default function ChargePage() {
   };
 
   // 確認ステップへの移行
-  const handleProceedToConfirm = () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+  const handleProceedToConfirm = (receivedAmount?: number) => {
+    // 受け取った金額がある場合は状態を更新
+    if (receivedAmount) {
+      setAmount(receivedAmount.toString());
+    }
+
+    const amountToCheck = receivedAmount ? receivedAmount.toString() : amount;
+    if (
+      !amountToCheck ||
+      isNaN(Number(amountToCheck)) ||
+      Number(amountToCheck) <= 0
+    ) {
       setError("有効な金額を入力してください");
       return;
     }

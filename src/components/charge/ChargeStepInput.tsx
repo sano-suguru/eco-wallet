@@ -12,7 +12,7 @@ interface ChargeStepInputProps {
   isLoading: boolean;
   error: string | null;
   handleSelectAmount: (value: string) => void;
-  handleProceedToConfirm: () => void;
+  handleProceedToConfirm: (amount?: number) => void;
   handleSendBankTransferEmail: () => void;
   transferCode: string;
   setTransferCode: (value: string) => void;
@@ -26,6 +26,8 @@ export function ChargeStepInput({
   handleProceedToConfirm,
 }: ChargeStepInputProps) {
   return (
-    <ChargeInputContainer onProceedToConfirm={() => handleProceedToConfirm()} />
+    <ChargeInputContainer
+      onProceedToConfirm={(amount) => handleProceedToConfirm(amount)}
+    />
   );
 }
