@@ -1,6 +1,19 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { ja } from "date-fns/locale";
+import {
+  format,
+  parseISO,
+  isWithinInterval,
+  startOfDay,
+  endOfDay,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  isSameMonth,
+  isSameYear,
+} from "date-fns";
 import Link from "next/link";
 import {
   Card,
@@ -24,6 +37,12 @@ import {
   Info,
   Tag,
 } from "lucide-react";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useTransactionStore } from "@/stores/slices/transaction";
 import { useBalanceStore } from "@/stores/slices/balance";
 import { FeaturedCampaignSection } from "@/components/campaigns/FeaturedCampaignSection";
@@ -51,6 +70,28 @@ export default function TransactionHistoryPage() {
   // タブの選択状態
   const [selectedTab, setSelectedTab] = useState<string>("all");
 
+  // 期間選択の状態
+  const [startDate, setStartDate] = useState<Date>(startOfMonth(new Date()));
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
+  const [periodMode, setPeriodMode] = useState<
+    "thisMonth" | "lastMonth" | "last3Months" | "custom"
+  >("thisMonth");
+
+  // 期間表示テキストの生成
+  const periodDisplayText = useMemo(() => {
+    if (isSameMonth(startDate, endDate)) {
+      // 同じ月の場合: 2025年4月
+      return format(startDate, "yyyy年M月", { locale: ja });
+    } else if (isSameYear(startDate, endDate)) {
+      // 同じ年の場合: 2025年3月〜4月
+      return `${format(startDate, "yyyy年M月", { locale: ja })}〜${format(endDate, "M月", { locale: ja })}`;
+    } else {
+      // 異なる年の場合: 2024年12月〜2025年1月
+      return `${format(startDate, "yyyy年M月", { locale: ja })}〜${format(endDate, "yyyy年M月", { locale: ja })}`;
+    }
+  }, [startDate, endDate]);
+
   // Zustand ストアからデータを取得
   const transactions = useTransactionStore((state) => state.transactions);
   const balances = useBalanceStore((state) => state.campaignBalances);
@@ -71,29 +112,79 @@ export default function TransactionHistoryPage() {
 
   // フィルタリングされた取引リストを計算
   const filteredTransactions = useMemo(() => {
+    // タイプでフィルタリング
+    let result = transactions;
+
     switch (selectedTab) {
       case "in":
         // 入金: charge と receive タイプの取引
-        return transactions.filter(
+        result = result.filter(
           (tx) => tx.type === "charge" || tx.type === "receive",
         );
+        break;
       case "out":
         // 支払い: payment タイプの取引
-        return transactions.filter((tx) => tx.type === "payment");
+        result = result.filter((tx) => tx.type === "payment");
+        break;
       case "campaign":
         // 特典: 特典バッジを持つ取引
-        return transactions.filter(
-          (tx) => tx.badges && tx.badges.includes("特典"),
-        );
+        result = result.filter((tx) => tx.badges && tx.badges.includes("特典"));
+        break;
       case "eco":
         // 環境貢献: 環境貢献のある取引
-        return transactions.filter((tx) => tx.ecoContribution?.enabled);
-      case "all":
-      default:
-        // すべて: フィルタリングなし
-        return transactions;
+        result = result.filter((tx) => tx.ecoContribution?.enabled);
+        break;
     }
-  }, [transactions, selectedTab]);
+
+    // 日付でフィルタリング
+    result = result.filter((tx) => {
+      try {
+        // 文字列形式の日付をDateオブジェクトに変換
+        // "2025/04/15" 形式か "2025年4月15日" 形式かチェック
+        let txDate: Date;
+
+        if (typeof tx.date === "string") {
+          if (tx.date.includes("/")) {
+            // yyyy/mm/dd 形式
+            txDate = parseISO(tx.date.replace(/\//g, "-"));
+          } else if (tx.date.includes("年")) {
+            // yyyy年mm月dd日 形式
+            const matched = tx.date.match(/(\d+)年(\d+)月(\d+)日/);
+            if (matched) {
+              txDate = new Date(
+                parseInt(matched[1]),
+                parseInt(matched[2]) - 1,
+                parseInt(matched[3]),
+              );
+            } else {
+              txDate = new Date(tx.date);
+            }
+          } else {
+            // その他の形式
+            txDate = new Date(tx.date);
+          }
+        } else if (tx.date && typeof tx.date === "object") {
+          // 日付オブジェクトとして扱う
+          txDate = new Date(tx.date as Date);
+        } else {
+          // 日付として解釈できない場合はフィルタから除外しない
+          return true;
+        }
+
+        // 開始日の00:00:00から終了日の23:59:59までの範囲でフィルタリング
+        return isWithinInterval(txDate, {
+          start: startOfDay(startDate),
+          end: endOfDay(endDate),
+        });
+      } catch (e) {
+        // 日付解析エラーの場合は表示する（フィルタから除外しない）
+        console.error("Date parsing error:", e);
+        return true;
+      }
+    });
+
+    return result;
+  }, [transactions, selectedTab, startDate, endDate]);
 
   return (
     <div className="flex min-h-screen bg-stone-50 flex-col items-center justify-center p-4">
@@ -203,13 +294,146 @@ export default function TransactionHistoryPage() {
 
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs h-8 bg-white border-stone-200"
-                >
-                  <Calendar className="h-3 w-3 mr-1" /> 期間
-                </Button>
+                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-8 bg-white border-stone-200"
+                    >
+                      <Calendar className="h-3 w-3 mr-1" /> 期間
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-4" align="start">
+                    <div className="space-y-4">
+                      {/* プリセットタブ */}
+                      <Tabs
+                        defaultValue={periodMode}
+                        onValueChange={(value) =>
+                          setPeriodMode(
+                            value as
+                              | "thisMonth"
+                              | "lastMonth"
+                              | "last3Months"
+                              | "custom",
+                          )
+                        }
+                        className="w-full"
+                      >
+                        <TabsList className="grid grid-cols-4 h-8">
+                          <TabsTrigger value="thisMonth" className="text-xs">
+                            今月
+                          </TabsTrigger>
+                          <TabsTrigger value="lastMonth" className="text-xs">
+                            先月
+                          </TabsTrigger>
+                          <TabsTrigger value="last3Months" className="text-xs">
+                            過去3ヶ月
+                          </TabsTrigger>
+                          <TabsTrigger value="custom" className="text-xs">
+                            カスタム
+                          </TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+
+                      {/* カスタム期間選択 */}
+                      {periodMode === "custom" && (
+                        <div className="grid gap-2">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <div className="text-xs text-stone-600 mb-1">
+                                開始月
+                              </div>
+                              <CalendarComponent
+                                mode="single"
+                                selected={startDate}
+                                onSelect={(date) => date && setStartDate(date)}
+                                disabled={(date) => date > endDate}
+                                initialFocus
+                                showOutsideDays={false}
+                                locale={ja}
+                                className="rounded-md border"
+                                classNames={{
+                                  day_selected:
+                                    "bg-teal-700 text-white hover:bg-teal-600",
+                                  day_today: "bg-teal-50 text-teal-700",
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <div className="text-xs text-stone-600 mb-1">
+                                終了月
+                              </div>
+                              <CalendarComponent
+                                mode="single"
+                                selected={endDate}
+                                onSelect={(date) => date && setEndDate(date)}
+                                disabled={(date) => date < startDate}
+                                initialFocus
+                                showOutsideDays={false}
+                                locale={ja}
+                                className="rounded-md border"
+                                classNames={{
+                                  day_selected:
+                                    "bg-teal-700 text-white hover:bg-teal-600",
+                                  day_today: "bg-teal-50 text-teal-700",
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 選択期間の表示 */}
+                      <div className="pt-2 text-xs text-stone-600">
+                        選択中の期間:{" "}
+                        {format(startDate, "yyyy/MM/dd", { locale: ja })} 〜{" "}
+                        {format(endDate, "yyyy/MM/dd", { locale: ja })}
+                      </div>
+
+                      {/* アクション */}
+                      <div className="flex justify-between space-x-2 pt-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsCalendarOpen(false)}
+                          className="text-xs"
+                        >
+                          キャンセル
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-teal-700 hover:bg-teal-800 text-white text-xs"
+                          onClick={() => {
+                            // プリセットに応じた日付設定
+                            switch (periodMode) {
+                              case "thisMonth":
+                                setStartDate(startOfMonth(new Date()));
+                                setEndDate(new Date());
+                                break;
+                              case "lastMonth":
+                                const lastMonth = subMonths(new Date(), 1);
+                                setStartDate(startOfMonth(lastMonth));
+                                setEndDate(endOfMonth(lastMonth));
+                                break;
+                              case "last3Months":
+                                setStartDate(subMonths(new Date(), 3));
+                                setEndDate(new Date());
+                                break;
+                              case "custom":
+                                // カスタムの場合はすでに選択されている
+                                break;
+                            }
+                            setIsCalendarOpen(false);
+                          }}
+                        >
+                          期間を適用
+                        </Button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
                 <Button
                   variant="outline"
                   size="sm"
@@ -218,7 +442,7 @@ export default function TransactionHistoryPage() {
                   <Filter className="h-3 w-3 mr-1" /> 絞り込み
                 </Button>
               </div>
-              <div className="text-xs text-stone-500">2025年4月</div>
+              <div className="text-xs text-stone-500">{periodDisplayText}</div>
             </div>
 
             <div className="space-y-2">
