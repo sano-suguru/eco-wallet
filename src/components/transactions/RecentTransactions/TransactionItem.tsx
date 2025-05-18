@@ -51,7 +51,7 @@ const TransactionItem = React.memo(({ item }: TransactionItemProps) => {
               <div className="flex items-center">
                 <p className="text-xs text-stone-700">{transaction.date}</p>
                 {transaction.ecoContribution?.enabled && (
-                  <Badge className="ml-2 bg-teal-100 text-teal-800 text-[10px] py-0 h-4">
+                  <Badge className="ml-2 bg-teal-100 text-teal-600 text-[10px] py-0 h-4 rounded-full border-0">
                     <Leaf className="h-2 w-2 mr-0.5" />
                     環境貢献
                   </Badge>
@@ -61,11 +61,11 @@ const TransactionItem = React.memo(({ item }: TransactionItemProps) => {
                     key={index}
                     className={`ml-2 ${
                       badge === "特典"
-                        ? "bg-amber-100 text-amber-800"
+                        ? "bg-amber-100 text-amber-600"
                         : badge === "期限切れ"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-stone-100 text-stone-800"
-                    } text-[10px] py-0 h-4`}
+                          ? "bg-red-100 text-red-600"
+                          : "bg-stone-100 text-stone-600"
+                    } text-[10px] py-0 h-4 rounded-full border-0`}
                   >
                     {badge}
                   </Badge>
@@ -100,8 +100,8 @@ const TransactionItem = React.memo(({ item }: TransactionItemProps) => {
         {/* キャンペーン特典の表示 */}
         {transaction.type === "receive" &&
           transaction.badges?.includes("特典") && (
-            <div className="mt-2 ml-11 text-xs bg-amber-50 rounded-md p-2 border border-amber-100">
-              <div className="flex items-center text-amber-700">
+            <div className="mt-2 ml-11 text-xs bg-amber-100 rounded-lg p-2 border border-amber-600/20">
+              <div className="flex items-center text-amber-600">
                 <Gift className="h-3 w-3 mr-1" />
                 <span className="font-medium">友達紹介プログラム</span>
               </div>
@@ -114,8 +114,8 @@ const TransactionItem = React.memo(({ item }: TransactionItemProps) => {
 
         {/* 期限切れの表示 */}
         {transaction.type === "expired" && (
-          <div className="mt-2 ml-11 text-xs bg-red-50 rounded-md p-2 border border-red-100">
-            <div className="flex items-center text-red-700">
+          <div className="mt-2 ml-11 text-xs bg-red-100 rounded-lg p-2 border border-red-600/20">
+            <div className="flex items-center text-red-600">
               <Clock className="h-3 w-3 mr-1" />
               <span>エコポイントの残高が期限切れになりました</span>
             </div>

@@ -38,13 +38,13 @@ export function CampaignCard({
   const getGradientBg = () => {
     switch (campaign.type) {
       case "eco":
-        return "from-teal-50 to-teal-100";
+        return "from-teal-100 to-teal-100/70";
       case "referral":
         return "from-blue-50 to-blue-100";
       case "point":
-        return "from-amber-50 to-amber-100";
+        return "from-amber-100 to-amber-100/70";
       default:
-        return "from-amber-50 to-amber-100";
+        return "from-amber-100 to-amber-100/70";
     }
   };
 
@@ -53,24 +53,24 @@ export function CampaignCard({
       case "eco":
         return "bg-teal-600 text-white";
       case "referral":
-        return "bg-blue-500 text-white";
+        return "bg-blue-600 text-white";
       case "point":
-        return "bg-amber-500 text-white";
+        return "bg-amber-600 text-white";
       default:
-        return "bg-amber-500 text-white";
+        return "bg-amber-600 text-white";
     }
   };
 
   const getButtonStyle = () => {
     switch (campaign.type) {
       case "eco":
-        return "bg-teal-700 hover:bg-teal-800 text-white";
+        return "bg-teal-600 hover:bg-teal-700 text-white";
       case "referral":
-        return "bg-blue-500 hover:bg-blue-600 text-white";
+        return "bg-blue-600 hover:bg-blue-700 text-white";
       case "point":
-        return "bg-amber-500 hover:bg-amber-600 text-white";
+        return "bg-amber-600 hover:bg-amber-700 text-white";
       default:
-        return "bg-amber-500 hover:bg-amber-600 text-white";
+        return "bg-amber-600 hover:bg-amber-700 text-white";
     }
   };
 
@@ -79,11 +79,11 @@ export function CampaignCard({
     if (variant !== "notification") return null;
 
     return (
-      <div className="bg-amber-50 p-4 rounded-lg mt-3 eco-transition hover:bg-amber-100">
-        <h3 className="text-sm font-medium text-amber-800 mb-2">
+      <div className="bg-amber-100 p-4 rounded-lg mt-3 eco-transition hover:bg-amber-100/80">
+        <h3 className="text-sm font-medium text-amber-700 mb-2">
           キャンペーン詳細
         </h3>
-        <p className="text-xs text-amber-700">
+        <p className="text-xs text-amber-600">
           {campaign.title}期間中（{campaign.startDate}〜{campaign.endDate}）
           {campaign.pointRate
             ? `にエコ製品を購入すると、購入金額の${campaign.pointRate}%がEcoポイントとして還元されます。`
@@ -96,7 +96,7 @@ export function CampaignCard({
   return (
     <Card
       className={cn(
-        `border-0 shadow-md bg-gradient-to-r ${getGradientBg()} eco-transition hover:shadow-lg`,
+        `border-0 shadow-md bg-gradient-to-r ${getGradientBg()} eco-transition hover:shadow-lg rounded-lg`,
         className,
       )}
     >
@@ -118,7 +118,7 @@ export function CampaignCard({
           {showButton && (
             <Link href={`/campaigns/${campaign.id}`}>
               <Button
-                className={`mt-3 w-full ${getButtonStyle()} eco-transition h-10`}
+                className={`mt-3 w-full ${getButtonStyle()} eco-transition h-10 rounded-md font-medium`}
               >
                 {buttonText}
                 <ChevronRight className="h-4 w-4 ml-1" />

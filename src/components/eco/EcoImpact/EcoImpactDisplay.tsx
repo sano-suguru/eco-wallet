@@ -34,8 +34,8 @@ const EcoImpactDisplay = React.memo(
     // コンテナクラスの設定
     const containerClass = cn(
       `${isCompact ? "p-2" : "p-4"} 
-     bg-teal-50 border border-teal-100 rounded-md 
-     eco-transition ${clickable ? "hover:bg-teal-100 hover:border-teal-200" : ""}`,
+     bg-teal-100 border border-teal-600 rounded-lg 
+     eco-transition ${clickable ? "hover:bg-teal-100/80 hover:border-teal-600" : ""}`,
       className,
     );
 
