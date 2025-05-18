@@ -233,17 +233,17 @@ export default function TransactionHistoryPage() {
 
           {/* 残高情報セクション */}
           <div className="px-6 py-3">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
               <div className="text-sm text-stone-600">総残高</div>
               <div className="text-2xl font-bold text-teal-800">
                 ¥{totalBalance.toLocaleString()}
               </div>
             </div>
 
-            <div className="mt-3 space-y-2">
-              <div className="flex justify-between items-center p-2 rounded-md bg-stone-50">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 rounded-md bg-stone-50 border border-stone-100">
                 <div className="flex items-center">
-                  <CreditCard className="h-4 w-4 text-stone-500 mr-2" />
+                  <CreditCard className="h-5 w-5 text-stone-600 mr-3" />
                   <div>
                     <div className="text-sm font-medium text-stone-800">
                       通常残高
@@ -258,73 +258,82 @@ export default function TransactionHistoryPage() {
               {balances.map((balance) => (
                 <div
                   key={balance.id}
-                  className="flex justify-between items-center p-2 rounded-md bg-amber-50 border border-amber-100"
+                  className="flex justify-between items-center p-3 rounded-md bg-amber-50 border border-amber-600 border-opacity-20"
                 >
                   <div className="flex items-center">
-                    <Gift className="h-4 w-4 text-amber-500 mr-2" />
-                    <div>
+                    <div className="h-10 w-10 rounded-full flex items-center justify-center bg-amber-100">
+                      <Gift className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <div className="ml-3">
                       <div className="text-sm font-medium text-stone-800">
                         {balance.label}
                       </div>
-                      <div className="flex items-center text-xs text-amber-600">
+                      <div className="flex items-center text-xs text-amber-700 mt-0.5">
                         <Clock className="h-3 w-3 mr-1" />
                         あと{balance.daysLeft}日（{balance.expiryDate}まで）
                       </div>
                     </div>
                   </div>
-                  <div className="text-sm font-medium text-stone-800">
+                  <div className="text-sm font-medium text-amber-700">
                     ¥{balance.amount.toLocaleString()}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="flex items-center mt-3 bg-teal-50 p-2 rounded-md">
-              <Leaf className="h-4 w-4 text-teal-600 mr-2" />
-              <div className="text-xs text-teal-700">
-                あなたは今月 ¥{totalEcoContribution.toLocaleString()}{" "}
-                を環境保全活動に貢献しています
+            <div className="flex items-center mt-4 bg-teal-50 border border-teal-100 p-3 rounded-md">
+              <div className="h-8 w-8 rounded-full flex items-center justify-center bg-teal-100 mr-3">
+                <Leaf className="h-4 w-4 text-teal-700" />
+              </div>
+              <div>
+                <div className="text-sm font-medium text-teal-800">
+                  環境貢献サマリー
+                </div>
+                <div className="text-xs text-teal-700 mt-1">
+                  今月の貢献額: ¥{totalEcoContribution.toLocaleString()}
+                </div>
               </div>
             </div>
           </div>
 
           <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
               <Tabs
                 defaultValue="all"
                 className="w-full"
                 onValueChange={handleTabChange}
               >
-                <TabsList className="grid grid-cols-5 h-8 bg-stone-100">
-                  <TabsTrigger value="all" className="text-xs">
+                <TabsList className="grid grid-cols-5 h-10 bg-stone-100 rounded-md p-0.5">
+                  <TabsTrigger value="all" className="text-xs rounded-md">
                     すべて
                   </TabsTrigger>
-                  <TabsTrigger value="in" className="text-xs">
+                  <TabsTrigger value="in" className="text-xs rounded-md">
                     入金
                   </TabsTrigger>
-                  <TabsTrigger value="out" className="text-xs">
+                  <TabsTrigger value="out" className="text-xs rounded-md">
                     支払い
                   </TabsTrigger>
-                  <TabsTrigger value="campaign" className="text-xs">
+                  <TabsTrigger value="campaign" className="text-xs rounded-md">
                     特典
                   </TabsTrigger>
-                  <TabsTrigger value="eco" className="text-xs">
+                  <TabsTrigger value="eco" className="text-xs rounded-md">
+                    <Leaf className="h-3 w-3 mr-1" />
                     環境貢献
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
 
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center space-x-3">
                 <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs h-8 bg-white border-stone-200"
+                      className="text-xs h-9 bg-white border-stone-200 hover:bg-stone-50"
                     >
-                      <Calendar className="h-3 w-3 mr-1" /> 期間
+                      <Calendar className="h-4 w-4 mr-2 text-teal-700" /> 期間
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-4" align="start">
@@ -468,83 +477,83 @@ export default function TransactionHistoryPage() {
               <div className="text-xs text-stone-500">{periodDisplayText}</div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               {displayedTransactions.map((transaction) => (
                 <Link href={`/history/${transaction.id}`} key={transaction.id}>
                   <div
-                    className={`bg-white border ${
+                    className={`bg-white border shadow-sm ${
                       transaction.badges?.includes("特典") ||
                       transaction.type === "receive"
-                        ? "border-amber-100"
+                        ? "border-amber-200"
                         : transaction.badges?.includes("期限切れ") ||
                             transaction.type === "expired"
-                          ? "border-red-100"
-                          : "border-stone-100"
-                    } rounded-md p-3 hover:bg-stone-50 transition-colors`}
+                          ? "border-red-200"
+                          : "border-stone-200"
+                    } rounded-lg p-4 hover:bg-stone-50 transition-colors`}
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-start space-x-3">
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          className={`w-10 h-10 rounded-full flex items-center justify-center ${
                             transaction.type === "charge" ||
                             transaction.type === "receive"
-                              ? "bg-blue-50 text-blue-500"
+                              ? "bg-blue-50 text-blue-600"
                               : transaction.badges?.includes("特典")
-                                ? "bg-amber-50 text-amber-500"
+                                ? "bg-amber-50 text-amber-600"
                                 : transaction.type === "expired" ||
                                     transaction.badges?.includes("期限切れ")
-                                  ? "bg-red-50 text-red-500"
-                                  : "bg-stone-50 text-stone-500"
+                                  ? "bg-red-50 text-red-600"
+                                  : "bg-stone-50 text-stone-600"
                           }`}
                         >
                           {transaction.type === "charge" ||
                           transaction.type === "receive" ? (
-                            <ArrowDown className="h-4 w-4" />
+                            <ArrowDown className="h-5 w-5" />
                           ) : transaction.type === "payment" ? (
-                            <ArrowUp className="h-4 w-4" />
+                            <ArrowUp className="h-5 w-5" />
                           ) : transaction.badges?.includes("特典") ? (
-                            <Gift className="h-4 w-4" />
+                            <Gift className="h-5 w-5" />
                           ) : transaction.type === "expired" ? (
-                            <Clock className="h-4 w-4" />
+                            <Clock className="h-5 w-5" />
                           ) : (
-                            <Info className="h-4 w-4" />
+                            <Info className="h-5 w-5" />
                           )}
                         </div>
-                        <div>
-                          <div className="flex items-center">
+                        <div className="flex-1">
+                          <div className="flex items-center flex-wrap gap-2">
                             <h4 className="text-sm font-medium text-stone-800">
                               {transaction.description}
                             </h4>
                             {transaction.ecoContribution?.enabled && (
-                              <Badge className="ml-2 bg-teal-100 text-teal-800 hover:bg-teal-200 text-xs">
+                              <Badge className="bg-teal-100 text-teal-700 hover:bg-teal-200 text-xs border border-teal-200">
                                 <Leaf className="h-3 w-3 mr-1" /> 環境貢献
                               </Badge>
                             )}
                             {transaction.badges?.includes("特典") && (
-                              <Badge className="ml-2 bg-amber-100 text-amber-800 hover:bg-amber-200 text-xs">
+                              <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200 text-xs border border-amber-200">
                                 <Gift className="h-3 w-3 mr-1" /> 特典
                               </Badge>
                             )}
                             {transaction.badges?.includes("期限切れ") && (
-                              <Badge className="ml-2 bg-red-100 text-red-800 hover:bg-red-200 text-xs">
+                              <Badge className="bg-red-100 text-red-700 hover:bg-red-200 text-xs border border-red-200">
                                 <AlertCircle className="h-3 w-3 mr-1" />{" "}
                                 期限切れ
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs text-stone-500">
+                          <p className="text-xs text-stone-500 mt-1">
                             {transaction.date}
                           </p>
                         </div>
                       </div>
                       <div
-                        className={`text-sm font-medium ${
+                        className={`text-base font-medium ${
                           transaction.amount < 0
-                            ? "text-stone-800"
+                            ? "text-stone-700"
                             : transaction.type === "receive" ||
                                 transaction.badges?.includes("特典")
-                              ? "text-amber-600"
-                              : "text-blue-600"
+                              ? "text-amber-700"
+                              : "text-blue-700"
                         }`}
                       >
                         {transaction.amount < 0 ? "-" : "+"}¥
@@ -554,34 +563,39 @@ export default function TransactionHistoryPage() {
 
                     {transaction.type === "receive" &&
                       transaction.badges?.includes("特典") && (
-                        <div className="mt-2 ml-11 text-xs bg-amber-50 rounded-md p-2 border border-amber-100">
+                        <div className="mt-3 ml-12 text-xs bg-amber-50 rounded-md p-3 border border-amber-200">
                           <div className="flex items-center text-amber-700">
-                            <Tag className="h-3 w-3 mr-1" />
+                            <Tag className="h-4 w-4 mr-2" />
                             <span className="font-medium">
                               友達紹介プログラム
                             </span>
                           </div>
-                          <div className="flex items-center mt-1 text-amber-600">
-                            <Clock className="h-3 w-3 mr-1" />
+                          <div className="flex items-center mt-2 text-amber-700">
+                            <Clock className="h-4 w-4 mr-2" />
                             <span>有効期限: 2025/04/30</span>
                           </div>
                         </div>
                       )}
 
                     {transaction.type === "expired" && (
-                      <div className="mt-2 ml-11 text-xs bg-red-50 rounded-md p-2 border border-red-100">
+                      <div className="mt-3 ml-12 text-xs bg-red-50 rounded-md p-3 border border-red-200">
                         <div className="flex items-center text-red-700">
-                          <AlertCircle className="h-3 w-3 mr-1" />
+                          <AlertCircle className="h-4 w-4 mr-2" />
                           <span>エコポイントの残高が期限切れになりました</span>
                         </div>
                       </div>
                     )}
 
                     {transaction.ecoContribution?.enabled && (
-                      <div className="mt-2 ml-11 text-xs text-teal-600 flex items-center">
-                        <Leaf className="h-3 w-3 mr-1" />
-                        うち環境保全寄付 ¥
-                        {transaction.ecoContribution.amount.toLocaleString()}
+                      <div className="mt-3 ml-12 text-xs bg-teal-50 p-3 rounded-md border border-teal-200">
+                        <div className="flex items-center text-teal-700">
+                          <Leaf className="h-4 w-4 mr-2" />
+                          <span className="font-medium">環境保全寄付</span>
+                          <span className="ml-2 font-medium">
+                            ¥
+                            {transaction.ecoContribution.amount.toLocaleString()}
+                          </span>
+                        </div>
                       </div>
                     )}
                   </div>
