@@ -40,7 +40,10 @@ export function SocialShareButtons({
           url: inviteLink,
         });
       } catch (error) {
-        console.error("共有に失敗しました", error);
+        // AbortError (ユーザーによる共有キャンセル) の場合はエラーとして扱わない
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error("共有に失敗しました", error);
+        }
       }
     }
   };

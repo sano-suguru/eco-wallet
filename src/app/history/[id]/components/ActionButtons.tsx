@@ -23,7 +23,12 @@ const ActionButtons = React.memo(
               title: "取引詳細",
               url: window.location.href,
             })
-            .catch((err) => console.error("共有に失敗しました:", err));
+            .catch((err) => {
+              // AbortError (ユーザーによる共有キャンセル) の場合はエラーとして扱わない
+              if (err instanceof Error && err.name !== "AbortError") {
+                console.error("共有に失敗しました:", err);
+              }
+            });
         } else {
           navigator.clipboard
             .writeText(window.location.href)
