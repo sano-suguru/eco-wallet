@@ -70,6 +70,10 @@ export default function TransactionHistoryPage() {
   // タブの選択状態
   const [selectedTab, setSelectedTab] = useState<string>("all");
 
+  // 表示件数の制限とローディング状態
+  const [displayLimit, setDisplayLimit] = useState<number>(10);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   // 期間選択の状態
   const [startDate, setStartDate] = useState<Date>(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState<Date>(new Date());
@@ -185,6 +189,25 @@ export default function TransactionHistoryPage() {
 
     return result;
   }, [transactions, selectedTab, startDate, endDate]);
+
+  // 「もっと見る」ボタンのクリックハンドラ
+  const handleLoadMore = () => {
+    // ローディング状態をアクティブに
+    setIsLoading(true);
+
+    // 実際のデータ取得はローカルなので、タイムアウトで遅延をシミュレート
+    setTimeout(() => {
+      setDisplayLimit((prev) => prev + 10);
+      // ローディング状態を解除
+      setIsLoading(false);
+    }, 500); // 0.5秒の遅延（UXの観点から短めに設定）
+  };
+
+  // 表示用のトランザクションを制限
+  const displayedTransactions = filteredTransactions.slice(0, displayLimit);
+
+  // 全件表示されているかチェック
+  const hasMoreTransactions = filteredTransactions.length > displayLimit;
 
   return (
     <div className="flex min-h-screen bg-stone-50 flex-col items-center justify-center p-4">
@@ -446,7 +469,7 @@ export default function TransactionHistoryPage() {
             </div>
 
             <div className="space-y-2">
-              {filteredTransactions.map((transaction) => (
+              {displayedTransactions.map((transaction) => (
                 <Link href={`/history/${transaction.id}`} key={transaction.id}>
                   <div
                     className={`bg-white border ${
@@ -566,12 +589,42 @@ export default function TransactionHistoryPage() {
               ))}
             </div>
 
-            <Button
-              variant="ghost"
-              className="w-full text-stone-600 border border-stone-200 hover:bg-stone-50"
-            >
-              もっと見る
-            </Button>
+            {hasMoreTransactions && (
+              <Button
+                variant="ghost"
+                className="w-full text-stone-600 border border-stone-200 hover:bg-stone-50"
+                onClick={handleLoadMore}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-teal-700"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    読み込み中...
+                  </div>
+                ) : (
+                  "もっと見る"
+                )}
+              </Button>
+            )}
           </CardContent>
         </Card>
 
