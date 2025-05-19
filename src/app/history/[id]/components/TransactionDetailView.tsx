@@ -4,7 +4,7 @@ import React from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Transaction } from "@/lib/mock-data/transactions";
+import { Transaction } from "@/types/transaction";
 import { TransactionStyle } from "@/components/transactions/RecentTransactions/TransactionItem";
 import TransactionHeader from "./TransactionHeader";
 import TransactionInfo from "./TransactionInfo";

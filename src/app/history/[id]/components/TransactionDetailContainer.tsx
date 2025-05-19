@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useTransactionStore } from "@/stores/slices/transaction";
 import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
 import { useFormattedCurrency, useTransactionStyling } from "@/hooks";
-import { Transaction } from "@/lib/mock-data/transactions";
+import { Transaction } from "@/types/transaction";
 import TransactionDetailView from "./TransactionDetailView";
 
 export interface ReceiptItem {

@@ -10,7 +10,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { recommendedActions } from "@/lib/mock-data/recommended-actions";
 import { FeaturedCampaignCard } from "@/components/cards/FeaturedCampaignCard";
-import { transactionsData } from "@/lib/mock-data/transactions";
+import { transactionsData } from "@/lib/mock-data/transactions-data";
 import { Leaf } from "lucide-react";
 
 export default async function HomePage() {

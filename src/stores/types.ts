@@ -16,4 +16,5 @@ export type SliceCreator<T> = (
 // 各ストアでのインポート用
 export * from "@/lib/mock-data/campaigns";
 export * from "@/lib/mock-data/eco-impact";
-export * from "@/lib/mock-data/transactions";
+export * from "@/types/transaction";
+export * from "@/lib/mock-data/transactions-data";

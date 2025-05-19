@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useTransactionStore } from "@/stores/slices/transaction";
-import { Transaction } from "@/lib/mock-data/transactions";
+import { Transaction } from "@/types/transaction";
 import { useTransactionStyling } from "@/hooks";
 import RecentTransactionsList from "./RecentTransactionsList";
 import { StyledTransaction } from "./TransactionItem";
