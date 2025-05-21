@@ -3,7 +3,7 @@
 import React from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ElectronicReceipt } from "@/components/receipts/ElectronicReceipt";
-import { ReceiptItem, ReceiptSavings } from "./TransactionDetailContainer";
+import { ReceiptItem, ReceiptSavings } from "@/features/transactions";
 
 interface ReceiptDialogProps {
   open: boolean;

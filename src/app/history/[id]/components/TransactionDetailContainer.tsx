@@ -2,23 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useTransactionStore } from "@/stores/slices/transaction";
 import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
-import { useFormattedCurrency, useTransactionStyling } from "@/hooks";
-import { Transaction } from "@/types/transaction";
+import {
+  Transaction,
+  ReceiptItem,
+  useTransactionStore,
+  useFormattedCurrency,
+  useTransactionStyling,
+} from "@/features/transactions";
 import TransactionDetailView from "./TransactionDetailView";
-
-export interface ReceiptItem {
-  name: string;
-  quantity: number;
-  price: number;
-  isEco: boolean;
-}
-
-export interface ReceiptSavings {
-  paperSaved: string;
-  co2Reduction: string;
-}
 
 export default function TransactionDetailContainer() {
   const params = useParams();
