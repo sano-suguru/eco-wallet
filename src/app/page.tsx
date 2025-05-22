@@ -1,4 +1,4 @@
-import { BalanceCard } from "@/components/cards/BalanceCard";
+import BalanceCard from "@/components/cards/BalanceCard";
 import { EcoImpactCard } from "@/components/cards/EcoImpactCard";
 import { InviteCard } from "@/components/cards/InviteCard";
 import { PageContainer } from "@/components/layout/PageContainer";

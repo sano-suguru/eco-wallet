@@ -6,7 +6,7 @@ interface AuthFieldProps {
   id: string;
   label: string;
   type?: string;
-  name: string; // name プロパティを追加
+  name: string;
   placeholder?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -41,6 +41,7 @@ export function AuthField({
           className="text-sm font-medium text-stone-800 mb-1 inline-block"
         >
           {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
         </Label>
         {action}
       </div>
@@ -54,7 +55,7 @@ export function AuthField({
 
         <Input
           id={id}
-          name={name} // nameプロパティを追加
+          name={name}
           type={type}
           placeholder={placeholder}
           value={value}
