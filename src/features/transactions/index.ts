@@ -18,3 +18,12 @@ export {
   RecentTransactionsContainer,
   RecentTransactionsList,
 } from "./components/RecentTransactions";
+export {
+  TransactionDetailContainer,
+  TransactionDetailView,
+  TransactionHeader,
+  TransactionInfo,
+  TransactionEcoInfo,
+  ActionButtons,
+  ReceiptDialog,
+} from "./components/TransactionDetail";

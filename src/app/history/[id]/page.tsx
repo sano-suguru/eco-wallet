@@ -1,10 +1,8 @@
-"use client";
+// ブリッジファイル: このファイルは下位互換性のために維持されています
+// 新しいバーティカルスライスアーキテクチャのコンポーネントを使用
 
-import TransactionDetailContainer from "./components/TransactionDetailContainer";
+import { TransactionDetailContainer } from "@/features/transactions";
 
-// 取引詳細ページのエントリーポイント
-// リファクタリングの一環として、コンテナコンポーネントと表示コンポーネントを分離
 export default function TransactionDetailPage() {
-  // ロジックとデータ処理はすべてTransactionDetailContainerに移譲
   return <TransactionDetailContainer />;
 }
