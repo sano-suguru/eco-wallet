@@ -1,5 +1,4 @@
-import { PageHeader } from "@/components/settings/PageHeader";
-import { ProfileCard } from "@/components/settings/ProfileCard";
+import { PageHeader, ProfileCard } from "@/features/settings";
 import { SettingsTabCard } from "@/components/settings/SettingsTabCard";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";

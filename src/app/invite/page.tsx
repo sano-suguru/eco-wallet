@@ -15,8 +15,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { SocialShareButtons } from "@/components/invite/SocialShareButtons";
-import { QRCodeDisplay } from "@/components/invite/QRCodeDisplay";
+import { SocialShareButtons, QRCodeDisplay } from "@/features/invite";
 import { ReferralCampaignCard } from "@/components/campaigns/ReferralCampaignCard";
 import { PageContainer } from "@/components/layout/PageContainer";
 

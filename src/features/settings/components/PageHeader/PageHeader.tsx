@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogoutButton } from "@/components/auth/LogoutButton";
+import { LogoutButton } from "@/features/auth";
 
 /**
  * 設定ページのヘッダーコンポーネント
