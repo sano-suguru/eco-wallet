@@ -6,7 +6,7 @@
  */
 
 // 型定義をリエクスポート
-export type { Transaction, TransactionType } from "@/types/transaction";
+export type { Transaction, TransactionType } from "@/shared/types/transaction";
 
 // モックデータをリエクスポート
 export { transactionsData } from "./transactions-data";

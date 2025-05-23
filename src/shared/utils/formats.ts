@@ -14,19 +14,25 @@ export function formatCurrency(
     withSymbol?: boolean;
     withPlus?: boolean;
     compactDisplay?: boolean;
+    locale?: string;
+    currency?: string;
   },
 ): string {
   const {
     withSymbol = true,
     withPlus = false,
     compactDisplay = false,
+    locale = "ja-JP",
+    currency = "JPY",
   } = options || {};
 
-  const formatter = new Intl.NumberFormat("ja-JP", {
+  const formatter = new Intl.NumberFormat(locale, {
     style: withSymbol ? "currency" : "decimal",
-    currency: "JPY",
+    currency: withSymbol ? currency : undefined,
     currencyDisplay: "symbol",
     notation: compactDisplay ? "compact" : "standard",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   });
 
   const formatted = formatter.format(Math.abs(amount));

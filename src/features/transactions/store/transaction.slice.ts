@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import { create } from "zustand";
-import { Transaction, TransactionType } from "../types/transaction";
+import { Transaction, TransactionType } from "@/shared/types/transaction";
 import { transactionsData } from "@/lib/mock-data/transactions-data";
 import {
   filterTransactionsByDateRange,

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TransactionEcoImpact } from "@/components/eco/TransactionEcoImpact";
-import { formatCurrency } from "@/lib/utils/common";
+import { formatCurrency } from "@/shared/utils/formats";
 import {
   Leaf,
   Receipt,

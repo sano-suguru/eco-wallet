@@ -4,7 +4,7 @@
  * 通貨フォーマット用のカスタムフック
  */
 import { useMemo } from "react";
-import { formatCurrency } from "@/lib/utils/common";
+import { formatCurrency } from "@/shared/utils/formats";
 
 /**
  * 通貨フォーマットに関するカスタムフック
@@ -19,7 +19,9 @@ export function useFormattedCurrency(
     withSymbol?: boolean;
     withPlus?: boolean;
     compactDisplay?: boolean;
+    locale?: string;
+    currency?: string;
   },
-) {
+): string {
   return useMemo(() => formatCurrency(amount, options), [amount, options]);
 }

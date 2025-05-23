@@ -10,7 +10,7 @@ import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
 import { useTransactionStore } from "@/stores/slices/transaction";
 import { useEffect } from "react";
 
-import { formatCurrency } from "@/lib/utils/common";
+import { formatCurrency } from "@/shared/utils/formats";
 
 interface EcoImpactProps {
   ecoRank?: string;

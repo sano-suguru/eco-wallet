@@ -24,7 +24,7 @@ import {
 import { useCampaignStore } from "@/stores/slices/campaign";
 import { Campaign } from "@/lib/mock-data/campaigns";
 
-import { calculateDateDifference } from "@/lib/utils/common";
+import { calculateDateDifference } from "@/shared/utils/formats";
 import { calculateProgressPercent } from "@/lib/utils/eco";
 
 export default function CampaignDetailPage() {

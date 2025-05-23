@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Transaction } from "../../types/transaction";
-import { useTransactionStore } from "../../store/transaction.slice";
+import { Transaction } from "@/shared/types/transaction";
+import { useTransactionStore } from "@/stores/slices/transaction";
 import {
   useTransactionStyling,
   TransactionStyle,

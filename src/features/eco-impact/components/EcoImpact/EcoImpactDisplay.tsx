@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Leaf, TreePine, Droplets, Globe, ArrowRight } from "lucide-react";
 import { useEcoImpact } from "@/features/eco-impact/hooks/useEcoImpact";
-import { useFormattedCurrency } from "@/features/transactions/hooks/useFormattedCurrency";
+import { useFormattedCurrency } from "@/shared/hooks/useFormattedCurrency";
 
 type EcoImpactVariant = "compact" | "detailed" | "transaction";
 

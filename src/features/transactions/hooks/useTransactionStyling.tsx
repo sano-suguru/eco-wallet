@@ -6,7 +6,7 @@ import {
   HeartHandshake,
   Clock,
 } from "lucide-react";
-import { TransactionType } from "../types/transaction";
+import { TransactionType } from "@/shared/types/transaction";
 
 // トランザクションスタイルの型定義
 export interface TransactionStyle {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useBalanceStore } from "@/stores/slices/balance";
-import { formatCurrency } from "@/lib/utils/common";
+import { formatCurrency } from "@/shared/utils/formats";
 import BalanceCardView from "./BalanceCardView";
 
 // 残高データと加工を担当するコンテナコンポーネント

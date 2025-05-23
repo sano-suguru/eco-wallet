@@ -4,11 +4,8 @@ import React from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Transaction,
-  TransactionStyle,
-  ReceiptItem,
-} from "@/features/transactions";
+import { Transaction } from "@/shared/types/transaction";
+import { TransactionStyle, ReceiptItem } from "@/features/transactions";
 
 interface TransactionDetailViewProps {
   transaction: Transaction | null;

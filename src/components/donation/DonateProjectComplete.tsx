@@ -9,7 +9,7 @@ import {
 import { CheckCircle, Leaf, Trophy } from "lucide-react";
 import { Session } from "next-auth";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { formatCurrency } from "@/lib/utils/common";
+import { formatCurrency } from "@/shared/utils/formats";
 import { DonationProject } from "@/features/donation/types/donation";
 
 interface DonateProjectCompleteProps {

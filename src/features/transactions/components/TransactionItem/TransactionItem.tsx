@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Gift, Leaf } from "lucide-react";
 import { CompactEcoImpact } from "@/components/eco/CompactEcoImpact";
-import { Transaction } from "../../types/transaction";
+import { Transaction } from "@/shared/types/transaction";
 import { TransactionStyle } from "../../hooks/useTransactionStyling";
 
 // スタイル化されたトランザクションの型定義

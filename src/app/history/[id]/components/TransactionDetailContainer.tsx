@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
 import {
-  Transaction,
   ReceiptItem,
   useTransactionStore,
-  useFormattedCurrency,
   useTransactionStyling,
 } from "@/features/transactions";
+import { Transaction } from "@/shared/types/transaction";
+import { useFormattedCurrency } from "@/shared/hooks/useFormattedCurrency";
 import TransactionDetailView from "./TransactionDetailView";
 
 export default function TransactionDetailContainer() {

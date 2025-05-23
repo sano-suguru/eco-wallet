@@ -1,7 +1,7 @@
 "use client";
 
 import { useBalanceStore } from "../../store/balance.slice";
-import { formatCurrency } from "@/lib/utils/common";
+import { formatCurrency } from "@/shared/utils/formats";
 import { BalanceCardView } from "./BalanceCardView";
 import { BalanceCardContainerProps } from "../../types/balance";
 

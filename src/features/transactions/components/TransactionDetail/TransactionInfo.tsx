@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { TransactionType } from "@/features/transactions";
+import { TransactionType } from "@/shared/types/transaction";
 
 // Define EcoContribution locally until it's available in the exported types
 interface EcoContribution {

@@ -4,11 +4,8 @@ import React from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Transaction,
-  TransactionStyle,
-  ReceiptItem,
-} from "@/features/transactions";
+import { TransactionStyle, ReceiptItem } from "@/features/transactions";
+import { Transaction } from "@/shared/types/transaction";
 import TransactionHeader from "./TransactionHeader";
 import TransactionInfo from "./TransactionInfo";
 import TransactionEcoInfo from "./TransactionEcoInfo";

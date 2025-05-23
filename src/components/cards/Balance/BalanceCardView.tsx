@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, Send, Users, CreditCard, Plus } from "lucide-react";
-import { formatCurrency } from "@/lib/utils/common";
+import { formatCurrency } from "@/shared/utils/formats";
 
 // 残高表示とUIレイアウトを担当するコンポーネント
 interface BalanceCardViewProps {

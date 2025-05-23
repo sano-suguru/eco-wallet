@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useTransactionStore } from "@/stores/slices/transaction";
-import { Transaction } from "@/types/transaction";
-import { useTransactionStyling } from "@/hooks";
+import { Transaction } from "@/shared/types/transaction";
+import { useTransactionStyling } from "@/features/transactions/hooks/useTransactionStyling";
 import RecentTransactionsList from "./RecentTransactionsList";
 import { StyledTransaction } from "./TransactionItem";
 
