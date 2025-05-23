@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import { SettingSection } from "../SettingSection";
+import { SettingSection } from "@/features/settings/components/SettingSection";
 
 interface ProfileTabProps {
   user?: Session["user"];

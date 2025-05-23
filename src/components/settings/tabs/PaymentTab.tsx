@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard, Wallet, RefreshCw } from "lucide-react";
 import { Session } from "next-auth";
-import { SettingSection } from "../SettingSection";
+import { SettingSection } from "@/features/settings/components/SettingSection";
 
 interface PaymentTabProps {
   user?: Session["user"];

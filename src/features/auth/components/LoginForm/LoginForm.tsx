@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { AuthForm } from "@/components/auth/AuthForm";
-import { AuthField } from "@/components/auth/AuthField";
+import { AuthForm } from "../AuthForm/LegacyAuthForm";
+import { AuthField } from "../AuthField/LegacyAuthField";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Leaf, Mail, Lock } from "lucide-react";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 import { isValidEmail, validatePassword } from "@/lib/utils/validation";
 

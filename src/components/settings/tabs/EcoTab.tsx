@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SettingSection } from "../SettingSection";
+import { SettingSection } from "@/features/settings/components/SettingSection";
 
 interface EcoTabProps {
   user?: Session["user"];

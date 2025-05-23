@@ -19,7 +19,7 @@ import {
   LogOut,
   Fingerprint,
 } from "lucide-react";
-import { SettingSection } from "../SettingSection";
+import { SettingSection } from "@/features/settings/components/SettingSection";
 
 interface SecurityTabProps {
   user?: Session["user"];

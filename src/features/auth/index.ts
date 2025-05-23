@@ -9,6 +9,7 @@ export * from "./types/auth";
 export { AuthField } from "./components/AuthField";
 export type { ExtendedAuthFieldProps } from "./components/AuthField";
 export { AuthForm } from "./components/AuthForm";
+export { LoginForm } from "./components/LoginForm";
 export { LogoutButton } from "./components/LogoutButton";
 
 // フックのエクスポート（将来追加予定）

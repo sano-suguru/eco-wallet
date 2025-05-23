@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Session } from "next-auth";
-import { SettingSection } from "../SettingSection";
+import { SettingSection } from "@/features/settings/components/SettingSection";
 import { Bell, Mail, ShoppingBag, Leaf, AlertTriangle } from "lucide-react";
 
 interface NotificationsTabProps {

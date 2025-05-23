@@ -1,7 +1,7 @@
 "use client";
 
 import { AuthLayout } from "@/components/layout/AuthLayout";
-import { LoginForm } from "@/components/auth/LoginForm";
+import { LoginForm } from "@/features/auth";
 import { Gift } from "lucide-react";
 
 export default function LoginPage() {
