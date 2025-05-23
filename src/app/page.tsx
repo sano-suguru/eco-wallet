@@ -2,10 +2,10 @@ import BalanceCard from "@/components/cards/BalanceCard";
 import { EcoImpactCard } from "@/components/cards/EcoImpactCard";
 import { InviteCard } from "@/components/cards/InviteCard";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { RecentTransactions } from "@/components/transactions/RecentTransactions";
-import { NewsAndProjects } from "@/components/eco/NewsAndProjects";
-import { RecommendedAction } from "@/components/eco/RecommendedAction";
-import { TransactionEcoImpact } from "@/components/eco/TransactionEcoImpact";
+import { RecentTransactionsContainer } from "@/features/transactions";
+import { NewsAndProjects } from "@/features/eco-impact";
+import { RecommendedAction } from "@/features/eco-impact";
+import { TransactionEcoImpact } from "@/features/eco-impact";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { recommendedActions } from "@/lib/mock-data/recommended-actions";
@@ -69,7 +69,7 @@ export default async function HomePage() {
       )}
 
       <InviteCard />
-      <RecentTransactions limit={3} />
+      <RecentTransactionsContainer limit={3} />
       <FeaturedCampaignCard />
       <NewsAndProjects />
       <RecommendedAction

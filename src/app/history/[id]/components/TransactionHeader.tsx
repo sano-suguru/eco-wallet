@@ -4,7 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Leaf } from "lucide-react";
-import { TransactionStyle } from "@/components/transactions/RecentTransactions/TransactionItem";
+import { TransactionStyle } from "@/features/transactions";
 
 interface TransactionHeaderProps {
   description: string;

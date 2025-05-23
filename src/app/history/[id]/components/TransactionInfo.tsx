@@ -2,9 +2,9 @@
 
 import React from "react";
 import { Separator } from "@/components/ui/separator";
-import { TransactionDetailSection } from "@/components/transactions/TransactionDetailSection";
+import { TransactionDetailSection } from "@/features/transactions";
 import { Leaf, Gift, Clock } from "lucide-react";
-import { TransactionEcoImpact } from "@/components/eco/TransactionEcoImpact";
+import { TransactionEcoImpact } from "@/features/eco-impact";
 
 interface TransactionInfoProps {
   transactionId: string;

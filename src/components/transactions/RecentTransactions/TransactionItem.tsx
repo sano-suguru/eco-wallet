@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Gift, Leaf } from "lucide-react";
-import { CompactEcoImpact } from "@/components/eco/CompactEcoImpact";
+import { CompactEcoImpact } from "@/features/eco-impact";
 import { Transaction } from "@/shared/types/transaction";
 
 // スタイル情報の型定義をエクスポートして再利用可能に

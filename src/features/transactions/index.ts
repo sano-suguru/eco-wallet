@@ -25,3 +25,4 @@ export {
   ActionButtons,
   ReceiptDialog,
 } from "./components/TransactionDetail";
+export { TransactionDetailSection } from "./components/TransactionDetailSection";
