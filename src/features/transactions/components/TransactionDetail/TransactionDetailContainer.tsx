@@ -104,9 +104,12 @@ export function TransactionDetailContainer() {
           url: window.location.href,
         })
         .catch((err) => {
-          if (err instanceof Error && err.name !== "AbortError") {
-            console.error("共有に失敗しました:", err);
+          // ユーザーがキャンセルした場合は何もしない（正常な動作）
+          if (err.name === "AbortError" || err.message === "Share canceled") {
+            return;
           }
+          // その他のエラーの場合のみログ出力
+          console.error("共有に失敗しました:", err);
         });
     } else {
       navigator.clipboard
