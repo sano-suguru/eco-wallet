@@ -37,8 +37,8 @@ const ReceiptDialog = React.memo(
   }: ReceiptDialogProps) => {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogTitle className="sr-only">電子レシート</DialogTitle>
         <DialogContent className="max-w-md mx-auto p-0">
+          <DialogTitle className="sr-only">電子レシート</DialogTitle>
           <ElectronicReceipt
             transactionId={transactionId}
             date={date}

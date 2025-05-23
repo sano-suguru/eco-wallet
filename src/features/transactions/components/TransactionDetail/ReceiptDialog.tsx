@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Leaf } from "lucide-react";
 import { ReceiptItem } from "@/features/transactions/types/receipt";
@@ -49,9 +49,9 @@ export const ReceiptDialog = React.memo(
           <div className="p-4 bg-white">
             <div className="flex justify-between mb-4">
               <div>
-                <h3 className="text-lg font-bold text-stone-800">
+                <DialogTitle className="text-lg font-bold text-stone-800">
                   電子レシート
-                </h3>
+                </DialogTitle>
                 <p className="text-sm text-stone-600">{date}</p>
               </div>
               <div className="text-xs text-right text-stone-500">
