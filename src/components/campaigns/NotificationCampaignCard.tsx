@@ -1,7 +1,6 @@
 "use client";
 
-import { useCampaignStore } from "@/stores/slices/campaign";
-import { CampaignCard } from "@/components/campaigns/CampaignCard";
+import { useCampaignStore, CampaignCard } from "@/features/campaigns";
 
 interface NotificationCampaignCardProps {
   // オプション：特定のキャンペーンIDを指定できるようにする

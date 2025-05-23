@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useTransactionStore } from "@/stores/slices/transaction";
-import { FeaturedCampaignSection } from "@/components/campaigns/FeaturedCampaignSection";
+import { FeaturedCampaignSection } from "@/features/campaigns";
 import {
   BalanceOverview,
   TransactionFilters,
