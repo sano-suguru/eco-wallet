@@ -1,0 +1,1 @@
+export { EcoImpactDisplay } from "./EcoImpactDisplay";

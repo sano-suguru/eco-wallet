@@ -141,6 +141,52 @@ src/
         └── README.md         # 機能の説明
 ```
 
+## 完了した移行作業
+
+### 1. 取引詳細機能 (Transaction Detail)
+
+```
+src/features/transactions/components/TransactionDetail/ に移行済み
+- TransactionDetailContainer.tsx - メインコンテナコンポーネント
+- TransactionDetailView.tsx - ビューコンポーネント
+- TransactionHeader.tsx - ヘッダー表示
+- TransactionInfo.tsx - 取引情報表示
+- TransactionEcoInfo.tsx - 環境貢献情報表示
+- ActionButtons.tsx - アクションボタン群
+- ReceiptDialog.tsx - レシートダイアログ
+- index.ts - 公開API
+```
+
+### 2. 最近の取引リスト機能 (Recent Transactions)
+
+```
+src/features/transactions/components/RecentTransactions/ に移行済み
+- RecentTransactionsContainer.tsx - データ取得・ロジック処理
+- RecentTransactionsList.tsx - 表示コンポーネント
+- index.ts - 公開API
+```
+
+### 3. 取引アイテム (Transaction Item)
+
+```
+src/features/transactions/components/TransactionItem/ に移行済み
+- TransactionItem.tsx - 取引項目の表示
+- index.ts - 公開API、型のエクスポート
+```
+
+### 4. ブリッジコンポーネント
+
+```
+src/components/transactions/ に配置
+- RecentTransactions.tsx - 新しい実装への橋渡し
+```
+
+### 5. 機能READMEファイル
+
+```
+src/features/transactions/README.md - 機能の概要説明と使用方法
+```
+
 ## ベストプラクティス
 
 1. **明確な公開API**: 各機能は `index.ts` で明示的に公開するAPIを定義します。

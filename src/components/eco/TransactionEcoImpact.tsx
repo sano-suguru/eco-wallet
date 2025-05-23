@@ -1,4 +1,6 @@
-import EcoImpactContainer from "@/components/eco/EcoImpact";
+// このファイルは下位互換性のために維持されています
+// リファクタリングされたコンポーネントを再エクスポートします
+import { TransactionEcoImpact as NewTransactionEcoImpact } from "@/features/eco-impact";
 
 interface TransactionEcoImpactProps {
   contributionAmount: number;
@@ -7,18 +9,7 @@ interface TransactionEcoImpactProps {
   className?: string;
 }
 
-export function TransactionEcoImpact({
-  contributionAmount,
-  compact = false,
-  clickable = false,
-  className = "",
-}: TransactionEcoImpactProps) {
-  return (
-    <EcoImpactContainer
-      contributionAmount={contributionAmount}
-      variant={compact ? "compact" : "transaction"}
-      clickable={clickable}
-      className={className}
-    />
-  );
+export function TransactionEcoImpact(props: TransactionEcoImpactProps) {
+  // 新しいコンポーネントを使用
+  return <NewTransactionEcoImpact {...props} />;
 }

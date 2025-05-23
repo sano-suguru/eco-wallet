@@ -10,10 +10,10 @@ import { CheckCircle, Leaf, Trophy } from "lucide-react";
 import { Session } from "next-auth";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { formatCurrency } from "@/lib/utils/common";
-import { ProjectItem } from "@/lib/mock-data/news-projects";
+import { DonationProject } from "@/features/donation/types/donation";
 
 interface DonateProjectCompleteProps {
-  project: ProjectItem;
+  project: DonationProject;
   amount: string;
   session: Session | null;
   transactionId: string;

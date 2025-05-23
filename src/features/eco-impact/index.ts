@@ -18,3 +18,6 @@ export {
 
 // コンポーネントのエクスポート
 export { CompactEcoImpact } from "./components/CompactEcoImpact";
+export { EcoImpactDisplay } from "./components/EcoImpact";
+export { TransactionEcoImpact } from "./components/TransactionEcoImpact";
+export { NewsAndProjects } from "./components/NewsAndProjects";

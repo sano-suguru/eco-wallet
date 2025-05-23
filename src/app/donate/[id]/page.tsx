@@ -12,6 +12,8 @@ import { useBalanceStore } from "@/stores/slices/balance";
 import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
 import { useSession } from "next-auth/react";
 import { newsAndProjects, ProjectItem } from "@/lib/mock-data/news-projects";
+import { convertProjectItemToDonationProject } from "@/features/donation/utils/project-converter";
+import { DonationProject } from "@/features/donation/types/donation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 
@@ -35,7 +37,7 @@ export default function DonateProjectPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [transactionId, setTransactionId] = useState<string>("");
-  const [project, setProject] = useState<ProjectItem | null>(null);
+  const [project, setProject] = useState<DonationProject | null>(null);
 
   // プロジェクト情報を取得
   useEffect(() => {
@@ -43,7 +45,12 @@ export default function DonateProjectPage() {
       (item) => item.id === projectId && item.type === "project",
     ) as ProjectItem | undefined;
 
-    setProject(projectData || null);
+    if (projectData) {
+      const donationProject = convertProjectItemToDonationProject(projectData);
+      setProject(donationProject);
+    } else {
+      setProject(null);
+    }
   }, [projectId]);
 
   // 金額選択ハンドラー

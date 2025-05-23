@@ -1,8 +1,8 @@
-import { ProjectItem } from "@/lib/mock-data/news-projects";
-import DonateInputContainer from "./DonateInput";
+// このファイルは下位互換性のために維持されています
+import { DonateInputContainer, DonationProject } from "@/features/donation";
 
 interface DonateProjectInputProps {
-  project: ProjectItem;
+  project: DonationProject;
   amount: string;
   setAmount: (value: string) => void;
   error: string | null;

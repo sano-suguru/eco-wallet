@@ -10,11 +10,11 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Leaf } from "lucide-react";
 import { Session } from "next-auth";
 import { formatCurrency } from "@/lib/utils/common";
-import { ProjectItem } from "@/lib/mock-data/news-projects";
+import { DonationProject } from "@/features/donation/types/donation";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface DonateProjectConfirmProps {
-  project: ProjectItem;
+  project: DonationProject;
   amount: string;
   session: Session | null;
   isLoading: boolean;

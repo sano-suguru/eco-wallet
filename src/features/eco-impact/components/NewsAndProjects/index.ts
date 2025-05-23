@@ -1,0 +1,1 @@
+export { NewsAndProjects } from "./NewsAndProjects";
