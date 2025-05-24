@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -12,74 +12,74 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CheckCircle } from "lucide-react";
-import { useTransactionStore } from "@/features/transactions/store/transaction.slice"; // トランザクションストアをインポート
+import {
+  usePaymentStore,
+  ProductInfo,
+  PaymentSummary,
+  PaymentMethodSelector,
+  PaymentOptionsComponent,
+  mockProducts,
+  mockPaymentMethods,
+  defaultPaymentOptions,
+} from "@/features/payment";
 
 export default function PaymentPage() {
   const router = useRouter();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isDonateChecked, setIsDonateChecked] = useState(true);
-  const [isReceiptDisabled, setIsReceiptDisabled] = useState(false);
+  const {
+    paymentInfo,
+    paymentStatus,
+    setPaymentInfo,
+    setPaymentMethod,
+    setPaymentOptions,
+    processPayment,
+    resetPayment,
+  } = usePaymentStore();
 
-  const addTransaction = useTransactionStore((state) => state.addTransaction);
+  // 初期化
+  useEffect(() => {
+    // デモ用に最初の商品を使用
+    const product = mockProducts[0];
+    const donationAmount = defaultPaymentOptions.donationAmount;
+
+    setPaymentInfo({
+      product,
+      subtotal: product.price,
+      donationAmount,
+      total: product.price + donationAmount,
+      selectedPaymentMethod: "wallet",
+      options: defaultPaymentOptions,
+    });
+
+    // クリーンアップ
+    return () => {
+      resetPayment();
+    };
+  }, [setPaymentInfo, resetPayment]);
 
   // キャンセルボタンのクリックハンドラー
   const handleCancel = () => {
-    if (!isProcessing) {
+    if (paymentStatus !== "processing") {
       router.back();
     }
   };
 
   // 決済確定ボタンのクリックハンドラー
   const handleConfirmPayment = async () => {
-    setIsProcessing(true);
+    const result = await processPayment();
 
-    try {
-      // 決済処理のモック - 実際のAPIコールの代わりにタイマーを使用
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // 新しいトランザクションを作成してストアに追加
-      const newTransaction = {
-        type: "payment" as const,
-        description: "エコ製品定期プラン",
-        date: new Date()
-          .toLocaleDateString("ja-JP", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          })
-          .replace(/\//g, "/"),
-        amount: -4000, // 金額は負の値（支払い）
-        ecoContribution: isDonateChecked
-          ? {
-              enabled: true,
-              amount: 200, // 環境保全負担金
-            }
-          : undefined,
-        badges: ["環境貢献"],
-      };
-
-      // トランザクションをストアに追加して、生成されたIDを取得
-      const transactionId = addTransaction(newTransaction);
-
-      // 決済成功状態を設定
-      setIsSuccess(true);
-
+    if (result.success && result.transactionId) {
       // 成功表示を少し見せた後に遷移
       setTimeout(() => {
-        router.push(`/history/${transactionId}`);
+        router.push(`/history/${result.transactionId}`);
       }, 1000);
-    } catch (error) {
-      console.error("決済処理中にエラーが発生しました", error);
-      setIsProcessing(false);
     }
   };
+
+  if (!paymentInfo) {
+    return null; // 初期化中
+  }
 
   return (
     <div className="flex min-h-screen bg-stone-50 flex-col items-center justify-center p-4">
@@ -104,7 +104,7 @@ export default function PaymentPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {/* 成功メッセージ */}
-            {isSuccess && (
+            {paymentStatus === "success" && (
               <div className="bg-teal-50 p-4 rounded-md border border-teal-100 flex items-center mb-4">
                 <CheckCircle className="h-5 w-5 text-teal-600 mr-3" />
                 <div>
@@ -118,132 +118,40 @@ export default function PaymentPage() {
               </div>
             )}
 
-            {!isSuccess && (
+            {paymentStatus !== "success" && (
               <>
                 <div className="space-y-3">
                   <h3 className="text-sm font-medium text-stone-700">
                     商品情報
                   </h3>
-                  <div className="bg-stone-50 rounded-md p-3">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-stone-200 rounded flex items-center justify-center">
-                          <svg
-                            viewBox="0 0 24 24"
-                            className="h-6 w-6 text-stone-500"
-                          >
-                            <path
-                              fill="currentColor"
-                              d="M21,9H3V3H21V9M13,11H3V21H13V11M21,11H15V15H21V11M21,17H15V21H21V17Z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-medium text-stone-800">
-                            エコ製品定期プラン
-                          </h4>
-                          <p className="text-xs text-stone-600">
-                            リサイクル素材100%
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-sm font-medium text-stone-800">
-                        ¥3,800
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-stone-600">小計</span>
-                      <span className="text-stone-800">¥3,800</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-stone-600">
-                        環境保全負担金（寄付）
-                      </span>
-                      <span className="text-stone-800">¥200</span>
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="flex justify-between font-medium">
-                      <span className="text-stone-800">合計</span>
-                      <span className="text-teal-800">¥4,000</span>
-                    </div>
-                  </div>
+                  <ProductInfo product={paymentInfo.product} />
+                  <PaymentSummary
+                    subtotal={paymentInfo.subtotal}
+                    donationAmount={paymentInfo.donationAmount}
+                    total={paymentInfo.total}
+                    showDonation={paymentInfo.options.includeDonation}
+                  />
                 </div>
 
-                <Alert className="bg-teal-50 border-teal-200">
-                  <AlertDescription className="text-xs text-teal-800">
-                    この商品はリサイクル素材を使用し、製造過程でのCO2排出量を80%削減しています
-                  </AlertDescription>
-                </Alert>
+                {paymentInfo.product.isEcoFriendly &&
+                  paymentInfo.product.ecoDescription && (
+                    <Alert className="bg-teal-50 border-teal-200">
+                      <AlertDescription className="text-xs text-teal-800">
+                        {paymentInfo.product.ecoDescription}
+                      </AlertDescription>
+                    </Alert>
+                  )}
 
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-stone-700">
-                    支払い方法
-                  </h3>
-                  <RadioGroup defaultValue="wallet" className="space-y-2">
-                    <div className="flex items-center space-x-2 rounded-md border border-stone-200 p-3">
-                      <RadioGroupItem value="wallet" id="wallet" />
-                      <Label htmlFor="wallet" className="flex-1 text-sm">
-                        <div className="flex justify-between">
-                          <span>Eco Wallet残高</span>
-                          <span className="font-medium">¥12,500</span>
-                        </div>
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2 rounded-md border border-stone-200 p-3 bg-stone-50 text-stone-400">
-                      <RadioGroupItem value="card" id="card" disabled />
-                      <Label htmlFor="card" className="flex-1 text-sm">
-                        登録済みカード
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+                <PaymentMethodSelector
+                  methods={mockPaymentMethods}
+                  selectedMethod={paymentInfo.selectedPaymentMethod}
+                  onMethodChange={setPaymentMethod}
+                />
 
-                <div className="space-y-2">
-                  <div className="flex items-start space-x-2">
-                    <Checkbox
-                      id="donate"
-                      checked={isDonateChecked}
-                      onCheckedChange={(checked) =>
-                        setIsDonateChecked(checked as boolean)
-                      }
-                    />
-                    <div className="grid gap-1">
-                      <Label
-                        htmlFor="donate"
-                        className="text-sm font-medium text-stone-800"
-                      >
-                        環境保全活動に200円を寄付する
-                      </Label>
-                      <p className="text-xs text-stone-600">
-                        寄付金は山岳地域の清掃活動に使用されます
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-2">
-                    <Checkbox
-                      id="receipt"
-                      checked={isReceiptDisabled}
-                      onCheckedChange={(checked) =>
-                        setIsReceiptDisabled(checked as boolean)
-                      }
-                    />
-                    <div className="grid gap-1">
-                      <Label
-                        htmlFor="receipt"
-                        className="text-sm font-medium text-stone-800"
-                      >
-                        紙のレシートを発行しない
-                      </Label>
-                      <p className="text-xs text-stone-600">
-                        電子レシートをメールでお送りします
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <PaymentOptionsComponent
+                  options={paymentInfo.options}
+                  onOptionsChange={setPaymentOptions}
+                />
               </>
             )}
           </CardContent>
@@ -251,9 +159,11 @@ export default function PaymentPage() {
             <Button
               className="w-full bg-teal-700 hover:bg-teal-800 text-white"
               onClick={handleConfirmPayment}
-              disabled={isProcessing || isSuccess}
+              disabled={
+                paymentStatus === "processing" || paymentStatus === "success"
+              }
             >
-              {isProcessing ? (
+              {paymentStatus === "processing" ? (
                 <>
                   <LoadingSpinner size="sm" light className="mr-2" />
                   決済処理中...
@@ -266,7 +176,9 @@ export default function PaymentPage() {
               variant="ghost"
               className="w-full text-stone-600 hover:text-stone-800 hover:bg-stone-100"
               onClick={handleCancel}
-              disabled={isProcessing || isSuccess}
+              disabled={
+                paymentStatus === "processing" || paymentStatus === "success"
+              }
             >
               キャンセル
             </Button>

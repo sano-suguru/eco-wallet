@@ -4,7 +4,7 @@
 
 このドキュメントは、Eco Walletプロジェクトのバーティカルスライスアーキテクチャへの移行状況を追跡します。
 
-## 移行完了したfeatures（11個）
+## 移行完了したfeatures（12個）
 
 ✅ transactions - 取引履歴・詳細表示機能
 ✅ eco-impact - 環境貢献機能
@@ -17,6 +17,7 @@
 ✅ charge - チャージ機能
 ✅ donation - 寄付機能
 ✅ notifications - 通知機能
+✅ payment - 決済機能
 
 ## 移行状況
 
