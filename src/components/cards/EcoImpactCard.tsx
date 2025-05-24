@@ -1,15 +1,17 @@
 "use client";
 
+// ブリッジコンポーネント: このファイルは下位互換性のために維持されています
+// 旧コンポーネントと同じインターフェースを提供しながら、新しいアーキテクチャのコンポーネントを使用
+
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Leaf, TreePine, Droplets, Globe, ChevronRight } from "lucide-react";
-import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
-import { useTransactionStore } from "@/stores/slices/transaction";
+import { useEcoImpactStore } from "@/features/eco-impact/store/eco-impact.slice";
+import { useTransactionStore } from "@/features/transactions/store/transaction.slice";
 import { useEffect } from "react";
-
 import { formatCurrency } from "@/shared/utils/formats";
 
 interface EcoImpactProps {
@@ -109,3 +111,6 @@ export function EcoImpactCard({ ecoRank }: EcoImpactProps) {
     </Card>
   );
 }
+
+// デフォルトエクスポートも提供
+export default EcoImpactCard;

@@ -1,7 +1,7 @@
 /**
  * 招待機能関連のユーティリティ関数
  */
-import { Invitation, InvitationStatus } from "@/stores/slices/invitation";
+import { Invitation, InviteStatus } from "@/features/invite/types/invite";
 
 /**
  * 招待コードを生成する
@@ -28,13 +28,14 @@ export const generateInviteLink = (userId: string): string => {
 export const createNewInvitation = (
   email: string,
   code: string,
+  inviterId: string,
 ): Invitation => {
   return {
-    id: `inv_${Date.now().toString(36)}`,
     email,
     code,
     status: "pending",
     createdAt: new Date().toISOString().split("T")[0].replace(/-/g, "/"),
+    inviterId,
   };
 };
 
@@ -43,22 +44,24 @@ export const createNewInvitation = (
  */
 export const updateInvitationToAccepted = (
   invitation: Invitation,
+  inviteeId: string,
 ): Invitation => {
   return {
     ...invitation,
-    status: "accepted",
-    acceptedAt: new Date().toISOString().split("T")[0].replace(/-/g, "/"),
+    status: "registered",
+    usedAt: new Date().toISOString().split("T")[0].replace(/-/g, "/"),
+    inviteeId,
   };
 };
 
 /**
  * 招待状態を取得する
  */
-export const getInvitationStatusById = (
+export const getInvitationStatusByCode = (
   invitations: Invitation[],
-  id: string,
-): InvitationStatus | undefined => {
-  const invitation = invitations.find((inv) => inv.id === id);
+  code: string,
+): InviteStatus | undefined => {
+  const invitation = invitations.find((inv) => inv.code === code);
   return invitation?.status;
 };
 
@@ -70,7 +73,7 @@ export const calculateEarnedPoints = (
   pointsPerInvite: number = 1000,
 ): number => {
   const acceptedCount = sentInvitations.filter(
-    (inv) => inv.status === "accepted",
+    (inv) => inv.status === "registered",
   ).length;
   return acceptedCount * pointsPerInvite;
 };

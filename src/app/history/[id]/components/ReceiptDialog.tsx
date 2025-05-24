@@ -40,12 +40,12 @@ const ReceiptDialog = React.memo(
         <DialogContent className="max-w-md mx-auto p-0">
           <DialogTitle className="sr-only">電子レシート</DialogTitle>
           <ElectronicReceipt
+            open={open}
+            onOpenChange={onOpenChange}
             transactionId={transactionId}
             date={date}
-            storeName="Eco Wallet"
             items={items}
             total={total}
-            paymentMethod="Eco Wallet残高"
             ecoContribution={ecoContribution}
             receiptSavings={receiptSavings}
             onDownload={onDownload}

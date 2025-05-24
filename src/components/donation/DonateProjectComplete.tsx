@@ -1,3 +1,5 @@
+// ブリッジファイル - 一時的な実装
+// TODO: features/donationに適切なコンポーネントを作成して移行する
 import { Button } from "@/components/ui/button";
 import {
   CardContent,

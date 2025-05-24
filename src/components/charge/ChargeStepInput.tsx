@@ -1,4 +1,5 @@
-import ChargeInputContainer from "./ChargeInput";
+// ブリッジファイル - features/chargeへリダイレクト
+import { ChargeInputContainer } from "@/features/charge/components/ChargeInput";
 
 interface ChargeStepInputProps {
   amount: string;

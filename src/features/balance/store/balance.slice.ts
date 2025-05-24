@@ -21,6 +21,9 @@ export interface BalanceState {
   /** 残高を更新 */
   updateBalance: (newRegularBalance: number) => void;
 
+  /** 通常残高から引く */
+  subtractFromRegularBalance: (amount: number) => void;
+
   /** キャンペーン残高を追加 */
   addCampaignBalance: (campaign: CampaignBalance) => void;
 
@@ -66,6 +69,11 @@ export const useBalanceStore = create<BalanceState>((set, get) => ({
   // 通常残高を更新
   updateBalance: (newRegularBalance) => {
     set({ regularBalance: newRegularBalance });
+  },
+
+  // 通常残高から引く
+  subtractFromRegularBalance: (amount) => {
+    set((state) => ({ regularBalance: state.regularBalance - amount }));
   },
 
   // キャンペーン残高を追加

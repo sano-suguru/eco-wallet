@@ -53,27 +53,6 @@ export default function DonateProjectPage() {
     }
   }, [projectId]);
 
-  // 金額選択ハンドラー
-  const handleSelectAmount = (value: string) => {
-    setAmount(value);
-  };
-
-  // 確認ステップへの移行
-  const handleProceedToConfirm = () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      setError("有効な金額を入力してください");
-      return;
-    }
-
-    if (Number(amount) > (session?.user?.balance || 0)) {
-      setError("残高が不足しています");
-      return;
-    }
-
-    setError(null);
-    setCurrentStep("confirm");
-  };
-
   // 入力ステップに戻る
   const handleBackToInput = () => {
     setCurrentStep("input");
@@ -186,12 +165,11 @@ export default function DonateProjectPage() {
           {currentStep === "input" && (
             <DonateProjectInput
               project={project}
-              amount={amount}
-              setAmount={setAmount}
-              error={error}
-              handleSelectAmount={handleSelectAmount}
-              handleProceedToConfirm={handleProceedToConfirm}
-              balance={session?.user?.balance || 0}
+              onProceed={(donationAmount) => {
+                setAmount(donationAmount.toString());
+                setError(null);
+                setCurrentStep("confirm");
+              }}
             />
           )}
 

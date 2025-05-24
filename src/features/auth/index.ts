@@ -12,9 +12,8 @@ export { AuthForm } from "./components/AuthForm";
 export { LoginForm } from "./components/LoginForm";
 export { LogoutButton } from "./components/LogoutButton";
 
-// フックのエクスポート（将来追加予定）
-// export { useAuth } from "./hooks/useAuth";
-// export { useAuthForm } from "./hooks/useAuthForm";
+// フックのエクスポート
+export { useAuthForm } from "./hooks/useAuthForm";
 
 // ユーティリティのエクスポート（将来追加予定）
 // export { validateEmail } from "./utils/validators";
