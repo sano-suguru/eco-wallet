@@ -10,6 +10,7 @@ export { SuccessMessage } from "./components/SuccessMessage";
 export { TransferForm } from "./components/TransferForm";
 export { SplitForm } from "./components/SplitForm";
 export { SplitHistoryList } from "./components/SplitHistoryList";
+export { TransferSplitPage } from "./components/TransferSplitPage";
 
 // データ
 export {
