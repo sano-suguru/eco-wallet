@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, Gift, Leaf } from "lucide-react";
 import { CompactEcoImpact } from "@/features/eco-impact";
 import { Transaction } from "@/shared/types/transaction";
-import { TransactionStyle } from "../../hooks/useTransactionStyling";
+import { TransactionStyle } from "../../hooks/transactionStyling";
 
 // スタイル化されたトランザクションの型定義
 export interface StyledTransaction {

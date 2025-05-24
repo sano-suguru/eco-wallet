@@ -2,167 +2,194 @@
 
 ## 概要
 
-このドキュメントは、従来のレイヤードアーキテクチャからバーティカルスライスアーキテクチャへの移行作業の進捗を追跡します。
+このドキュメントは、Eco Walletプロジェクトのバーティカルスライスアーキテクチャへの移行状況を追跡します。
 
-## 移行戦略
+## 移行完了したfeatures（10個）
 
-1. **機能別モジュール化**: 各機能を独立したfeatureモジュールとして再構成
-2. **段階的移行**: 既存のコードを壊さないように段階的に移行
-3. **インポートパスの統一**: features/[機能名] からの公開APIを使用
+✅ transactions - 取引履歴・詳細表示機能
+✅ eco-impact - 環境貢献機能
+✅ campaigns - キャンペーン機能
+✅ balance - 残高表示機能
+✅ auth - 認証機能
+✅ settings - 設定機能
+✅ layout - レイアウト共通コンポーネント
+✅ invite - 招待機能
+✅ charge - チャージ機能
+✅ donation - 寄付機能
 
-## 完了したFeatures ✅
+## 移行状況
 
-### 1. features/transactions
+### ✅ 完了したタスク
 
-- ✅ types/の移行
-- ✅ hooks/の移行
-- ✅ store/の移行
-- ✅ components/の移行
-- ✅ utils/の移行
-- ✅ 公開APIの定義（index.ts）
+#### 1. features/transactionsモジュールの作成
 
-### 2. features/eco-impact
+- ✅ 型定義の移行 (types/receipt.ts)
+- ✅ TransactionItemコンポーネントの作成
+- ✅ RecentTransactionsコンポーネントの分割と移行
+- ✅ TransactionDetailコンポーネント群の移行
+- ✅ TransactionDetailSectionコンポーネントの移行
+- ✅ ストアの移行 (store/transaction.slice.ts)
+- ✅ フックの作成 (useTransactionStyling, useTransactionFilters)
+- ✅ READMEドキュメントの作成
+- ✅ TransactionFiltersコンポーネントの作成
+- ✅ TransactionListコンポーネントの作成
 
-- ✅ types/の移行
-- ✅ hooks/の移行
-- ✅ components/の移行
-- ✅ store/の移行
-- ✅ utils/の移行
-- ✅ 公開APIの定義（index.ts）
+#### 2. features/eco-impactモジュールの作成
 
-### 3. features/campaigns
+- ✅ 型定義の作成 (types/eco-impact.ts)
+- ✅ CompactEcoImpactコンポーネントの移行
+- ✅ EcoImpactDisplayコンポーネントの移行
+- ✅ TransactionEcoImpactコンポーネントの移行
+- ✅ NewsAndProjectsコンポーネントの移行
+- ✅ RecommendedActionコンポーネントの移行
+- ✅ EcoContributionSummaryコンポーネントの作成
+- ✅ ストアの移行 (store/eco-impact.slice.ts)
+- ✅ ユーティリティ関数の作成 (utils/calculations.ts)
+- ✅ フックの作成 (hooks/useEcoImpact.ts)
+- ✅ READMEドキュメントの作成
 
-- ✅ types/の移行
-- ✅ components/の移行
-- ✅ store/の移行
-- ✅ utils/の移行
-- ✅ data/の移行
-- ✅ 公開APIの定義（index.ts）
+#### 3. features/campaignsモジュールの作成
 
-### 4. features/balance
+- ✅ 型定義の作成 (types/campaign.ts)
+- ✅ CampaignCardコンポーネントの作成
+- ✅ FeaturedCampaignSectionコンポーネントの作成
+- ✅ NotificationCampaignCardコンポーネントの移行
+- ✅ ReferralCampaignCardコンポーネントの移行
+- ✅ ストアの移行 (store/campaign.slice.ts)
+- ✅ ユーティリティ関数の作成 (utils/campaign-utils.ts)
+- ✅ モックデータの移行 (data/campaigns-data.ts)
+- ✅ READMEドキュメントの作成
 
-- ✅ types/の移行
-- ✅ components/の移行
-- ✅ store/の移行
-- ✅ utils/の移行
-- ✅ 公開APIの定義（index.ts）
+#### 4. features/balanceモジュールの作成
 
-### 5. features/auth
+- ✅ 型定義の作成 (types/balance.ts)
+- ✅ BalanceCardコンポーネントの移行
+- ✅ BalanceOverviewコンポーネントの作成
+- ✅ ストアの移行 (store/balance.slice.ts)
+- ✅ READMEドキュメントの作成
 
-- ✅ types/の移行
-- ✅ hooks/の移行
-- ✅ components/の移行
-- ✅ utils/の移行
-- ✅ 公開APIの定義（index.ts）
+#### 5. features/authモジュールの作成
 
-### 6. features/settings
+- ✅ 型定義の作成 (types/auth.ts)
+- ✅ LoginFormコンポーネントの移行
+- ✅ AuthFormコンポーネントの移行
+- ✅ AuthFieldコンポーネントの移行
+- ✅ LogoutButtonコンポーネントの移行
+- ✅ フックの移行 (hooks/useAuthForm.ts)
+- ✅ READMEドキュメントの作成
 
-- ✅ types/の移行
-- ✅ components/の移行
-- ✅ 公開APIの定義（index.ts）
+#### 6. features/settingsモジュールの作成
 
-### 7. features/layout
+- ✅ 型定義の作成 (types/settings.ts)
+- ✅ PageHeaderコンポーネントの移行
+- ✅ SettingSectionコンポーネントの移行
+- ✅ ProfileCardコンポーネントの移行
+- ✅ タブコンポーネントの移行 (ProfileTab, NotificationsTab, PaymentTab, SecurityTab, EcoTab)
+- ✅ READMEドキュメントの作成
 
-- ✅ components/の移行
-- ✅ 公開APIの定義（index.ts）
-- ✅ すべてのインポートパスを更新（2025/5/24完了）
+#### 7. features/layoutモジュールの作成
 
-### 8. features/invite
+- ✅ AuthLayoutコンポーネントの移行
+- ✅ PageContainerコンポーネントの移行
+- ✅ AppHeaderコンポーネントの移行
+- ✅ AppFooterコンポーネントの移行
+- ✅ READMEドキュメントの作成
 
-- ✅ components/の移行
-- ✅ types/の移行
-- ✅ 公開APIの定義（index.ts）
+#### 8. features/inviteモジュールの作成
 
-### 9. features/charge
+- ✅ 型定義の作成 (types/invite.ts)
+- ✅ InviteCardコンポーネントの移行
+- ✅ QRCodeDisplayコンポーネントの移行
+- ✅ SocialShareButtonsコンポーネントの移行
+- ✅ READMEドキュメントの作成
 
-- ✅ types/の移行
-- ✅ components/の移行
-- ✅ utils/の移行
-- ✅ 公開APIの定義（index.ts）
+#### 9. features/chargeモジュールの作成
 
-### 10. features/donation
+- ✅ 型定義の作成 (types/charge.ts)
+- ✅ ChargeInputコンポーネント群の移行
+- ✅ BankTransferSectionコンポーネントの移行
+- ✅ ChargeConfirmコンポーネントの移行
+- ✅ ChargeCompleteコンポーネントの移行
+- ✅ READMEドキュメントの作成
 
-- ✅ types/の移行
-- ✅ components/の移行
-- ✅ store/の移行
-- ✅ utils/の移行
-- ✅ 公開APIの定義（index.ts）
+#### 10. features/donationモジュールの作成
 
-## 残作業
+- ✅ 型定義の作成 (types/donation.ts)
+- ✅ DonateInputコンポーネント群の移行
+- ✅ DonateConfirmコンポーネントの移行
+- ✅ DonateCompleteコンポーネントの移行
+- ✅ ユーティリティ関数の作成 (utils/project-converter.ts)
+- ✅ READMEドキュメントの作成
 
-### 1. レガシーコンポーネントの削除準備
+#### 11. レガシーコンポーネントの整理
 
-#### レガシーコンポーネントディレクトリの削除（移行済み）
+- ✅ src/components/cards/ディレクトリを削除
+- ✅ src/components/charge/のコンポーネントをブリッジファイル化
+- ✅ src/components/donation/のコンポーネントをブリッジファイル化
+- ✅ src/components/eco/ディレクトリを削除（features/eco-impactに移行済み）
+- ✅ src/components/transactions/ディレクトリを削除（features/transactionsに移行済み）
+- ✅ src/components/campaigns/ディレクトリを削除（features/campaignsに移行済み）
+- ✅ src/hooks/ディレクトリを削除（各featuresに移行済み）
+- ✅ src/components/history/のコンポーネントをブリッジファイル化
+- ✅ src/components/receipts/ElectronicReceiptをブリッジファイル化
 
-- ✅ src/components/layout/ （features/layoutに移行済み - 削除完了 2025/5/24）
-- ✅ src/components/invite/ （features/inviteに移行済み - 削除完了 2025/5/24）
-- ✅ src/components/settings/ （features/settingsに移行済み - 削除完了 2025/5/24）
-- ✅ src/components/cards/Balance/ （features/balanceに移行済み - 削除完了 2025/5/24）
+### 🚧 進行中のタスク
 
-#### レガシーコンポーネントファイルの削除（ブリッジファイル）
+なし
 
-- ✅ src/components/cards/BalanceCard.tsx （削除完了 2025/5/24）
-- ✅ src/components/cards/EcoImpactCard.tsx （削除完了 2025/5/24）
-- ✅ src/components/cards/FeaturedCampaignCard.tsx （削除完了 2025/5/24）
+### 📋 今後のタスク
 
-### 2. 共通機能の整理
-
-#### Hooksの移行
-
-- ✅ src/hooks/ディレクトリのhooksをfeaturesまたはsharedに移行（完了 2025/5/24）
-  - ✅ useAuthForm.ts → features/auth/hooks/（移行済み）
-  - ✅ useFormValidation.ts → shared/hooks/（移行済み）
-  - ✅ useEcoImpact.ts → features/eco-impact/hooks/（移行済み）
-  - ✅ useTransactionFilters.ts → features/transactions/hooks/（移行済み）
-  - ✅ useTransactionStyling.tsx → features/transactions/hooks/（移行済み）
-  - ✅ src/hooks/ディレクトリを削除（完了）
-
-### 3. その他のレガシーコンポーネント
-
-- ✅ src/components/cards/ （削除完了 2025/5/24）
-  - ✅ InviteCard.tsx → features/invite/components/InviteCard/へ移行
-- ✅ src/components/charge/ （ブリッジファイルに変換完了 2025/5/24）
-  - ✅ ChargeStepConfirm.tsx → features/charge/components/ChargeConfirm/へ移行
-  - ✅ ChargeStepComplete.tsx → features/charge/components/ChargeComplete/へ移行
-  - ✅ ChargeStepInput.tsx → 既存のブリッジファイルを維持
-- ✅ src/components/donation/ （ブリッジファイルに変換完了 2025/5/24）
-  - ✅ DonateProjectComplete.tsx → features/donation/components/DonateComplete/へ移行
-  - ✅ DonateProjectConfirm.tsx → features/donation/components/DonateConfirm/へ移行
-  - ✅ DonateProjectInput.tsx → 既存のブリッジファイルを維持
-- src/components/transactions/ → 削除（features/transactionsに移行済み）
-- src/components/eco/ → 削除（features/eco-impactに移行済み）
-- src/components/campaigns/ → 削除（features/campaignsに移行済み）
-- src/components/history/ → スタブコンポーネント（TODO: 適切なfeatureに実装を移行）
-- src/components/receipts/ → ElectronicReceipt.tsx（ブリッジファイル - features/transactionsへリダイレクト）
-
-### 4. ストア構造の最適化
+#### ストア構造の最適化
 
 - src/stores/slices/の各sliceをfeatures/[機能名]/store/に移行検討
 
-## 技術的な注意事項
+#### レガシーコンポーネントディレクトリの削除
 
-### 循環参照の回避
+- src/components/settings/ディレクトリの削除（features/settingsに移行済み - 確認後削除）
 
-- features間の直接インポートを避ける
-- 共通の型定義はshared/types/に配置
-- 共通のユーティリティはshared/utils/に配置
+#### その他
 
-### 公開APIの設計原則
+- 各featureのテストファイルの作成
+- Storybook設定の更新
+- CI/CDパイプラインの更新確認
+- パフォーマンス最適化（遅延読み込みなど）
 
-- 各featureのindex.tsから必要最小限のものだけをexport
-- 内部実装の詳細は外部に公開しない
-- featureの独立性を保つ
+## 移行時の注意事項
 
-### 命名規則
+### インポートパスの更新
 
-- feature名: 複数形または機能を表す名詞（例: transactions, auth）
-- コンポーネント: PascalCase
-- hooks: use接頭辞
-- utils: camelCase
+レガシーコンポーネントから新しいfeatureモジュールへの移行時は、以下のパターンでインポートパスを更新：
 
-## 今後の課題
+```typescript
+// Before
+import { Component } from "@/components/category/Component";
 
-1. テストファイルの移行
-2. Storybook設定の更新
-3. CI/CDパイプラインの更新確認
-4. パフォーマンス最適化（遅延読み込みなど）
+// After
+import { Component } from "@/features/feature-name";
+```
+
+### ブリッジファイルの作成
+
+移行期間中の互換性維持のため、レガシーコンポーネントファイルはブリッジファイルとして残す：
+
+```typescript
+// src/components/legacy/Component.tsx
+export { Component } from "@/features/feature-name";
+```
+
+### 型定義の移行
+
+- 共通型は`src/shared/types/`に配置
+- feature固有の型は`src/features/[feature-name]/types/`に配置
+
+## 更新履歴
+
+### 2025/01/24
+
+- src/components/history/のコンポーネントを適切なfeaturesモジュールに移行
+  - BalanceOverview → features/balance/components/BalanceOverview/
+  - TransactionFilters → features/transactions/components/TransactionFilters/
+  - TransactionList → features/transactions/components/TransactionList/
+  - EcoContributionSummary → features/eco-impact/components/EcoContributionSummary/
+- src/components/history/index.tsxをブリッジファイル化
+- src/components/receipts/ElectronicReceiptは既にブリッジファイル化済みを確認

@@ -28,7 +28,7 @@ transactions/
 │   ├── transaction.ts         # 取引関連の型定義
 │   └── receipt.ts             # レシート関連の型定義
 ├── hooks/                      # カスタムフック
-│   ├── useTransactionStyling.tsx # 取引のスタイリングフック
+│   ├── transactionStyling.tsx   # 取引のスタイリング関数
 │   └── useFormattedCurrency.ts  # 通貨フォーマットフック
 ├── store/                      # 状態管理
 │   └── transaction.slice.ts    # Zustandストア
@@ -52,7 +52,7 @@ import {
   ReceiptItem,
 
   // フック
-  useTransactionStyling,
+  getTransactionStyle,
   useFormattedCurrency,
 
   // ストア

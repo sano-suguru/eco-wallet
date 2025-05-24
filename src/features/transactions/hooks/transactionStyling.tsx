@@ -18,9 +18,9 @@ export interface TransactionStyle {
 }
 
 /**
- * トランザクションのタイプとバッジに基づいてスタイルを生成するカスタムフック
+ * トランザクションのタイプとバッジに基づいてスタイルを生成する関数
  */
-export function useTransactionStyling(
+export function getTransactionStyle(
   type: TransactionType,
   badges: string[] = [],
 ): TransactionStyle {

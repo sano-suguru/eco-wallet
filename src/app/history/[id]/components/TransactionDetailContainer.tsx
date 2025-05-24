@@ -6,7 +6,7 @@ import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
 import {
   ReceiptItem,
   useTransactionStore,
-  useTransactionStyling,
+  getTransactionStyle,
 } from "@/features/transactions";
 import { Transaction } from "@/shared/types/transaction";
 import { useFormattedCurrency } from "@/shared/hooks/useFormattedCurrency";
@@ -55,7 +55,7 @@ export default function TransactionDetailContainer() {
   }, [transactionId, getTransactionById]);
 
   // スタイルとフォーマットを設定
-  const style = useTransactionStyling(
+  const style = getTransactionStyle(
     transaction?.type || "payment",
     transaction?.badges || [],
   );

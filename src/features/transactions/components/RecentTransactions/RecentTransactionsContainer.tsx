@@ -4,9 +4,9 @@ import { useState, useEffect, useMemo } from "react";
 import { Transaction } from "@/shared/types/transaction";
 import { useTransactionStore } from "@/stores/slices/transaction";
 import {
-  useTransactionStyling,
+  getTransactionStyle,
   TransactionStyle,
-} from "../../hooks/useTransactionStyling";
+} from "../../hooks/transactionStyling";
 import { StyledTransaction } from "../TransactionItem";
 import RecentTransactionsList from "./RecentTransactionsList";
 
@@ -35,12 +35,12 @@ export default function RecentTransactionsContainer({
   );
 
   // 各トランザクションタイプのスタイルを事前に計算
-  const paymentStyle = useTransactionStyling("payment", []);
-  const chargeStyle = useTransactionStyling("charge", []);
-  const receiveStyle = useTransactionStyling("receive", []);
-  const donationStyle = useTransactionStyling("donation", []);
-  const expiredStyle = useTransactionStyling("expired", []);
-  const receiveWithBonusStyle = useTransactionStyling("receive", ["特典"]);
+  const paymentStyle = getTransactionStyle("payment", []);
+  const chargeStyle = getTransactionStyle("charge", []);
+  const receiveStyle = getTransactionStyle("receive", []);
+  const donationStyle = getTransactionStyle("donation", []);
+  const expiredStyle = getTransactionStyle("expired", []);
+  const receiveWithBonusStyle = getTransactionStyle("receive", ["特典"]);
 
   // トランザクションデータをフェッチ
   useEffect(() => {

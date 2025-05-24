@@ -14,6 +14,7 @@ export {
   BalanceCardContainer,
   BalanceCardView,
 } from "./components/BalanceCard";
+export { BalanceOverview } from "./components/BalanceOverview";
 
 // フックのエクスポート（将来追加予定）
 // export { useBalanceHistory } from "./hooks/useBalanceHistory";

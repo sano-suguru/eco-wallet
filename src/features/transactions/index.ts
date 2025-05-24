@@ -6,8 +6,8 @@ export { useTransactionStore } from "./store/transaction.slice";
 export type { TransactionSlice } from "./store/transaction.slice";
 
 // フックのエクスポート
-export { useTransactionStyling } from "./hooks/useTransactionStyling";
-export type { TransactionStyle } from "./hooks/useTransactionStyling";
+export { getTransactionStyle } from "./hooks/transactionStyling";
+export type { TransactionStyle } from "./hooks/transactionStyling";
 
 // コンポーネントのエクスポート
 export { TransactionItem } from "./components/TransactionItem";
@@ -26,3 +26,5 @@ export {
   ReceiptDialog,
 } from "./components/TransactionDetail";
 export { TransactionDetailSection } from "./components/TransactionDetailSection";
+export { TransactionFilters } from "./components/TransactionFilters";
+export { TransactionList } from "./components/TransactionList";

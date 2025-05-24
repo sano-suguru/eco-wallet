@@ -22,3 +22,4 @@ export { EcoImpactDisplay } from "./components/EcoImpact";
 export { TransactionEcoImpact } from "./components/TransactionEcoImpact";
 export { NewsAndProjects } from "./components/NewsAndProjects";
 export { RecommendedAction } from "./components/RecommendedAction";
+export { EcoContributionSummary } from "./components/EcoContributionSummary";
