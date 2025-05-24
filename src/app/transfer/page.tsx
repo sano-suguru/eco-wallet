@@ -38,8 +38,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useSession } from "next-auth/react";
-import { useTransactionStore } from "@/stores/slices/transaction";
-import { useBalanceStore } from "@/stores/slices/balance";
+import { useTransactionStore } from "@/features/transactions/store/transaction.slice";
+import { useBalanceStore } from "@/features/balance/store/balance.slice";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 // 受取人のモックデータ

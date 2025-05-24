@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Transaction } from "@/shared/types/transaction";
-import { useTransactionStore } from "@/stores/slices/transaction";
+import { useTransactionStore } from "@/features/transactions/store/transaction.slice";
 import {
   getTransactionStyle,
   TransactionStyle,

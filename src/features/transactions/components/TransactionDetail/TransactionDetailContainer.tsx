@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useEcoImpactStore } from "@/stores/slices/ecoImpact";
+import { useEcoImpactStore } from "@/features/eco-impact/store/eco-impact.slice";
 import {
   ReceiptItem,
   useTransactionStore,

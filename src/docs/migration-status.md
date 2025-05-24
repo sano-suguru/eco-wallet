@@ -141,7 +141,13 @@
 
 #### ストア構造の最適化
 
-- src/stores/slices/の各sliceをfeatures/[機能名]/store/に移行検討
+- ✅ src/stores/slices/の各sliceをfeatures/[機能名]/store/に移行完了
+  - ✅ balance.ts → features/balance/store/balance.slice.ts
+  - ✅ campaign.ts → features/campaigns/store/campaign.slice.ts
+  - ✅ ecoImpact.ts → features/eco-impact/store/eco-impact.slice.ts
+  - ✅ transaction.ts → features/transactions/store/transaction.slice.ts
+- ✅ レガシーストアディレクトリを削除
+- ✅ すべてのインポートパスを更新
 
 #### レガシーコンポーネントディレクトリの削除
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useBalanceStore } from "@/stores/slices/balance";
+import { useBalanceStore } from "@/features/balance/store/balance.slice";
 import { DonationProject } from "../../types/donation";
 import { DonateInputForm } from "./DonateInputForm";
 

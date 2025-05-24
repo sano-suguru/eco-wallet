@@ -9,7 +9,7 @@ import { Transaction } from "@/shared/types/transaction";
 import TransactionHeader from "./TransactionHeader";
 import TransactionInfo from "./TransactionInfo";
 import TransactionEcoInfo from "./TransactionEcoInfo";
-import ActionButtons from "./ActionButtons";
+import { ActionButtons } from "./ActionButtons";
 import ReceiptDialog from "./ReceiptDialog";
 
 interface TransactionDetailViewProps {
