@@ -11,3 +11,6 @@ export {
   AmountSelector,
   ProjectInfo,
 } from "./components/DonateInput";
+
+export { DonateConfirm } from "./components/DonateConfirm";
+export { DonateComplete } from "./components/DonateComplete";

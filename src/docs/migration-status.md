@@ -125,12 +125,15 @@
   - ✅ ChargeStepConfirm.tsx → features/charge/components/ChargeConfirm/へ移行
   - ✅ ChargeStepComplete.tsx → features/charge/components/ChargeComplete/へ移行
   - ✅ ChargeStepInput.tsx → 既存のブリッジファイルを維持
+- ✅ src/components/donation/ （ブリッジファイルに変換完了 2025/5/24）
+  - ✅ DonateProjectComplete.tsx → features/donation/components/DonateComplete/へ移行
+  - ✅ DonateProjectConfirm.tsx → features/donation/components/DonateConfirm/へ移行
+  - ✅ DonateProjectInput.tsx → 既存のブリッジファイルを維持
 - src/components/transactions/ → 削除（features/transactionsに移行済み）
 - src/components/eco/ → 削除（features/eco-impactに移行済み）
-- src/components/donation/ → features/donationへの移行確認
 - src/components/campaigns/ → 削除（features/campaignsに移行済み）
-- src/components/history/ → features/transactionsへの移行確認
-- src/components/receipts/ → features/transactionsへの移行検討
+- src/components/history/ → スタブコンポーネント（TODO: 適切なfeatureに実装を移行）
+- src/components/receipts/ → ElectronicReceipt.tsx（ブリッジファイル - features/transactionsへリダイレクト）
 
 ### 4. ストア構造の最適化
 
