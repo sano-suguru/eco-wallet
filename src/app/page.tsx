@@ -1,7 +1,7 @@
 "use client";
 
-import BalanceCard from "@/components/cards/BalanceCard";
-import { EcoImpactCard } from "@/components/cards/EcoImpactCard";
+import { BalanceCardContainer } from "@/features/balance";
+import { EcoImpactDisplay } from "@/features/eco-impact";
 import { InviteCard } from "@/components/cards/InviteCard";
 import { PageContainer } from "@/features/layout";
 import { RecentTransactionsContainer } from "@/features/transactions";
@@ -11,10 +11,13 @@ import { RecommendedAction } from "@/features/eco-impact";
 
 // TODO: データのフェッチロジックをfeatures/balanceに移動する
 export default function DashboardPage() {
+  // TODO: 実際の環境貢献額を計算する
+  const contributionAmount = 1500; // 仮の値
+
   return (
     <PageContainer>
-      <BalanceCard />
-      <EcoImpactCard />
+      <BalanceCardContainer />
+      <EcoImpactDisplay contributionAmount={contributionAmount} />
       <FeaturedCampaignSection />
       {recommendedActions.length > 0 && (
         <RecommendedAction actionId={recommendedActions[0].id} />

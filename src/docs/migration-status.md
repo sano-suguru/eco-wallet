@@ -94,16 +94,16 @@
 
 #### レガシーコンポーネントディレクトリの削除（移行済み）
 
-- src/components/layout/ （features/layoutに移行済み - インポートパス更新完了 ✅）
-- src/components/invite/ （features/inviteに移行済み）
-- src/components/settings/ （features/settingsに移行済み）
-- src/components/cards/Balance/ （features/balanceに移行済み）
+- ✅ src/components/layout/ （features/layoutに移行済み - 削除完了 2025/5/24）
+- ✅ src/components/invite/ （features/inviteに移行済み - 削除完了 2025/5/24）
+- ✅ src/components/settings/ （features/settingsに移行済み - 削除完了 2025/5/24）
+- ✅ src/components/cards/Balance/ （features/balanceに移行済み - 削除完了 2025/5/24）
 
 #### レガシーコンポーネントファイルの削除（ブリッジファイル）
 
-- src/components/cards/BalanceCard.tsx
-- src/components/cards/EcoImpactCard.tsx
-- src/components/cards/FeaturedCampaignCard.tsx
+- ✅ src/components/cards/BalanceCard.tsx （削除完了 2025/5/24）
+- ✅ src/components/cards/EcoImpactCard.tsx （削除完了 2025/5/24）
+- ✅ src/components/cards/FeaturedCampaignCard.tsx （削除完了 2025/5/24）
 
 ### 2. 共通機能の整理
 
