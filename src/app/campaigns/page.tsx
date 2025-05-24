@@ -17,7 +17,7 @@ import {
   Gift,
 } from "lucide-react";
 import { useCampaignStore } from "@/stores/slices/campaign";
-import { PageContainer } from "@/components/layout/PageContainer";
+import { PageContainer } from "@/features/layout";
 import { Campaign } from "@/lib/mock-data/campaigns";
 
 export default function CampaignsPage() {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Suspense } from "react"; // Suspenseをインポート
-import { AuthLayout } from "@/components/layout/AuthLayout";
+import { AuthLayout } from "@/features/layout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle, Leaf, Mail, ArrowRight } from "lucide-react";

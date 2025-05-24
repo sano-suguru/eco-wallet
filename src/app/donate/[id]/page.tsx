@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
-import { PageContainer } from "@/components/layout/PageContainer";
+import { PageContainer } from "@/features/layout";
 import { DonateProjectConfirm } from "@/components/donation/DonateProjectConfirm";
 import { DonateProjectComplete } from "@/components/donation/DonateProjectComplete";
 import { DonateProjectInput } from "@/components/donation/DonateProjectInput";

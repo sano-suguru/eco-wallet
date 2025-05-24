@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthLayout } from "@/components/layout/AuthLayout";
+import { AuthLayout } from "@/features/layout";
 import { LoginForm } from "@/features/auth";
 import { Gift } from "lucide-react";
 

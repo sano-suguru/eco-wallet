@@ -17,7 +17,7 @@ import {
 import { useSession } from "next-auth/react";
 import { SocialShareButtons, QRCodeDisplay } from "@/features/invite";
 import { ReferralCampaignCard } from "@/features/campaigns";
-import { PageContainer } from "@/components/layout/PageContainer";
+import { PageContainer } from "@/features/layout";
 
 export default function InvitePage() {
   const { data: session } = useSession();

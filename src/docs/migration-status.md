@@ -1,102 +1,159 @@
 # バーティカルスライスアーキテクチャ移行状況
 
-## 完了した作業
+## 概要
 
-### 1. バックアップディレクトリの削除
+このドキュメントは、従来のレイヤードアーキテクチャからバーティカルスライスアーキテクチャへの移行作業の進捗を追跡します。
 
-- `src/stores_backup_20250524_122817/`
-- `src/components/charge_backup_20250524_124021/`
-- `src/components/donation_backup_20250524_124129/`
-- `src/components/settings_backup_20250524_124248/`
+## 移行戦略
 
-### 2. ビルドエラーの解消
+1. **機能別モジュール化**: 各機能を独立したfeatureモジュールとして再構成
+2. **段階的移行**: 既存のコードを壊さないように段階的に移行
+3. **インポートパスの統一**: features/[機能名] からの公開APIを使用
 
-- 未使用変数エラー
-- 型の不一致エラー
-- 循環参照エラー
-- Zustandストアの不足メソッド
-- 型定義のインポートパスエラー
-- バックアップディレクトリのビルド除外
+## 完了したFeatures ✅
 
-### 3. featuresモジュールへの移行状況
+### 1. features/transactions
 
-#### 移行完了
+- ✅ types/の移行
+- ✅ hooks/の移行
+- ✅ store/の移行
+- ✅ components/の移行
+- ✅ utils/の移行
+- ✅ 公開APIの定義（index.ts）
 
-- ✅ features/transactions
-- ✅ features/eco-impact
-- ✅ features/campaigns
-- ✅ features/balance
-- ✅ features/auth
-- ✅ features/settings
-- ✅ features/layout
-- ✅ features/invite
-- ✅ features/charge
-- ✅ features/donation
+### 2. features/eco-impact
+
+- ✅ types/の移行
+- ✅ hooks/の移行
+- ✅ components/の移行
+- ✅ store/の移行
+- ✅ utils/の移行
+- ✅ 公開APIの定義（index.ts）
+
+### 3. features/campaigns
+
+- ✅ types/の移行
+- ✅ components/の移行
+- ✅ store/の移行
+- ✅ utils/の移行
+- ✅ data/の移行
+- ✅ 公開APIの定義（index.ts）
+
+### 4. features/balance
+
+- ✅ types/の移行
+- ✅ components/の移行
+- ✅ store/の移行
+- ✅ utils/の移行
+- ✅ 公開APIの定義（index.ts）
+
+### 5. features/auth
+
+- ✅ types/の移行
+- ✅ hooks/の移行
+- ✅ components/の移行
+- ✅ utils/の移行
+- ✅ 公開APIの定義（index.ts）
+
+### 6. features/settings
+
+- ✅ types/の移行
+- ✅ components/の移行
+- ✅ 公開APIの定義（index.ts）
+
+### 7. features/layout
+
+- ✅ components/の移行
+- ✅ 公開APIの定義（index.ts）
+- ✅ すべてのインポートパスを更新（2025/5/24完了）
+
+### 8. features/invite
+
+- ✅ components/の移行
+- ✅ types/の移行
+- ✅ 公開APIの定義（index.ts）
+
+### 9. features/charge
+
+- ✅ types/の移行
+- ✅ components/の移行
+- ✅ utils/の移行
+- ✅ 公開APIの定義（index.ts）
+
+### 10. features/donation
+
+- ✅ types/の移行
+- ✅ components/の移行
+- ✅ store/の移行
+- ✅ utils/の移行
+- ✅ 公開APIの定義（index.ts）
 
 ## 残作業
 
 ### 1. レガシーコンポーネントの削除準備
 
-#### レイアウトコンポーネント（インポートパス更新が必要）
+#### レガシーコンポーネントディレクトリの削除（移行済み）
 
-以下のファイルで `@/components/layout/` から `@/features/layout` への更新が必要：
-
-- src/app/campaigns/page.tsx
-- src/app/notifications/page.tsx
-- src/app/notifications/[id]/page.tsx
-- src/app/campaigns/[id]/page.tsx
-- src/app/eco-news/page.tsx
-- src/app/invite/page.tsx
-- src/app/eco-news/[id]/page.tsx
-- src/app/auth/register/page.tsx
-- src/app/auth/forgot-password/page.tsx
-- src/app/history/[id]/components/TransactionDetailView.tsx
-- src/app/auth/login/page.tsx
-- src/app/auth/register-success/page.tsx
-- src/app/donate/[id]/page.tsx
-- src/features/transactions/components/TransactionDetail/TransactionDetailView.tsx
-
-#### その他のレガシーコンポーネント
-
-移行済みのため削除可能：
-
-- src/components/layout/ （features/layoutに移行済み）
+- src/components/layout/ （features/layoutに移行済み - インポートパス更新完了 ✅）
 - src/components/invite/ （features/inviteに移行済み）
 - src/components/settings/ （features/settingsに移行済み）
 - src/components/cards/Balance/ （features/balanceに移行済み）
 
-### 2. ブリッジファイルの整理
-
-以下のブリッジコンポーネントは段階的に削除：
+#### レガシーコンポーネントファイルの削除（ブリッジファイル）
 
 - src/components/cards/BalanceCard.tsx
 - src/components/cards/EcoImpactCard.tsx
 - src/components/cards/FeaturedCampaignCard.tsx
 
-### 3. レガシーHooksの移行
+### 2. 共通機能の整理
 
-- src/hooks/ ディレクトリのhooksをfeaturesまたはsharedに移行
+#### Hooksの移行
 
-### 4. 残存する移行が必要なコンポーネント
+- src/hooks/ディレクトリのhooksをfeaturesまたはsharedに移行
+  - useAuthForm.ts → features/auth/hooks/
+  - useFormValidation.ts → shared/hooks/
+  - useEcoImpact.ts → features/eco-impact/hooks/
+  - useTransactionFilters.ts → features/transactions/hooks/
+  - useTransactionStyling.tsx → features/transactions/hooks/
 
-- src/components/charge/
-- src/components/donation/
-- src/components/receipts/
-- src/components/history/
+### 3. その他のレガシーコンポーネント
 
-### 5. データ・ユーティリティの整理
+- src/components/transactions/ → 削除（features/transactionsに移行済み）
+- src/components/eco/ → 削除（features/eco-impactに移行済み）
+- src/components/donation/ → features/donationへの移行確認
+- src/components/charge/ → features/chargeへの移行確認
+- src/components/campaigns/ → 削除（features/campaignsに移行済み）
+- src/components/history/ → features/transactionsへの移行確認
+- src/components/receipts/ → features/transactionsへの移行検討
 
-- src/lib/mock-data/ を適切なfeaturesに移行
-- src/stores/slices/ をfeaturesに移行
+### 4. ストア構造の最適化
 
-## 優先順位
+- src/stores/slices/の各sliceをfeatures/[機能名]/store/に移行検討
 
-1. **高優先度**：レイアウトコンポーネントのインポートパス更新
-2. **中優先度**：レガシーコンポーネントディレクトリの削除
-3. **低優先度**：ブリッジファイルの削除とHooksの移行
+## 技術的な注意事項
 
-## 注意事項
+### 循環参照の回避
 
-- 各ステップごとにビルドを確認
-- 削除前に使用箇所の確認を徹底
-- 段階的な移行でアプリケーションの動作を維持
+- features間の直接インポートを避ける
+- 共通の型定義はshared/types/に配置
+- 共通のユーティリティはshared/utils/に配置
+
+### 公開APIの設計原則
+
+- 各featureのindex.tsから必要最小限のものだけをexport
+- 内部実装の詳細は外部に公開しない
+- featureの独立性を保つ
+
+### 命名規則
+
+- feature名: 複数形または機能を表す名詞（例: transactions, auth）
+- コンポーネント: PascalCase
+- hooks: use接頭辞
+- utils: camelCase
+
+## 今後の課題
+
+1. テストファイルの移行
+2. Storybook設定の更新
+3. CI/CDパイプラインの更新確認
+4. パフォーマンス最適化（遅延読み込みなど）
