@@ -31,3 +31,5 @@ export function NotificationCampaignCard({
     />
   );
 }
+
+export type { NotificationCampaignCardProps };

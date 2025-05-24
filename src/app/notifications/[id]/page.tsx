@@ -18,7 +18,7 @@ import {
   Notification,
   NotificationType,
 } from "@/lib/mock-data/notifications";
-import { NotificationCampaignCard } from "@/components/campaigns/NotificationCampaignCard";
+import { NotificationCampaignCard } from "@/features/campaigns";
 
 interface NotificationDetailPageProps {
   params: Promise<{

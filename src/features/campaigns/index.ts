@@ -19,6 +19,9 @@ export {
 export { CampaignCard } from "./components/CampaignCard";
 export type { CampaignCardProps } from "./components/CampaignCard";
 export { FeaturedCampaignSection } from "./components/FeaturedCampaign";
+export { NotificationCampaignCard } from "./components/NotificationCampaignCard";
+export type { NotificationCampaignCardProps } from "./components/NotificationCampaignCard";
+export { ReferralCampaignCard } from "./components/ReferralCampaignCard";
 
 // データのエクスポート（必要に応じて）
 export { campaignsData } from "./data/campaigns-data";

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { SocialShareButtons, QRCodeDisplay } from "@/features/invite";
-import { ReferralCampaignCard } from "@/components/campaigns/ReferralCampaignCard";
+import { ReferralCampaignCard } from "@/features/campaigns";
 import { PageContainer } from "@/components/layout/PageContainer";
 
 export default function InvitePage() {
