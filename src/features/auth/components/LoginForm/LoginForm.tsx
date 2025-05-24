@@ -6,7 +6,7 @@ import { AuthField } from "../AuthField/LegacyAuthField";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Leaf, Mail, Lock } from "lucide-react";
-import { useAuthForm } from "@/hooks/useAuthForm";
+import { useAuthForm } from "@/features/auth/hooks/useAuthForm";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 

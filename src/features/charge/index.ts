@@ -13,6 +13,9 @@ export {
 
 export { BankTransferSection } from "./components/BankTransferSection";
 
+export { ChargeConfirm } from "./components/ChargeConfirm";
+export { ChargeComplete } from "./components/ChargeComplete";
+
 export type {
   ChargeInputContainerProps,
   ChargeInputFormProps,

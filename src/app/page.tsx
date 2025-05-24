@@ -2,7 +2,7 @@
 
 import { BalanceCardContainer } from "@/features/balance";
 import { EcoImpactDisplay } from "@/features/eco-impact";
-import { InviteCard } from "@/components/cards/InviteCard";
+import { InviteCard } from "@/features/invite";
 import { PageContainer } from "@/features/layout";
 import { RecentTransactionsContainer } from "@/features/transactions";
 import { recommendedActions } from "@/lib/mock-data/recommended-actions";

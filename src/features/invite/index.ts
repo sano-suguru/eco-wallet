@@ -10,6 +10,8 @@ export type { QRCodeDisplayProps } from "./components/QRCodeDisplay";
 export { SocialShareButtons } from "./components/SocialShareButtons";
 export type { SocialShareButtonsProps } from "./components/SocialShareButtons";
 
+export { InviteCard } from "./components/InviteCard";
+
 // ユーティリティ関数のエクスポート（将来追加予定）
 // export { createInviteLink, validateInviteCode } from "./utils/invite-utils";
 

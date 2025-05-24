@@ -109,19 +109,25 @@
 
 #### Hooksの移行
 
-- src/hooks/ディレクトリのhooksをfeaturesまたはsharedに移行
-  - useAuthForm.ts → features/auth/hooks/
-  - useFormValidation.ts → shared/hooks/
-  - useEcoImpact.ts → features/eco-impact/hooks/
-  - useTransactionFilters.ts → features/transactions/hooks/
-  - useTransactionStyling.tsx → features/transactions/hooks/
+- ✅ src/hooks/ディレクトリのhooksをfeaturesまたはsharedに移行（完了 2025/5/24）
+  - ✅ useAuthForm.ts → features/auth/hooks/（移行済み）
+  - ✅ useFormValidation.ts → shared/hooks/（移行済み）
+  - ✅ useEcoImpact.ts → features/eco-impact/hooks/（移行済み）
+  - ✅ useTransactionFilters.ts → features/transactions/hooks/（移行済み）
+  - ✅ useTransactionStyling.tsx → features/transactions/hooks/（移行済み）
+  - ✅ src/hooks/ディレクトリを削除（完了）
 
 ### 3. その他のレガシーコンポーネント
 
+- ✅ src/components/cards/ （削除完了 2025/5/24）
+  - ✅ InviteCard.tsx → features/invite/components/InviteCard/へ移行
+- ✅ src/components/charge/ （ブリッジファイルに変換完了 2025/5/24）
+  - ✅ ChargeStepConfirm.tsx → features/charge/components/ChargeConfirm/へ移行
+  - ✅ ChargeStepComplete.tsx → features/charge/components/ChargeComplete/へ移行
+  - ✅ ChargeStepInput.tsx → 既存のブリッジファイルを維持
 - src/components/transactions/ → 削除（features/transactionsに移行済み）
 - src/components/eco/ → 削除（features/eco-impactに移行済み）
 - src/components/donation/ → features/donationへの移行確認
-- src/components/charge/ → features/chargeへの移行確認
 - src/components/campaigns/ → 削除（features/campaignsに移行済み）
 - src/components/history/ → features/transactionsへの移行確認
 - src/components/receipts/ → features/transactionsへの移行検討
