@@ -10,6 +10,15 @@ export type { SettingSectionProps } from "./components/SettingSection";
 export { ProfileCard } from "./components/ProfileCard";
 export type { ProfileCardProps } from "./components/ProfileCard";
 
+// タブコンポーネントのエクスポート
+export {
+  EcoTab,
+  ProfileTab,
+  NotificationsTab,
+  PaymentTab,
+  SecurityTab,
+} from "./components/tabs";
+
 // ユーティリティ関数のエクスポート（将来追加予定）
 // export { validateEmail, formatPhoneNumber } from "./utils/validation";
 

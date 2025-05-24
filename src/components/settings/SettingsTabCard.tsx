@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Leaf, Bell, Lock, CreditCard } from "lucide-react";
-import { ProfileTab } from "./tabs/ProfileTab";
-import { EcoTab } from "./tabs/EcoTab";
-import { NotificationsTab } from "./tabs/NotificationsTab";
-import { PaymentTab } from "./tabs/PaymentTab";
-import { SecurityTab } from "./tabs/SecurityTab";
+import {
+  ProfileTab,
+  EcoTab,
+  NotificationsTab,
+  PaymentTab,
+  SecurityTab,
+} from "@/features/settings";
 import { Session } from "next-auth";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
