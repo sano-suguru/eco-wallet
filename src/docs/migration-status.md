@@ -135,11 +135,42 @@
 - ✅ src/components/history/のコンポーネントをブリッジファイル化
 - ✅ src/components/receipts/ElectronicReceiptをブリッジファイル化
 
+### ✅ 完了したタスク（続き）
+
+#### フェーズ1: app配下のコンポーネント移行
+
+- ✅ src/app/history/[id]/components/を削除完了（2025/01/24）
+  - これらのコンポーネントは既にfeatures/transactionsに移行済みのため不要
+
 ### 🚧 進行中のタスク
 
-なし
+#### フェーズ2: 新規featureモジュール作成
+
+##### 1. features/transferモジュールの作成（進行中）
+
+- ✅ 型定義の作成 (types/transfer.ts)
+- ✅ モックデータの作成 (data/recipients-data.ts)
+- ✅ ユーティリティ関数の作成 (utils/validation.ts)
+- ✅ フックの作成 (useTransferForm, useSplitForm)
+- ✅ 基本コンポーネントの作成
+  - ✅ RecipientSelector
+  - ✅ SuccessMessage
+- ✅ READMEドキュメントの作成
+- ✅ インデックスファイルの作成
+- 🚧 残りのコンポーネント作成
+  - [ ] TransferForm
+  - [ ] SplitForm
+  - [ ] SplitHistoryList
+  - [ ] TransferSplitPage（メインページコンポーネント）
+- [ ] app/transfer/page.tsxの更新
 
 ### 📋 今後のタスク
+
+#### フェーズ2: 新規featureモジュール作成（続き）
+
+2. **eco-news** - エコニュース機能
+3. **qrcode** - QRコード機能
+4. **splash** - スプラッシュ画面
 
 #### ストア構造の最適化
 
