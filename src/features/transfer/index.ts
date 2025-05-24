@@ -7,6 +7,8 @@ export * from "./hooks";
 // コンポーネント
 export { RecipientSelector } from "./components/RecipientSelector";
 export { SuccessMessage } from "./components/SuccessMessage";
+export { TransferForm } from "./components/TransferForm";
+export { SplitForm } from "./components/SplitForm";
 
 // データ
 export {
