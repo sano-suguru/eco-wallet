@@ -4,7 +4,7 @@
 
 このドキュメントは、Eco Walletプロジェクトのバーティカルスライスアーキテクチャへの移行状況を追跡します。
 
-## 移行完了したfeatures（16個）
+## 移行完了したfeatures（17個）
 
 ✅ transactions - 取引履歴・詳細表示機能
 ✅ eco-impact - 環境貢献機能
@@ -21,6 +21,7 @@
 ✅ transfer - 送金・割り勘機能（2025/01/25完成）
 ✅ eco-news - エコニュース機能（2025/01/25完成）
 ✅ splash - スプラッシュ画面機能（2025/01/25完成）
+✅ qrcode - QRコード機能（2025/01/25完成）
 
 ## 現在のディレクトリ構造
 
@@ -356,8 +357,11 @@ export { Component } from "@/features/feature-name";
 - features/transferモジュールの作成を完了
 - features/eco-newsモジュールの作成を完了
 - features/splashモジュールの作成を完了
-- 16個のfeatureモジュールが移行完了
-- 次フェーズの計画を更新
+- features/qrcodeモジュールが完了（17個目のfeature）
+- lib/mock-dataの整理を完了
+  - 各モックデータを適切なfeatureディレクトリに移動
+  - transactions.tsは後方互換性のために維持
+- 17個のfeatureモジュールが移行完了
 
 ### 2025/01/24
 

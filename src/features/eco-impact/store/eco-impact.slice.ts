@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import { create } from "zustand";
-import { ecoImpactData } from "@/lib/mock-data/eco-impact";
+import { ecoImpactData } from "../data/eco-impact-data";
 import { EcoRank, ContributionParams } from "../types/eco-impact";
 import {
   calculateContribution,

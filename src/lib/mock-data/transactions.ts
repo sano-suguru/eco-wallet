@@ -9,4 +9,4 @@
 export type { Transaction, TransactionType } from "@/shared/types/transaction";
 
 // モックデータをリエクスポート
-export { transactionsData } from "./transactions-data";
+export { transactionsData } from "@/features/transactions/data/transactions-data";
