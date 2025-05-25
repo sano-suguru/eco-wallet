@@ -8,18 +8,13 @@ import {
   endOfDay,
   startOfMonth,
 } from "date-fns";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { useTransactionStore } from "@/features/transactions/store/transaction.slice";
 import { FeaturedCampaignSection } from "@/features/campaigns";
 import { BalanceOverview } from "@/features/balance";
 import { TransactionFilters, TransactionList } from "@/features/transactions";
 import { EcoContributionSummary } from "@/features/eco-impact";
+import { ArrowLeft, TrendingUp, Leaf } from "lucide-react";
+import Link from "next/link";
 
 export default function TransactionHistoryPage() {
   // タブの選択状態
@@ -117,57 +112,136 @@ export default function TransactionHistoryPage() {
     return result;
   }, [transactions, selectedTab, startDate, endDate]);
 
+  // 統計情報の計算
+  const statistics = useMemo(() => {
+    const totalIncome = filteredTransactions
+      .filter((tx) => tx.amount > 0)
+      .reduce((sum, tx) => sum + tx.amount, 0);
+
+    const totalExpense = filteredTransactions
+      .filter((tx) => tx.amount < 0)
+      .reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
+
+    const totalEcoContribution = filteredTransactions
+      .filter((tx) => tx.ecoContribution?.enabled)
+      .reduce((sum, tx) => sum + (tx.ecoContribution?.amount || 0), 0);
+
+    return {
+      totalIncome,
+      totalExpense,
+      totalEcoContribution,
+    };
+  }, [filteredTransactions]);
+
   return (
-    <div className="flex min-h-screen bg-stone-50 flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <svg viewBox="0 0 100 40" className="h-12 w-auto fill-teal-700">
-            <path d="M50,0 L75,20 L65,40 H35 L25,20 L50,0z" />
-            <path d="M45,15 L55,15 L55,25 L45,25 L45,15z" fill="white" />
-          </svg>
-          <h1 className="text-2xl font-bold tracking-tight text-stone-900">
-            Eco Wallet
-          </h1>
-          <p className="text-sm text-stone-600">
-            シンプルで環境に優しい決済サービス
-          </p>
+    <div className="min-h-screen bg-stone-50">
+      {/* ヘッダー */}
+      <header className="bg-white border-b border-stone-200 sticky top-0 z-10">
+        <div className="max-w-md mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-stone-600 hover:text-teal-700 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="text-xs font-medium">ホーム</span>
+            </Link>
+            <h1 className="text-lg font-semibold text-stone-900">取引履歴</h1>
+            <div className="w-16" /> {/* スペーサー */}
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+        {/* 統計サマリー */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-100">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <p className="text-xs text-stone-500 mb-1">入金合計</p>
+              <p className="text-lg font-semibold text-blue-600">
+                ¥{statistics.totalIncome.toLocaleString()}
+              </p>
+            </div>
+            <div className="text-center border-x border-stone-100">
+              <p className="text-xs text-stone-500 mb-1">支払合計</p>
+              <p className="text-lg font-semibold text-stone-700">
+                ¥{statistics.totalExpense.toLocaleString()}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-stone-500 mb-1">環境貢献</p>
+              <p className="text-lg font-semibold text-teal-600">
+                ¥{statistics.totalEcoContribution.toLocaleString()}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <Card className="border-0 shadow-md bg-white">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xl text-teal-800">取引履歴</CardTitle>
-            <CardDescription>あなたの取引と環境への貢献</CardDescription>
-          </CardHeader>
-
-          {/* 残高情報セクション */}
+        {/* 残高情報 */}
+        <div className="bg-white rounded-xl shadow-sm border border-stone-100 overflow-hidden">
+          <div className="px-4 py-3 border-b border-stone-100">
+            <h2 className="text-sm font-medium text-stone-700">残高情報</h2>
+          </div>
           <BalanceOverview />
+        </div>
 
-          <CardContent className="space-y-4">
-            {/* フィルターセクション */}
-            <TransactionFilters
-              selectedTab={selectedTab}
-              onTabChange={handleTabChange}
-              startDate={startDate}
-              setStartDate={setStartDate}
-              endDate={endDate}
-              setEndDate={setEndDate}
-            />
+        {/* フィルター */}
+        <div>
+          <TransactionFilters
+            selectedTab={selectedTab}
+            onTabChange={handleTabChange}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+        </div>
 
-            {/* 取引リスト */}
-            <TransactionList
-              transactions={filteredTransactions}
-              initialLimit={10}
-            />
-          </CardContent>
-        </Card>
+        {/* 取引リスト */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-stone-700">
+              取引一覧
+              <span className="ml-2 text-xs text-stone-500">
+                ({filteredTransactions.length}件)
+              </span>
+            </h3>
+            {filteredTransactions.length > 0 && (
+              <TrendingUp className="h-4 w-4 text-stone-400" />
+            )}
+          </div>
+          <TransactionList
+            transactions={filteredTransactions}
+            initialLimit={10}
+          />
+        </div>
 
-        <FeaturedCampaignSection />
+        {/* キャンペーン情報 */}
+        <div className="pt-2">
+          <FeaturedCampaignSection />
+        </div>
 
-        <EcoContributionSummary />
+        {/* 環境貢献サマリー */}
+        <div className="bg-teal-50 rounded-xl p-4 border border-teal-200">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+              <Leaf className="h-4 w-4 text-teal-700" />
+            </div>
+            <h3 className="text-sm font-medium text-teal-800">
+              あなたの環境への貢献
+            </h3>
+          </div>
+          <EcoContributionSummary />
+        </div>
 
-        <p className="text-xs text-center text-stone-500">
-          お客様の購入ごとに、売上の1%を環境保護団体に寄付しています
-        </p>
+        {/* フッターメッセージ */}
+        <div className="text-center py-6">
+          <p className="text-xs text-stone-500">
+            お客様の購入ごとに、売上の1%を
+            <br />
+            環境保護団体に寄付しています
+          </p>
+        </div>
       </div>
     </div>
   );
