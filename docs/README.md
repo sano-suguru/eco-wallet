@@ -15,10 +15,17 @@
   - ディレクトリ構造と設計原則
 
 - **[development-guide.md](architecture/development-guide.md)** - 開発ガイド
+
   - 新機能の追加方法
   - 既存機能の修正方法
   - コーディング規約とベストプラクティス
   - テスト方針とパフォーマンス最適化
+
+- **[cline-development-guide.md](architecture/cline-development-guide.md)** - Cline開発ガイド
+  - TypeScript特化プロンプトエンジニアリング
+  - 効果的なプロンプトパターン（TDD、In Source Testing等）
+  - アンチパターンと回避方法
+  - Eco Wallet固有の適用方法
 
 ### デザイン (`design/`)
 
@@ -45,3 +52,4 @@
 ## 更新履歴
 
 - 2025/01/25 - ドキュメントの整理・統合を実施
+- 2025/01/25 - Cline開発ガイドを追加（TypeScript特化プロンプトエンジニアリング）
