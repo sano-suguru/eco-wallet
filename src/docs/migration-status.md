@@ -4,7 +4,7 @@
 
 このドキュメントは、Eco Walletプロジェクトのバーティカルスライスアーキテクチャへの移行状況を追跡します。
 
-## 移行完了したfeatures（12個）
+## 移行完了したfeatures（15個）
 
 ✅ transactions - 取引履歴・詳細表示機能
 ✅ eco-impact - 環境貢献機能
@@ -18,6 +18,8 @@
 ✅ donation - 寄付機能
 ✅ notifications - 通知機能
 ✅ payment - 決済機能
+✅ transfer - 送金・割り勘機能（2025/01/25完成）
+✅ eco-news - エコニュース機能
 
 ## 現在のディレクトリ構造
 
@@ -185,147 +187,141 @@
 - ✅ レガシーストアディレクトリを削除
 - ✅ すべてのインポートパスを更新
 
-### 🚧 進行中のタスク
-
-#### features/transferモジュールの作成（進行中）
+#### 15. features/transferモジュールの作成（2025/01/25完成）
 
 - ✅ 型定義の作成 (types/transfer.ts)
-- ✅ モックデータの作成 (data/recipients-data.ts)
+- ✅ モックデータの作成 (data/recipients-data.ts, data/split-histories-data.ts)
 - ✅ ユーティリティ関数の作成 (utils/validation.ts)
-- ✅ フックの作成 (useTransferForm, useSplitForm)
-- ✅ 基本コンポーネントの作成
+- ✅ フックの作成 (useTransferForm, useSplitForm, useSplitHistory)
+- ✅ コンポーネントの作成
   - ✅ RecipientSelector
   - ✅ SuccessMessage
+  - ✅ TransferForm
+  - ✅ SplitForm
+  - ✅ SplitHistoryList
+  - ✅ TransferSplitPage（統合コンポーネント）
 - ✅ READMEドキュメントの作成
 - ✅ インデックスファイルの作成
-- 🚧 残りのコンポーネント作成
-  - [ ] TransferForm
-  - [ ] SplitForm
-  - [ ] SplitHistoryList
-  - [ ] TransferSplitPage（メインページコンポーネント）
-- [ ] app/transfer/page.tsxの更新
+- ✅ app/transfer/page.tsxの更新
+
+### 🚧 未完了のタスク
+
+#### features/qrcodeモジュールの作成（フェーズ2）
+
+- [ ] 基本構造の作成
+- [ ] QRコード生成・読み取り機能の実装
+- [ ] app/qrcode/page.tsxの更新
+
+#### features/splashモジュールの作成（フェーズ3）
+
+- [ ] 基本構造の作成
+- [ ] スプラッシュ画面機能の実装
+- [ ] app/splash/page.tsxの更新
+
+#### レガシーコードの最終クリーンアップ（フェーズ4）
+
+- [ ] 残存ブリッジファイルの確認と削除
+- [ ] 共通型とユーティリティの整理
+- [ ] 不要なディレクトリの削除
 
 ## 段階的移行計画
 
-### フェーズ1: 進行中のtransferモジュールの完成（1-2日）
+### フェーズ1: transferモジュールの完成 ✅ 完了（2025/01/25）
 
-1. **残りのコンポーネント作成**
+### フェーズ2: qrcodeモジュールの作成（2日）
 
-   - TransferFormコンポーネント
-   - SplitFormコンポーネント
-   - SplitHistoryListコンポーネント
-   - TransferSplitPage（統合コンポーネント）
+**構造設計：**
 
-2. **app/transfer/page.tsxの更新**
+```typescript
+features/qrcode/
+├── types/
+│   └── qrcode.ts              // QRコード関連の型定義
+├── components/
+│   ├── QRCodeGenerator/       // QRコード生成
+│   ├── QRCodeScanner/         // QRコード読み取り
+│   ├── QRCodeDisplay/         // QRコード表示
+│   └── QRCodePage/            // ページ統合コンポーネント
+├── hooks/
+│   ├── useQRCodeGenerator.ts
+│   └── useQRCodeScanner.ts
+├── utils/
+│   └── qrcode-utils.ts
+├── README.md
+└── index.ts
+```
 
-   - 新しいfeatureモジュールを使用するよう更新
+**主要タスク：**
 
-3. **統合テスト**
-   - 機能の動作確認
-   - レイアウトの調整
+- 既存のqr-code-generator.tsxの分析と機能分割
+- カメラアクセスやスキャン機能の実装
+- エラーハンドリングとユーザーフィードバック
 
-### フェーズ2: eco-newsモジュールの作成（2-3日）
+### フェーズ3: splashモジュールの作成（1日）
 
-1. **基本構造の作成**
+**構造設計：**
 
-   ```
-   features/eco-news/
-   ├── types/
-   │   └── eco-news.ts
-   ├── data/
-   │   └── eco-news-data.ts
-   ├── components/
-   │   ├── NewsCard/
-   │   ├── NewsDetail/
-   │   ├── NewsList/
-   │   ├── CategoryFilter/
-   │   └── SearchBar/
-   ├── hooks/
-   │   └── useEcoNews.ts
-   ├── utils/
-   │   └── news-utils.ts
-   ├── README.md
-   └── index.ts
-   ```
+```typescript
+features/splash/
+├── components/
+│   ├── SplashScreen/          // メインスプラッシュ画面
+│   ├── LoadingAnimation/      // ローディングアニメーション
+│   ├── BrandLogo/             // ブランドロゴ表示
+│   └── InitializationStatus/  // 初期化状態表示
+├── hooks/
+│   ├── useSplashScreen.ts     // スプラッシュ画面制御
+│   └── useAppInitialization.ts // アプリ初期化処理
+├── utils/
+│   └── initialization.ts       // 初期化ユーティリティ
+├── README.md
+└── index.ts
+```
 
-2. **app/eco-news配下のページとの統合**
-   - app/eco-news/page.tsx
-   - app/eco-news/[id]/page.tsx
+### フェーズ4: レガシーコードの整理（2-3日）
 
-### フェーズ3: qrcodeモジュールの作成（1-2日）
+**1. ブリッジファイルの評価と削除**
 
-1. **基本構造の作成**
+```
+対象ディレクトリ：
+- src/components/charge/
+- src/components/donation/
+- src/components/history/
+- src/components/receipts/
+- src/components/settings/（削除確認）
 
-   ```
-   features/qrcode/
-   ├── types/
-   │   └── qrcode.ts
-   ├── components/
-   │   ├── QRCodeGenerator/
-   │   ├── QRCodeScanner/
-   │   └── QRCodeDisplay/
-   ├── hooks/
-   │   └── useQRCode.ts
-   ├── utils/
-   │   └── qrcode-utils.ts
-   ├── README.md
-   └── index.ts
-   ```
+作業内容：
+- 使用状況の確認
+- 不要なブリッジファイルの削除
+- 必要なものはsharedに移行
+```
 
-2. **app/qrcode/page.tsxの更新**
-   - 既存のqr-code-generator.tsxとの統合
+**2. 共通型とユーティリティの整理**
 
-### フェーズ4: splashモジュールの作成（1日）
+```
+移行対象：
+- src/types/ → src/shared/types/
+- src/lib/utils/ → 各featureまたはshared/utils/
+- src/lib/mock-data/ → 各feature/data/
+```
 
-1. **基本構造の作成**
+### フェーズ5: アーキテクチャの最適化（3-4日）
 
-   ```
-   features/splash/
-   ├── components/
-   │   ├── SplashScreen/
-   │   ├── LoadingAnimation/
-   │   └── BrandLogo/
-   ├── hooks/
-   │   └── useSplashScreen.ts
-   ├── README.md
-   └── index.ts
-   ```
+**1. パフォーマンス最適化**
 
-2. **app/splash/page.tsxの更新**
+- 動的インポートの実装
+- バンドルサイズの分析と最適化
+- 遅延読み込みの実装
 
-### フェーズ5: レガシーコードの最終クリーンアップ（1-2日）
+**2. 横断的関心事の整理**
 
-1. **残存ブリッジファイルの確認**
+- 認証ミドルウェアの統一
+- エラーハンドリングの標準化
+- ロギングとモニタリングの実装
 
-   - 使用状況の確認
-   - 不要なものの削除
+**3. ドキュメント整備**
 
-2. **共通型の整理**
-
-   - src/types配下の整理
-   - sharedディレクトリへの移行
-
-3. **ユーティリティの整理**
-   - src/lib配下の整理
-   - 適切なfeatureモジュールへの移行
-
-### フェーズ6: 最適化とドキュメント整備（2-3日）
-
-1. **パフォーマンス最適化**
-
-   - 遅延読み込みの実装
-   - バンドルサイズの最適化
-   - コード分割の最適化
-
-2. **ドキュメントの更新**
-
-   - 各featureのREADME.mdの更新
-   - 全体的なアーキテクチャドキュメントの作成
-   - 開発ガイドラインの作成
-
-3. **テストの整備**
-   - 各featureのテストファイル作成
-   - E2Eテストの更新
+- アーキテクチャガイドの作成
+- 開発規約の文書化
+- コンポーネントカタログの作成
 
 ## 移行時の注意事項
 
@@ -365,10 +361,9 @@ export { Component } from "@/features/feature-name";
 
 ### 2025/01/25
 
-- ドキュメントを現在のファイルシステムの状態に合わせて更新
-- 削除済みディレクトリの一覧を追加
-- 段階的移行計画を詳細化
-- 配置ルールを明確化
+- features/transferモジュールの作成を完了
+- 15個のfeatureモジュールが移行完了
+- 次フェーズの計画を更新
 
 ### 2025/01/24
 

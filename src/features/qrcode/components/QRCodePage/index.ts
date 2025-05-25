@@ -1,0 +1,1 @@
+export { QRCodePage } from "./QRCodePage";

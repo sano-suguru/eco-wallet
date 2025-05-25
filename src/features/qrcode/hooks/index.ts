@@ -1,0 +1,1 @@
+export { useQRCodeGenerator } from "./useQRCodeGenerator";
