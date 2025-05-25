@@ -11,7 +11,7 @@ import { useTransactionStore } from "@/features/transactions/store/transaction.s
 import { useBalanceStore } from "@/features/balance/store/balance.slice";
 import { useEcoImpactStore } from "@/features/eco-impact/store/eco-impact.slice";
 import { useSession } from "next-auth/react";
-import { newsAndProjects, ProjectItem } from "@/lib/mock-data/news-projects";
+import { newsAndProjects, ProjectItem } from "@/features/eco-news";
 import { convertProjectItemToDonationProject } from "@/features/donation/utils/project-converter";
 import { DonationProject } from "@/features/donation/types/donation";
 import { Alert, AlertDescription } from "@/components/ui/alert";

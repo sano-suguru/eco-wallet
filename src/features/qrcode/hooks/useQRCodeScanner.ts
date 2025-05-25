@@ -25,43 +25,13 @@ export const useQRCodeScanner = ({
   const scanIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastScannedDataRef = useRef<string | null>(null);
 
-  // カメラを開始
-  const startCamera = useCallback(async () => {
-    try {
-      setIsCameraLoading(true);
-      setError(null);
-
-      // カメラへのアクセスを要求
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "environment", // 背面カメラを優先
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      });
-
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-
-        // ビデオの準備ができたらスキャンを開始
-        videoRef.current.onloadedmetadata = () => {
-          setIsCameraActive(true);
-          setIsCameraLoading(false);
-          startScanning();
-        };
-      }
-    } catch (err) {
-      console.error("Camera access error:", err);
-      setError(
-        "カメラへのアクセスができませんでした。カメラの使用を許可してください。",
-      );
-      setIsCameraLoading(false);
-      throw err;
+  // スキャンを停止
+  const stopScanning = useCallback(() => {
+    if (scanIntervalRef.current) {
+      clearInterval(scanIntervalRef.current);
+      scanIntervalRef.current = null;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoRef]);
+  }, []);
 
   // QRコードのスキャンを開始
   const startScanning = useCallback(() => {
@@ -115,15 +85,44 @@ export const useQRCodeScanner = ({
         }
       }
     }, scanInterval);
-  }, [videoRef, canvasRef, scanInterval, onScan]);
+  }, [videoRef, canvasRef, scanInterval, onScan, stopScanning]);
 
-  // スキャンを停止
-  const stopScanning = useCallback(() => {
-    if (scanIntervalRef.current) {
-      clearInterval(scanIntervalRef.current);
-      scanIntervalRef.current = null;
+  // カメラを開始
+  const startCamera = useCallback(async () => {
+    try {
+      setIsCameraLoading(true);
+      setError(null);
+
+      // カメラへのアクセスを要求
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "environment", // 背面カメラを優先
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      });
+
+      streamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+
+        // ビデオの準備ができたらスキャンを開始
+        videoRef.current.onloadedmetadata = () => {
+          setIsCameraActive(true);
+          setIsCameraLoading(false);
+          startScanning();
+        };
+      }
+    } catch (err) {
+      console.error("Camera access error:", err);
+      setError(
+        "カメラへのアクセスができませんでした。カメラの使用を許可してください。",
+      );
+      setIsCameraLoading(false);
+      throw err;
     }
-  }, []);
+  }, [videoRef, startScanning]);
 
   // カメラを停止
   const stopCamera = useCallback(() => {
@@ -140,8 +139,7 @@ export const useQRCodeScanner = ({
 
     setIsCameraActive(false);
     lastScannedDataRef.current = null;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoRef]);
+  }, [videoRef, stopScanning]);
 
   // スキャン結果をリセット
   const resetScan = useCallback(() => {

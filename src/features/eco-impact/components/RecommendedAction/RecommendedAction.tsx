@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Leaf } from "lucide-react";
-import { recommendedActions } from "@/lib/mock-data/recommended-actions";
+import { recommendedActions } from "@/features/eco-impact/data/recommended-actions-data";
 
 interface RecommendedActionProps {
   actionId?: string;

@@ -5,7 +5,7 @@ import { EcoImpactDisplay } from "@/features/eco-impact";
 import { InviteCard } from "@/features/invite";
 import { PageContainer } from "@/features/layout";
 import { RecentTransactionsContainer } from "@/features/transactions";
-import { recommendedActions } from "@/lib/mock-data/recommended-actions";
+import { recommendedActions } from "@/features/eco-impact/data/recommended-actions-data";
 import { FeaturedCampaignSection } from "@/features/campaigns";
 import { RecommendedAction } from "@/features/eco-impact";
 

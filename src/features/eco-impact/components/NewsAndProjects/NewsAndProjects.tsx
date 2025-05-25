@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Newspaper, ExternalLink, TreePine, Droplets } from "lucide-react";
-import { newsAndProjects, ContentItem } from "@/lib/mock-data/news-projects";
+import { newsAndProjects, ContentItem } from "@/features/eco-news";
 
 export function NewsAndProjects() {
   const router = useRouter();

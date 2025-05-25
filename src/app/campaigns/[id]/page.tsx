@@ -22,7 +22,7 @@ import {
   Gift,
 } from "lucide-react";
 import { useCampaignStore } from "@/features/campaigns/store/campaign.slice";
-import { Campaign } from "@/lib/mock-data/campaigns";
+import { Campaign } from "@/features/campaigns/types/campaign";
 
 import { calculateDateDifference } from "@/shared/utils/formats";
 import { calculateProgressPercent } from "@/lib/utils/eco";

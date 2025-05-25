@@ -1,6 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { userBalanceData } from "./mock-data/user-profile";
+import { userBalanceData } from "@/features/balance/data/user-profile-data";
 import crypto from "crypto";
 
 // 本番環境では安全なシークレットを使用する必要があります

@@ -1,4 +1,4 @@
-import { ProjectItem } from "@/lib/mock-data/news-projects";
+import { ProjectItem } from "@/features/eco-news";
 import { DonationProject } from "../types/donation";
 
 /**

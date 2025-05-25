@@ -13,11 +13,11 @@ import {
   AlertTriangle,
   Bell,
 } from "lucide-react";
+import { notificationsData } from "@/features/notifications/data/notifications-data";
 import {
-  notificationsData,
   Notification,
   NotificationType,
-} from "@/lib/mock-data/notifications";
+} from "@/features/notifications/types/notification";
 import { NotificationCampaignCard } from "@/features/campaigns";
 
 interface NotificationDetailPageProps {
