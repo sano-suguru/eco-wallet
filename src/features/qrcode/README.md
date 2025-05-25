@@ -19,7 +19,7 @@ features/qrcode/
 │   ├── QRCodeGenerator/    # QRコード生成コンポーネント
 │   ├── QRCodeDisplay/      # QRコード表示コンポーネント
 │   ├── BarCodeDisplay/     # バーコード表示コンポーネント
-│   ├── QRCodeScanner/      # QRコードスキャナー（実装予定）
+│   ├── QRCodeScanner/      # QRコードスキャナー
 │   └── QRCodePage/         # QRコード決済ページ
 ├── hooks/              # カスタムフック
 ├── utils/              # ユーティリティ関数

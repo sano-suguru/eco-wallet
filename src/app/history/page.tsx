@@ -17,12 +17,9 @@ import {
 } from "@/components/ui/card";
 import { useTransactionStore } from "@/features/transactions/store/transaction.slice";
 import { FeaturedCampaignSection } from "@/features/campaigns";
-import {
-  BalanceOverview,
-  TransactionFilters,
-  TransactionList,
-  EcoContributionSummary,
-} from "@/components/history";
+import { BalanceOverview } from "@/features/balance";
+import { TransactionFilters, TransactionList } from "@/features/transactions";
+import { EcoContributionSummary } from "@/features/eco-impact";
 
 export default function TransactionHistoryPage() {
   // タブの選択状態

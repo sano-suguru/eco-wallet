@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/features/layout";
-import { DonateProjectConfirm } from "@/components/donation/DonateProjectConfirm";
-import { DonateProjectComplete } from "@/components/donation/DonateProjectComplete";
-import { DonateProjectInput } from "@/components/donation/DonateProjectInput";
+import { DonateConfirm } from "@/features/donation/components/DonateConfirm";
+import { DonateComplete } from "@/features/donation/components/DonateComplete";
+import { DonateInputContainer } from "@/features/donation/components/DonateInput";
 import { useTransactionStore } from "@/features/transactions/store/transaction.slice";
 import { useBalanceStore } from "@/features/balance/store/balance.slice";
 import { useEcoImpactStore } from "@/features/eco-impact/store/eco-impact.slice";
@@ -163,9 +163,9 @@ export default function DonateProjectPage() {
         </h2>
         <Card className="border-0 shadow-md bg-white">
           {currentStep === "input" && (
-            <DonateProjectInput
+            <DonateInputContainer
               project={project}
-              onProceed={(donationAmount) => {
+              onProceed={(donationAmount: number) => {
                 setAmount(donationAmount.toString());
                 setError(null);
                 setCurrentStep("confirm");
@@ -174,7 +174,7 @@ export default function DonateProjectPage() {
           )}
 
           {currentStep === "confirm" && (
-            <DonateProjectConfirm
+            <DonateConfirm
               project={project}
               amount={amount}
               session={session}
@@ -186,7 +186,7 @@ export default function DonateProjectPage() {
           )}
 
           {currentStep === "complete" && (
-            <DonateProjectComplete
+            <DonateComplete
               project={project}
               amount={amount}
               session={session}

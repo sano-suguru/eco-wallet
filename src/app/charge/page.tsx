@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
-import { ChargeStepInput } from "@/components/charge/ChargeStepInput";
-import { ChargeStepConfirm } from "@/components/charge/ChargeStepConfirm";
-import { ChargeStepComplete } from "@/components/charge/ChargeStepComplete";
+import { ChargeInputContainer } from "@/features/charge/components/ChargeInput";
+import { ChargeConfirm } from "@/features/charge/components/ChargeConfirm";
+import { ChargeComplete } from "@/features/charge/components/ChargeComplete";
 
 type ChargeStep = "input" | "confirm" | "complete";
 
@@ -16,25 +16,14 @@ export default function ChargePage() {
 
   // 基本状態
   const [currentStep, setCurrentStep] = useState<ChargeStep>("input");
-  const [paymentMethod, setPaymentMethod] = useState<"credit-card" | "bank">(
-    "credit-card",
-  );
+  const [paymentMethod] = useState<"credit-card" | "bank">("credit-card");
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [transactionId, setTransactionId] = useState<string>("");
 
   // 銀行振込関連の状態
-  const [email, setEmail] = useState<string>("");
-  const [transferCode, setTransferCode] = useState<string>("");
-  const [emailSent, setEmailSent] = useState<boolean>(false);
-  const [processingVerification, setProcessingVerification] =
-    useState<boolean>(false);
-
-  // 金額選択ハンドラー
-  const handleSelectAmount = (value: string) => {
-    setAmount(value);
-  };
+  const [transferCode] = useState<string>("");
 
   // 確認ステップへの移行
   const handleProceedToConfirm = (receivedAmount?: number) => {
@@ -91,77 +80,6 @@ export default function ChargePage() {
     }
   };
 
-  // 振込情報取得処理
-  const handleSendBankTransferEmail = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // メール形式の簡易バリデーション
-      if (!email || !email.includes("@")) {
-        setError("有効なメールアドレスを入力してください");
-        setIsLoading(false);
-        return;
-      }
-
-      // 金額のバリデーション
-      if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-        setError("有効な金額を入力してください");
-        setIsLoading(false);
-        return;
-      }
-
-      // 振込コードの生成（実際はバックエンドで生成してDBに保存）
-      const generatedCode = Math.random()
-        .toString(36)
-        .substring(2, 8)
-        .toUpperCase();
-      setTransferCode(generatedCode);
-
-      // メール送信をシミュレート
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // 送信完了状態に更新
-      setEmailSent(true);
-    } catch {
-      setError(
-        "メール送信中にエラーが発生しました。時間をおいて再度お試しください。",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 振込完了通知処理
-  const handleNotifyBankTransfer = async () => {
-    setProcessingVerification(true);
-    setError(null);
-
-    try {
-      // 振込確認をシミュレート（実際はバックエンドで照合）
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // モックのトランザクションID生成
-      const mockTransactionId = `BNK${Date.now().toString().slice(-8)}`;
-      setTransactionId(mockTransactionId);
-
-      // セッションの残高を更新（モック）
-      if (session?.user) {
-        const newBalance = (session.user.balance || 0) + Number(amount);
-        await update({ balance: newBalance });
-      }
-
-      // 完了ステップに進む
-      setCurrentStep("complete");
-    } catch {
-      setError(
-        "振込確認中にエラーが発生しました。時間をおいて再度お試しください。",
-      );
-    } finally {
-      setProcessingVerification(false);
-    }
-  };
-
   return (
     <div className="flex min-h-screen bg-stone-50 flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
@@ -180,29 +98,13 @@ export default function ChargePage() {
 
         <Card className="border-0 shadow-md bg-white">
           {currentStep === "input" && (
-            <ChargeStepInput
-              amount={amount}
-              setAmount={setAmount}
-              email={email}
-              setEmail={setEmail}
-              paymentMethod={paymentMethod}
-              setPaymentMethod={setPaymentMethod}
-              emailSent={emailSent}
-              setEmailSent={setEmailSent}
-              isLoading={isLoading}
-              error={error}
-              handleSelectAmount={handleSelectAmount}
-              handleProceedToConfirm={handleProceedToConfirm}
-              handleSendBankTransferEmail={handleSendBankTransferEmail}
-              transferCode={transferCode}
-              setTransferCode={setTransferCode}
-              processingVerification={processingVerification}
-              handleNotifyBankTransfer={handleNotifyBankTransfer}
+            <ChargeInputContainer
+              onProceedToConfirm={(amount) => handleProceedToConfirm(amount)}
             />
           )}
 
           {currentStep === "confirm" && (
-            <ChargeStepConfirm
+            <ChargeConfirm
               amount={amount}
               paymentMethod={paymentMethod}
               session={session}
@@ -214,7 +116,7 @@ export default function ChargePage() {
           )}
 
           {currentStep === "complete" && (
-            <ChargeStepComplete
+            <ChargeComplete
               amount={amount}
               paymentMethod={paymentMethod}
               session={session}

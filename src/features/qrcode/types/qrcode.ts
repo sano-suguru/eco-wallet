@@ -33,10 +33,9 @@ export interface QRCodePaymentData {
 
 // QRコードスキャン結果
 export interface QRCodeScanResult {
-  success: boolean;
-  data?: string;
-  error?: string;
+  data: string;
   timestamp: Date;
+  format: "QR_CODE" | "DATA_MATRIX" | "CODE_128" | "EAN_13" | "UPC_A";
 }
 
 // QRコードの状態
