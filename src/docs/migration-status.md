@@ -4,7 +4,7 @@
 
 このドキュメントは、Eco Walletプロジェクトのバーティカルスライスアーキテクチャへの移行状況を追跡します。
 
-## 移行完了したfeatures（15個）
+## 移行完了したfeatures（16個）
 
 ✅ transactions - 取引履歴・詳細表示機能
 ✅ eco-impact - 環境貢献機能
@@ -19,7 +19,8 @@
 ✅ notifications - 通知機能
 ✅ payment - 決済機能
 ✅ transfer - 送金・割り勘機能（2025/01/25完成）
-✅ eco-news - エコニュース機能
+✅ eco-news - エコニュース機能（2025/01/25完成）
+✅ splash - スプラッシュ画面機能（2025/01/25完成）
 
 ## 現在のディレクトリ構造
 
@@ -204,6 +205,19 @@
 - ✅ インデックスファイルの作成
 - ✅ app/transfer/page.tsxの更新
 
+#### 16. features/splashモジュールの作成（2025/01/25完成）
+
+- ✅ 型定義の作成 (types/splash.ts)
+- ✅ ユーティリティ関数の作成 (utils/initialization.ts)
+- ✅ フックの作成 (hooks/useSplashScreen.ts)
+- ✅ コンポーネントの作成
+  - ✅ BrandLogo
+  - ✅ InitializationStatus
+  - ✅ SplashScreen
+- ✅ READMEドキュメントの作成
+- ✅ インデックスファイルの作成
+- ✅ app/splash/page.tsxの更新
+
 ### 🚧 未完了のタスク
 
 #### features/qrcodeモジュールの作成（フェーズ2）
@@ -212,13 +226,7 @@
 - [ ] QRコード生成・読み取り機能の実装
 - [ ] app/qrcode/page.tsxの更新
 
-#### features/splashモジュールの作成（フェーズ3）
-
-- [ ] 基本構造の作成
-- [ ] スプラッシュ画面機能の実装
-- [ ] app/splash/page.tsxの更新
-
-#### レガシーコードの最終クリーンアップ（フェーズ4）
+#### レガシーコードの最終クリーンアップ（フェーズ3）
 
 - [ ] 残存ブリッジファイルの確認と削除
 - [ ] 共通型とユーティリティの整理
@@ -226,7 +234,11 @@
 
 ## 段階的移行計画
 
-### フェーズ1: transferモジュールの完成 ✅ 完了（2025/01/25）
+### フェーズ1: 基本モジュールの完成 ✅ 完了（2025/01/25）
+
+- ✅ transferモジュール
+- ✅ eco-newsモジュール
+- ✅ splashモジュール
 
 ### フェーズ2: qrcodeモジュールの作成（2日）
 
@@ -256,27 +268,7 @@ features/qrcode/
 - カメラアクセスやスキャン機能の実装
 - エラーハンドリングとユーザーフィードバック
 
-### フェーズ3: splashモジュールの作成（1日）
-
-**構造設計：**
-
-```typescript
-features/splash/
-├── components/
-│   ├── SplashScreen/          // メインスプラッシュ画面
-│   ├── LoadingAnimation/      // ローディングアニメーション
-│   ├── BrandLogo/             // ブランドロゴ表示
-│   └── InitializationStatus/  // 初期化状態表示
-├── hooks/
-│   ├── useSplashScreen.ts     // スプラッシュ画面制御
-│   └── useAppInitialization.ts // アプリ初期化処理
-├── utils/
-│   └── initialization.ts       // 初期化ユーティリティ
-├── README.md
-└── index.ts
-```
-
-### フェーズ4: レガシーコードの整理（2-3日）
+### フェーズ3: レガシーコードの整理（2-3日）
 
 **1. ブリッジファイルの評価と削除**
 
@@ -303,7 +295,7 @@ features/splash/
 - src/lib/mock-data/ → 各feature/data/
 ```
 
-### フェーズ5: アーキテクチャの最適化（3-4日）
+### フェーズ4: アーキテクチャの最適化（3-4日）
 
 **1. パフォーマンス最適化**
 
@@ -362,7 +354,9 @@ export { Component } from "@/features/feature-name";
 ### 2025/01/25
 
 - features/transferモジュールの作成を完了
-- 15個のfeatureモジュールが移行完了
+- features/eco-newsモジュールの作成を完了
+- features/splashモジュールの作成を完了
+- 16個のfeatureモジュールが移行完了
 - 次フェーズの計画を更新
 
 ### 2025/01/24
