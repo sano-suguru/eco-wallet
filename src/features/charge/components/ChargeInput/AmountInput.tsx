@@ -4,6 +4,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Wallet } from "lucide-react";
 
 /**
  * 金額入力フォームのプロパティ
@@ -29,52 +30,66 @@ export interface AmountInputProps {
  */
 export const AmountInput = React.memo(
   ({ amount, setAmount, handleSelectAmount, error }: AmountInputProps) => {
+    const quickAmounts = [
+      { value: "1000", label: "¥1,000" },
+      { value: "3000", label: "¥3,000" },
+      { value: "5000", label: "¥5,000" },
+      { value: "10000", label: "¥10,000" },
+    ];
+
     return (
-      <div className="space-y-4">
-        <div className="space-y-2">
+      <div className="space-y-6">
+        {/* 金額入力フィールド */}
+        <div className="space-y-3">
           <Label
             htmlFor="amount"
-            className="text-sm font-medium text-stone-800"
+            className="text-sm font-semibold text-stone-700 flex items-center"
           >
+            <Wallet className="h-4 w-4 mr-2 text-teal-600" />
             チャージ金額
           </Label>
-          <div className="flex items-center space-x-2">
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl text-stone-600">
+              ¥
+            </span>
             <Input
               id="amount"
               type="number"
               placeholder="5,000"
-              className="border-stone-300"
+              className="pl-10 pr-12 h-14 text-xl font-medium border-stone-200 focus:border-teal-500 focus:ring-teal-500 transition-colors duration-200 text-center"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <span className="text-sm text-stone-600">円</span>
+            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-sm text-stone-600">
+              円
+            </span>
           </div>
         </div>
 
-        <div className="flex justify-between text-sm text-stone-600 px-1">
-          <span>おすすめ金額:</span>
-          <div className="space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 px-2 py-0 bg-stone-100 hover:bg-teal-50 border-stone-200"
-              onClick={() => handleSelectAmount("5000")}
-            >
-              5,000円
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 px-2 py-0 bg-stone-100 hover:bg-teal-50 border-stone-200"
-              onClick={() => handleSelectAmount("10000")}
-            >
-              10,000円
-            </Button>
+        {/* クイック金額選択 */}
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-stone-600">クイック選択</p>
+          <div className="grid grid-cols-2 gap-3">
+            {quickAmounts.map((quick) => (
+              <Button
+                key={quick.value}
+                variant="outline"
+                className={`
+                  h-12 font-medium border-stone-200 hover:border-teal-300 hover:bg-teal-50 
+                  transition-all duration-200
+                  ${amount === quick.value ? "bg-teal-50 border-teal-300 text-teal-700" : ""}
+                `}
+                onClick={() => handleSelectAmount(quick.value)}
+              >
+                {quick.label}
+              </Button>
+            ))}
           </div>
         </div>
 
+        {/* エラーメッセージ */}
         {error && (
-          <div className="text-red-600 text-sm bg-red-50 p-2 rounded-md">
+          <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg">
             {error}
           </div>
         )}

@@ -2,18 +2,10 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Leaf, ArrowLeft } from "lucide-react";
 import {
   usePaymentStore,
   ProductInfo,
@@ -82,112 +74,157 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-stone-50 flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <svg viewBox="0 0 100 40" className="h-12 w-auto fill-teal-700">
-            <path d="M50,0 L75,20 L65,40 H35 L25,20 L50,0z" />
-            <path d="M45,15 L55,15 L55,25 L45,25 L45,15z" fill="white" />
-          </svg>
-          <h1 className="text-2xl font-bold tracking-tight text-stone-900">
-            Eco Wallet
-          </h1>
+    <div className="min-h-screen bg-stone-50 pt-16 pb-8 px-4">
+      {/* ヘッダー */}
+      <div className="max-w-md mx-auto mb-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleCancel}
+          className="mb-4 -ml-2 text-stone-600 hover:text-stone-800"
+          disabled={
+            paymentStatus === "processing" || paymentStatus === "success"
+          }
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          戻る
+        </Button>
+
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-stone-800 mb-2">決済確認</h1>
           <p className="text-sm text-stone-600">
-            シンプルで環境に優しい決済サービス
+            購入内容をご確認の上、決済を行ってください
           </p>
         </div>
+      </div>
 
-        <Card className="border-0 shadow-md bg-white">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xl text-teal-800">決済確認</CardTitle>
-            <CardDescription>購入内容の確認と決済を行います</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* 成功メッセージ */}
-            {paymentStatus === "success" && (
-              <div className="bg-teal-50 p-4 rounded-md border border-teal-100 flex items-center mb-4">
-                <CheckCircle className="h-5 w-5 text-teal-600 mr-3" />
-                <div>
-                  <h3 className="text-sm font-medium text-teal-800">
-                    決済完了
-                  </h3>
-                  <p className="text-xs text-teal-700">
-                    決済が正常に完了しました。取引ページに移動します...
-                  </p>
-                </div>
+      <div className="max-w-md mx-auto space-y-4">
+        {/* 成功メッセージ */}
+        {paymentStatus === "success" && (
+          <Card className="border-0 shadow-sm bg-gradient-to-r from-teal-50 to-green-50">
+            <CardContent className="flex items-center p-6">
+              <div className="bg-teal-100 rounded-full p-3 mr-4">
+                <CheckCircle className="h-8 w-8 text-teal-600" />
               </div>
-            )}
+              <div>
+                <h3 className="text-lg font-semibold text-teal-800">
+                  決済が完了しました
+                </h3>
+                <p className="text-sm text-teal-700 mt-1">
+                  取引履歴に移動しています...
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-            {paymentStatus !== "success" && (
-              <>
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-stone-700">
-                    商品情報
-                  </h3>
-                  <ProductInfo product={paymentInfo.product} />
-                  <PaymentSummary
-                    subtotal={paymentInfo.subtotal}
-                    donationAmount={paymentInfo.donationAmount}
-                    total={paymentInfo.total}
-                    showDonation={paymentInfo.options.includeDonation}
-                  />
-                </div>
+        {paymentStatus !== "success" && (
+          <>
+            {/* 商品情報カード */}
+            <Card className="border border-stone-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold text-stone-800">
+                  購入商品
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ProductInfo product={paymentInfo.product} />
 
                 {paymentInfo.product.isEcoFriendly &&
                   paymentInfo.product.ecoDescription && (
-                    <Alert className="bg-teal-50 border-teal-200">
-                      <AlertDescription className="text-xs text-teal-800">
-                        {paymentInfo.product.ecoDescription}
-                      </AlertDescription>
-                    </Alert>
+                    <div className="mt-4 bg-teal-50 border border-teal-100 rounded-lg p-3">
+                      <div className="flex items-start">
+                        <Leaf className="h-4 w-4 text-teal-600 mr-2 mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-teal-700">
+                          {paymentInfo.product.ecoDescription}
+                        </p>
+                      </div>
+                    </div>
                   )}
+              </CardContent>
+            </Card>
 
+            {/* 支払い方法カード */}
+            <Card className="border border-stone-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold text-stone-800">
+                  支払い方法
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <PaymentMethodSelector
                   methods={mockPaymentMethods}
                   selectedMethod={paymentInfo.selectedPaymentMethod}
                   onMethodChange={setPaymentMethod}
                 />
+              </CardContent>
+            </Card>
 
+            {/* 環境オプションカード */}
+            <Card className="border border-stone-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold text-stone-800 flex items-center">
+                  <Leaf className="h-4 w-4 text-teal-600 mr-2" />
+                  環境への貢献
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <PaymentOptionsComponent
                   options={paymentInfo.options}
                   onOptionsChange={setPaymentOptions}
                 />
+              </CardContent>
+            </Card>
+
+            {/* 決済サマリーカード */}
+            <Card className="border border-stone-100 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold text-stone-800">
+                  お支払い金額
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PaymentSummary
+                  subtotal={paymentInfo.subtotal}
+                  donationAmount={paymentInfo.donationAmount}
+                  total={paymentInfo.total}
+                  showDonation={paymentInfo.options.includeDonation}
+                />
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {/* 決済ボタン */}
+        <div className="space-y-3 pt-2">
+          <Button
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 text-base font-medium shadow-sm transition-all duration-200"
+            onClick={handleConfirmPayment}
+            disabled={
+              paymentStatus === "processing" || paymentStatus === "success"
+            }
+          >
+            {paymentStatus === "processing" ? (
+              <>
+                <LoadingSpinner size="sm" light className="mr-2" />
+                決済処理中...
+              </>
+            ) : (
+              <>
+                決済を確定する
+                <span className="ml-2 text-sm font-normal">
+                  (¥{paymentInfo?.total.toLocaleString()})
+                </span>
               </>
             )}
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-2">
-            <Button
-              className="w-full bg-teal-700 hover:bg-teal-800 text-white"
-              onClick={handleConfirmPayment}
-              disabled={
-                paymentStatus === "processing" || paymentStatus === "success"
-              }
-            >
-              {paymentStatus === "processing" ? (
-                <>
-                  <LoadingSpinner size="sm" light className="mr-2" />
-                  決済処理中...
-                </>
-              ) : (
-                "決済を確定する"
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full text-stone-600 hover:text-stone-800 hover:bg-stone-100"
-              onClick={handleCancel}
-              disabled={
-                paymentStatus === "processing" || paymentStatus === "success"
-              }
-            >
-              キャンセル
-            </Button>
-          </CardFooter>
-        </Card>
+          </Button>
 
-        <p className="text-xs text-center text-stone-500">
-          お客様の購入ごとに、売上の1%を環境保護団体に寄付しています
-        </p>
+          {paymentStatus !== "success" && (
+            <p className="text-xs text-center text-stone-500">
+              決済を確定すると、売上の1%が環境保護団体に寄付されます
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

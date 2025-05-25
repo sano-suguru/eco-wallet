@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { ChargeInputContainer } from "@/features/charge/components/ChargeInput";
 import { ChargeConfirm } from "@/features/charge/components/ChargeConfirm";
 import { ChargeComplete } from "@/features/charge/components/ChargeComplete";
+import { PageContainer } from "@/features/layout";
 
 type ChargeStep = "input" | "confirm" | "complete";
 
@@ -80,23 +82,45 @@ export default function ChargePage() {
     }
   };
 
+  const handleBack = () => {
+    if (currentStep === "input") {
+      router.back();
+    } else {
+      handleBackToInput();
+    }
+  };
+
   return (
-    <div className="flex min-h-screen bg-stone-50 flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <svg viewBox="0 0 100 40" className="h-12 w-auto fill-teal-700">
-            <path d="M50,0 L75,20 L65,40 H35 L25,20 L50,0z" />
-            <path d="M45,15 L55,15 L55,25 L45,25 L45,15z" fill="white" />
-          </svg>
-          <h1 className="text-2xl font-bold tracking-tight text-stone-900">
-            Eco Wallet
-          </h1>
-          <p className="text-sm text-stone-600">
-            シンプルで環境に優しい決済サービス
-          </p>
+    <PageContainer showHeader={false} showFooter={false}>
+      <div className="min-h-screen bg-stone-50">
+        {/* ヘッダー */}
+        <div className="max-w-md mx-auto px-4 pt-6 pb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="mb-4 -ml-2 text-stone-600 hover:text-stone-800"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            戻る
+          </Button>
+
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-bold text-stone-800 mb-2">
+              {currentStep === "input" && "チャージ"}
+              {currentStep === "confirm" && "チャージ確認"}
+              {currentStep === "complete" && "チャージ完了"}
+            </h1>
+            <p className="text-sm text-stone-600">
+              {currentStep === "input" &&
+                "お支払い方法と金額を選択してください"}
+              {currentStep === "confirm" && "チャージ内容をご確認ください"}
+              {currentStep === "complete" && "チャージが完了しました"}
+            </p>
+          </div>
         </div>
 
-        <Card className="border-0 shadow-md bg-white">
+        <div className="max-w-md mx-auto px-4 pb-8">
           {currentStep === "input" && (
             <ChargeInputContainer
               onProceedToConfirm={(amount) => handleProceedToConfirm(amount)}
@@ -125,12 +149,8 @@ export default function ChargePage() {
               router={router}
             />
           )}
-        </Card>
-
-        <p className="text-xs text-center text-stone-500">
-          このサービスは環境に配慮した素材で作られたサーバーで運用されています
-        </p>
+        </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
