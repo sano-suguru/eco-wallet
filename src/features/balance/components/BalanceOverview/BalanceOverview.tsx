@@ -8,7 +8,8 @@ export function BalanceOverview() {
     useBalanceStore();
 
   // 合計残高を取得
-  const totalBalance = getTotalBalance();
+  const totalBalanceResult = getTotalBalance();
+  const totalBalance = totalBalanceResult.isOk() ? totalBalanceResult.value : 0;
 
   // キャンペーン残高の合計を計算
   const campaignTotal = campaignBalances.reduce(

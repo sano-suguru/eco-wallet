@@ -20,7 +20,8 @@ export function DonateInputContainer({
   const [error, setError] = useState<string | null>(null);
 
   // 残高データの取得
-  const balance = useBalanceStore((state) => state.getTotalBalance());
+  const balanceResult = useBalanceStore((state) => state.getTotalBalance());
+  const balance = balanceResult.isOk() ? balanceResult.value : 0;
 
   // 金額クイック選択ハンドラー
   const handleSelectAmount = (value: string) => {

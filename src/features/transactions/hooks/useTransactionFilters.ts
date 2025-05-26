@@ -52,23 +52,36 @@ export function useTransactionFilters() {
   // フィルター適用済みトランザクションを計算
   const filteredTransactions = useMemo<Transaction[]>(() => {
     // ベーストランザクション（タイプフィルター適用）
-    let result =
+    const typeResult =
       typeFilter === "all"
         ? [...transactions]
         : getTransactionsByType(typeFilter);
+    let result = Array.isArray(typeResult)
+      ? typeResult
+      : typeResult.isOk()
+        ? typeResult.value
+        : [];
 
     // 日付範囲フィルター適用
     if (dateRange) {
+      const dateRangeResult = getTransactionsByDateRange(
+        dateRange.startDate,
+        dateRange.endDate,
+      );
+      const dateTransactions = dateRangeResult.isOk()
+        ? dateRangeResult.value
+        : [];
       result = result.filter((tx) =>
-        getTransactionsByDateRange(dateRange.startDate, dateRange.endDate).some(
-          (dateTx) => dateTx.id === tx.id,
-        ),
+        dateTransactions.some((dateTx) => dateTx.id === tx.id),
       );
     }
 
     // エコ貢献フィルター適用
     if (showEcoOnly) {
-      const ecoTransactions = getTransactionsWithEcoContribution();
+      const ecoTransactionsResult = getTransactionsWithEcoContribution();
+      const ecoTransactions = ecoTransactionsResult.isOk()
+        ? ecoTransactionsResult.value
+        : [];
       result = result.filter((tx) =>
         ecoTransactions.some((ecoTx) => ecoTx.id === tx.id),
       );

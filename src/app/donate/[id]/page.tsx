@@ -72,7 +72,7 @@ export default function DonateProjectPage() {
       const donationAmount = Number(amount);
 
       // 1. 新しいトランザクションを作成（donation タイプ）
-      const newTransactionId = addTransaction({
+      const transactionResult = addTransaction({
         type: "donation",
         description: project.title,
         date: new Date()
@@ -89,7 +89,11 @@ export default function DonateProjectPage() {
         },
       });
 
-      setTransactionId(newTransactionId);
+      if (transactionResult.isErr()) {
+        throw new Error(transactionResult.error.message);
+      }
+
+      setTransactionId(transactionResult.value);
 
       // 2. ユーザーの残高を更新
       subtractFromRegularBalance(donationAmount);

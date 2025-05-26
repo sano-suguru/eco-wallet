@@ -50,9 +50,9 @@ export function TransactionDetailContainer() {
         // 実際のAPIリクエストの代わりにモックデータを使用
         await new Promise((resolve) => setTimeout(resolve, 500)); // 遅延を追加
 
-        const data = getTransactionById(transactionId);
-        if (data) {
-          setTransaction(data);
+        const dataResult = getTransactionById(transactionId);
+        if (dataResult.isOk()) {
+          setTransaction(dataResult.value);
         }
       } catch (error) {
         console.error("Failed to fetch transaction:", error);

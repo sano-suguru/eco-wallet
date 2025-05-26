@@ -5,8 +5,8 @@
 ### 全体進捗
 
 ```
-進捗: 43% (12/28 タスク完了)
-現在フェーズ: Phase 2 実装中（API関数層完了）
+進捗: 71% (20/28 タスク完了)
+現在フェーズ: Phase 2 完了 🎉 → Phase 3 準備完了
 最終更新: 2025/05/26
 ```
 
@@ -19,11 +19,11 @@
 推定工数: 2-3日 → 実績: 1日
 ```
 
-#### Phase 2: ビジネスロジック層 (4/12 完了)
+#### Phase 2: ビジネスロジック層 (12/12 完了) ✅
 
 ```
-進捗: 33% ███░░░░░░░
-推定工数: 5-7日
+進捗: 100% ██████████
+推定工数: 5-7日 → 実績: 1日
 ```
 
 #### Phase 3: UI層 (0/8 完了)
@@ -117,45 +117,53 @@
 
 #### 2.2 ビジネスロジック関数の改修
 
-- [ ] **P2-005**: 決済処理関数の改修
+- [x] **P2-005**: 決済処理関数の改修
 
   - ファイル: `src/lib/business/payment.ts`
   - 対象関数: processPayment, validatePayment等
+  - **完了日**: 2025/05/26
 
-- [ ] **P2-006**: 残高管理関数の改修
+- [x] **P2-006**: 残高管理関数の改修
 
   - ファイル: `src/lib/business/balance.ts`
   - 対象関数: calculateBalance, updateBalance等
+  - **完了日**: 2025/05/26
 
-- [ ] **P2-007**: トランザクション処理関数の改修
+- [x] **P2-007**: トランザクション処理関数の改修
 
   - ファイル: `src/lib/business/transaction.ts`
   - 対象関数: createTransaction, validateTransaction等
+  - **完了日**: 2025/05/26
 
-- [ ] **P2-008**: 環境貢献計算関数の改修
+- [x] **P2-008**: 環境貢献計算関数の改修
   - ファイル: `src/lib/business/eco-contribution.ts`
   - 対象関数: calculateEcoContribution等
+  - **完了日**: 2025/05/26
 
 #### 2.3 状態管理の改修
 
-- [ ] **P2-009**: ユーザー状態管理の改修
+- [x] **P2-009**: ユーザー状態管理の改修
 
-  - ファイル: `src/features/auth/store/`
-  - 対象: 認証関連のZustandストア
+  - ファイル: `src/features/auth/store/auth.slice.ts`
+  - 対象: 認証関連のZustandストア（Result型対応）
+  - **完了日**: 2025/05/26
 
-- [ ] **P2-010**: 残高状態管理の改修
+- [x] **P2-010**: 残高状態管理の改修
 
-  - ファイル: `src/features/balance/store/`
-  - 対象: 残高関連のZustandストア
+  - ファイル: `src/features/balance/store/balance.slice.ts`
+  - 対象: 残高関連のZustandストア（Result型対応）
+  - **完了日**: 2025/05/26
 
-- [ ] **P2-011**: 取引状態管理の改修
+- [x] **P2-011**: 取引状態管理の改修
 
-  - ファイル: `src/features/transactions/store/`
-  - 対象: 取引関連のZustandストア
+  - ファイル: `src/features/transactions/store/transaction.slice.ts`
+  - 対象: 取引関連のZustandストア（Result型対応）
+  - **完了日**: 2025/05/26
 
-- [ ] **P2-012**: 共通状態管理の改修
-  - ファイル: `src/shared/stores/`
-  - 対象: 共通状態管理（エラー、ローディング等）
+- [x] **P2-012**: 共通状態管理の改修
+  - ファイル: `src/shared/stores/app.slice.ts`
+  - 対象: 共通状態管理（エラー、ローディング等、Result型対応）
+  - **完了日**: 2025/05/26
 
 ### Phase 3: UI層
 
@@ -246,6 +254,30 @@
   - 機能: 取引一覧取得、作成、更新、削除、統計取得等
   - 8個のテスト（全て合格）
 - **技術的成果**: 48個のテスト全て合格、型安全なAPI基盤確立
+
+### 2025/05/26 - Phase 2 ビジネスロジック層完了 🎯
+
+- **P2-005完了**: 決済処理関数の改修
+  - ファイル: `src/lib/business/payment.ts`
+  - 内容: Result<T, BusinessError>対応の決済処理ビジネスロジック
+  - 機能: processPayment, validatePaymentAmount, calculatePaymentFee, cancelPayment等
+  - 包括的バリデーション、手数料計算、決済状態管理機能
+- **P2-006完了**: 残高管理関数の改修
+  - ファイル: `src/lib/business/balance.ts`
+  - 内容: Result<T, BusinessError>対応の残高管理ビジネスロジック
+  - 機能: calculateTotalBalance, validateChargeAmount, processCharge, checkSufficientBalance等
+  - キャンペーン残高計算、チャージ処理、残高制限チェック機能
+- **P2-007完了**: トランザクション処理関数の改修
+  - ファイル: `src/lib/business/transaction.ts`
+  - 内容: Result<T, BusinessError>対応の取引処理ビジネスロジック
+  - 機能: createTransaction, validateTransactionAmount, aggregateTransactions, checkTransactionDuplicate等
+  - 取引種別バリデーション、集計処理、重複チェック機能
+- **P2-008完了**: 環境貢献計算関数の改修
+  - ファイル: `src/lib/business/eco-contribution.ts`
+  - 内容: Result<T, BusinessError>対応の環境貢献計算ビジネスロジック
+  - 機能: calculateEcoContributionSafe, validateEcoContributionAmount, calculateEcoEfficiency等
+  - 環境貢献バリデーション、効率性計算、レポート生成機能
+- **技術的成果**: 型安全なビジネスロジック基盤確立、In Source Testing導入、包括的エラーハンドリング
 
 ### 2025/01/25
 

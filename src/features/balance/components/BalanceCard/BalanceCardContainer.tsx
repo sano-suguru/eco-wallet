@@ -21,7 +21,8 @@ export function BalanceCardContainer({} /* className */ : BalanceCardContainerPr
     0,
   );
 
-  const totalBalance = getTotalBalance();
+  const totalBalanceResult = getTotalBalance();
+  const totalBalance = totalBalanceResult.isOk() ? totalBalanceResult.value : 0;
   const formattedBalance = formatCurrency(totalBalance);
 
   // 期限が近い（7日以内）キャンペーン残高があるかチェック

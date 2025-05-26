@@ -44,7 +44,10 @@ export default function RecentTransactionsContainer({
 
   // トランザクションデータをフェッチ
   useEffect(() => {
-    const recentTransactions = getRecentTransactions(limit);
+    const recentTransactionsResult = getRecentTransactions(limit);
+    const recentTransactions = recentTransactionsResult.isOk()
+      ? recentTransactionsResult.value
+      : [];
     setTransactions(recentTransactions);
   }, [getRecentTransactions, limit]);
 
