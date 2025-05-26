@@ -5,9 +5,9 @@
 ### 全体進捗
 
 ```
-進捗: 71% (20/28 タスク完了)
-現在フェーズ: Phase 2 完了 🎉 → Phase 3 準備完了
-最終更新: 2025/05/26
+進捗: 75% (21/28 タスク完了)
+現在フェーズ: Phase 3 進行中 🚀
+最終更新: 2025/05/27
 ```
 
 ### フェーズ別進捗
@@ -26,10 +26,10 @@
 推定工数: 5-7日 → 実績: 1日
 ```
 
-#### Phase 3: UI層 (0/8 完了)
+#### Phase 3: UI層 (2/8 完了)
 
 ```
-進捗: 0% █░░░░░░░░░
+進捗: 25% ██░░░░░░░░
 推定工数: 3-5日
 ```
 
@@ -175,10 +175,11 @@
   - 変更: Result型を使用したバリデーション
   - **完了日**: 2025/05/27
 
-- [ ] **P3-002**: PaymentMethodSelectorの改修
+- [x] **P3-002**: PaymentMethodSelectorの改修
 
-  - ファイル: `src/features/payment/components/PaymentMethodSelector/PaymentMethodSelector.tsx`
-  - 変更: エラーハンドリングの統一
+  - ファイル: `src/features/payment/components/PaymentMethodSelector/PaymentMethodSelectorContainer.tsx`
+  - 変更: Result型対応コンテナコンポーネント作成、PaymentStore改修
+  - **完了日**: 2025/05/27
 
 - [ ] **P3-003**: その他フォームコンポーネントの改修
   - 対象: 認証フォーム、設定フォーム等
@@ -279,6 +280,20 @@
   - 機能: calculateEcoContributionSafe, validateEcoContributionAmount, calculateEcoEfficiency等
   - 環境貢献バリデーション、効率性計算、レポート生成機能
 - **技術的成果**: 型安全なビジネスロジック基盤確立、In Source Testing導入、包括的エラーハンドリング
+
+### 2025/05/27 - Phase 3 UI層開始 🎨
+
+- **P3-001完了**: ChargeInputContainerの改修
+  - ファイル: `src/features/charge/components/ChargeInput/ChargeInputContainer.tsx`
+  - 内容: Result型対応バリデーション、ビジネスロジック層統合、統一エラーハンドリング
+  - 機能: 段階的バリデーション（入力→ビジネス→API）、useMemoによる効率的再計算
+  - ESLintエラー修正、プロダクションビルド確認完了
+- **P3-002完了**: PaymentMethodSelectorの改修
+  - ファイル: `src/features/payment/components/PaymentMethodSelector/PaymentMethodSelectorContainer.tsx`
+  - 内容: Result型対応コンテナコンポーネント作成、PaymentStore改修
+  - 機能: 決済方法バリデーション、手数料計算、ビジネスロジック層統合
+  - PaymentStoreをResult型.match()パターンに移行、統一エラーハンドリング実装
+- **技術的成果**: P3-001で確立した実装パターンの効率的適用、UI層の型安全性向上
 
 ### 2025/01/25
 

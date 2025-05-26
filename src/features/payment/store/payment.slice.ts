@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { PaymentStore, PaymentStatus } from "../types/payment";
 import { useTransactionStore } from "@/features/transactions/store/transaction.slice";
+import { processPayment as businessProcessPayment } from "@/lib/business/payment";
+import { getErrorMessage } from "@/lib/utils/error-utils";
 
 const initialState = {
   paymentInfo: null,
@@ -49,50 +51,75 @@ export const usePaymentStore = create<PaymentStore>()(
           return { success: false, error: "Payment info not set" };
         }
 
+        // paymentInfoを変数に保存してnullチェック問題を回避
+        const paymentInfo = state.paymentInfo;
+
         set({ paymentStatus: "processing", error: null });
 
-        try {
-          // 決済処理のモック - 実際のAPIコールの代わりにタイマーを使用
-          await new Promise((resolve) => setTimeout(resolve, 1500));
+        // ビジネスロジック層への決済パラメータ作成
+        const paymentParams = {
+          amount: paymentInfo.total,
+          paymentMethod:
+            paymentInfo.selectedPaymentMethod === "wallet"
+              ? ("bank_transfer" as const)
+              : ("credit_card" as const),
+          description: paymentInfo.product.name,
+          metadata: {
+            productId: paymentInfo.product.id,
+            ecoFriendly: paymentInfo.product.isEcoFriendly,
+            donationIncluded: paymentInfo.options.includeDonation,
+            donationAmount: paymentInfo.donationAmount,
+          },
+        };
 
-          // トランザクションストアから関数を取得
-          const addTransaction = useTransactionStore.getState().addTransaction;
+        // ビジネスロジック層の決済処理を実行
+        const result = await businessProcessPayment(paymentParams);
 
-          // 新しいトランザクションを作成
-          const newTransaction = {
-            type: "payment" as const,
-            description: state.paymentInfo.product.name,
-            date: new Date()
-              .toLocaleDateString("ja-JP", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              })
-              .replace(/\//g, "/"),
-            amount: -state.paymentInfo.total,
-            ecoContribution: state.paymentInfo.options.includeDonation
-              ? {
-                  enabled: true,
-                  amount: state.paymentInfo.donationAmount,
-                }
-              : undefined,
-            badges: state.paymentInfo.product.isEcoFriendly ? ["環境貢献"] : [],
-          };
+        return result.match(
+          (paymentState) => {
+            // 成功時の処理
+            // トランザクションストアから関数を取得
+            const addTransaction =
+              useTransactionStore.getState().addTransaction;
 
-          // トランザクションをストアに追加して、生成されたIDを取得
-          const transactionId = addTransaction(newTransaction);
+            // 新しいトランザクションを作成
+            const newTransaction = {
+              type: "payment" as const,
+              description: paymentInfo.product.name,
+              date: new Date()
+                .toLocaleDateString("ja-JP", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                })
+                .replace(/\//g, "/"),
+              amount: -paymentInfo.total,
+              ecoContribution: paymentInfo.options.includeDonation
+                ? {
+                    enabled: true,
+                    amount: paymentInfo.donationAmount,
+                  }
+                : undefined,
+              badges: paymentInfo.product.isEcoFriendly ? ["環境貢献"] : [],
+            };
 
-          set({ paymentStatus: "success" });
+            // トランザクションをストアに追加して、生成されたIDを取得
+            const transactionId = addTransaction(newTransaction);
 
-          return { success: true, transactionId };
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : "決済処理中にエラーが発生しました";
-          set({ paymentStatus: "error", error: errorMessage });
-          return { success: false, error: errorMessage };
-        }
+            set({ paymentStatus: "success" });
+
+            return {
+              success: true,
+              transactionId: paymentState.transactionId || transactionId,
+            };
+          },
+          (businessError) => {
+            // エラー時の処理
+            const errorMessage = getErrorMessage(businessError);
+            set({ paymentStatus: "error", error: errorMessage });
+            return { success: false, error: errorMessage };
+          },
+        );
       },
 
       resetPayment: () => set(initialState),

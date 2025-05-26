@@ -10,7 +10,7 @@ import {
   usePaymentStore,
   ProductInfo,
   PaymentSummary,
-  PaymentMethodSelector,
+  PaymentMethodSelectorContainer,
   PaymentOptionsComponent,
   mockProducts,
   mockPaymentMethods,
@@ -152,10 +152,11 @@ export default function PaymentPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <PaymentMethodSelector
+                <PaymentMethodSelectorContainer
                   methods={mockPaymentMethods}
                   selectedMethod={paymentInfo.selectedPaymentMethod}
                   onMethodChange={setPaymentMethod}
+                  paymentAmount={paymentInfo.total}
                 />
               </CardContent>
             </Card>

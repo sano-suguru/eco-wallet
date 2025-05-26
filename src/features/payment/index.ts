@@ -12,7 +12,10 @@ export type {
 // Components
 export { ProductInfo } from "./components/ProductInfo";
 export { PaymentSummary } from "./components/PaymentSummary";
-export { PaymentMethodSelector } from "./components/PaymentMethodSelector";
+export {
+  PaymentMethodSelector,
+  PaymentMethodSelectorContainer,
+} from "./components/PaymentMethodSelector";
 export { PaymentOptions as PaymentOptionsComponent } from "./components/PaymentOptions";
 
 // Store
