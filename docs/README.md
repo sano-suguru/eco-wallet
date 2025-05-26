@@ -22,10 +22,24 @@
   - テスト方針とパフォーマンス最適化
 
 - **[cline-development-guide.md](architecture/cline-development-guide.md)** - Cline開発ガイド
+
   - TypeScript特化プロンプトエンジニアリング
   - 効果的なプロンプトパターン（TDD、In Source Testing等）
   - アンチパターンと回避方法
   - Eco Wallet固有の適用方法
+
+- **[neverthrow-migration-guide.md](architecture/neverthrow-migration-guide.md)** - Neverthrow導入ガイド
+
+  - 型安全なエラーハンドリングの導入計画
+  - 段階的移行戦略（Phase 1-3）
+  - 実装パターンとベストプラクティス
+  - トラブルシューティングガイド
+
+- **[neverthrow-progress.md](architecture/neverthrow-progress.md)** - Neverthrow導入進捗管理
+  - 進捗ダッシュボードと詳細タスク一覧
+  - 作業履歴とセッション間の継続性
+  - 品質指標と成功基準
+  - 次回作業予定の管理
 
 ### デザイン (`design/`)
 
