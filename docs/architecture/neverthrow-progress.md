@@ -169,10 +169,11 @@
 
 #### 3.1 フォームコンポーネントの改修
 
-- [ ] **P3-001**: ChargeInputContainerの改修
+- [x] **P3-001**: ChargeInputContainerの改修
 
   - ファイル: `src/features/charge/components/ChargeInput/ChargeInputContainer.tsx`
   - 変更: Result型を使用したバリデーション
+  - **完了日**: 2025/05/27
 
 - [ ] **P3-002**: PaymentMethodSelectorの改修
 

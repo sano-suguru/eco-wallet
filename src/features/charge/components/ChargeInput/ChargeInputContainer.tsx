@@ -1,7 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { validateAmount, isValidEmail } from "@/lib/utils/validation";
+import { useState, useMemo } from "react";
+import {
+  validateAmountResult,
+  validateEmailResult,
+} from "@/lib/utils/validation";
+import { validateChargeAmount } from "@/lib/business/balance";
+import { chargeBalance, ChargeRequest } from "@/services/api/balance";
+import { getErrorMessage } from "@/lib/utils/error-utils";
 import { ChargeInputForm } from "./ChargeInputForm";
 
 /**
@@ -33,10 +39,18 @@ export function ChargeInputContainer({
   const [processingVerification, setProcessingVerification] =
     useState<boolean>(false);
 
-  // バリデーション
-  const amountValidation = validateAmount(amount);
-  const isValidAmount = amountValidation.isValid;
-  const validEmail = isValidEmail(email);
+  // バリデーション（Result型対応）
+  const amountValidationResult = useMemo(
+    () => validateAmountResult(amount, 1, 1000000),
+    [amount],
+  );
+  const emailValidationResult = useMemo(
+    () => validateEmailResult(email),
+    [email],
+  );
+
+  const isValidAmount = amountValidationResult.isOk();
+  const validEmail = emailValidationResult.isOk();
 
   // 金額クイック選択ハンドラー
   const handleSelectAmount = (value: string) => {
@@ -44,87 +58,142 @@ export function ChargeInputContainer({
     setError(null);
   };
 
-  // フォーム送信ハンドラー
+  // フォーム送信ハンドラー（Result型対応）
   const handleProceedToConfirm = () => {
     console.log("handleProceedToConfirm called with amount:", amount);
 
-    // バリデーション
-    if (!isValidAmount) {
-      setError(amountValidation.reason || "金額を正しく入力してください");
-      console.log("Amount validation failed:", amountValidation);
+    // Result型バリデーション
+    if (amountValidationResult.isErr()) {
+      const validationError = amountValidationResult.error;
+      setError(getErrorMessage(validationError));
+      console.log("Amount validation failed:", validationError);
       return;
     }
 
-    const numAmount = parseFloat(amount);
-    if (numAmount <= 0) {
-      setError("0より大きい金額を入力してください");
-      console.log("Amount is zero or negative");
+    const validatedAmount = amountValidationResult.value;
+
+    // ビジネスロジック層でのバリデーション
+    const chargeValidationResult = validateChargeAmount(validatedAmount);
+    if (chargeValidationResult.isErr()) {
+      const businessError = chargeValidationResult.error;
+      setError(getErrorMessage(businessError));
+      console.log("Charge validation failed:", businessError);
       return;
     }
 
     // 入力が有効であれば次のステップに進む
     if (onProceedToConfirm) {
-      console.log("Calling onProceedToConfirm with numAmount:", numAmount);
-      onProceedToConfirm(numAmount);
+      console.log(
+        "Calling onProceedToConfirm with validatedAmount:",
+        validatedAmount,
+      );
+      onProceedToConfirm(validatedAmount);
     } else {
       console.log("onProceedToConfirm is not defined");
     }
   };
 
-  // 銀行振込メール送信処理
+  // 銀行振込メール送信処理（Result型対応）
   const handleSendBankTransferEmail = async () => {
-    if (!validEmail) {
-      setError("有効なメールアドレスを入力してください");
+    // メールアドレスのバリデーション
+    if (emailValidationResult.isErr()) {
+      const validationError = emailValidationResult.error;
+      setError(getErrorMessage(validationError));
       return;
     }
 
-    if (!isValidAmount) {
-      setError("金額を正しく入力してください");
+    // 金額のバリデーション
+    if (amountValidationResult.isErr()) {
+      const validationError = amountValidationResult.error;
+      setError(getErrorMessage(validationError));
+      return;
+    }
+
+    const validatedEmail = emailValidationResult.value;
+    const validatedAmount = amountValidationResult.value;
+
+    // ビジネスロジック層でのチャージバリデーション
+    const chargeValidationResult = validateChargeAmount(validatedAmount);
+    if (chargeValidationResult.isErr()) {
+      const businessError = chargeValidationResult.error;
+      setError(getErrorMessage(businessError));
       return;
     }
 
     setIsLoading(true);
     setError(null);
 
-    try {
-      // 実際のAPIリクエストの代わりにモックの処理
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+    // API呼び出し（Result型対応）
+    const chargeRequest: ChargeRequest = {
+      amount: validatedAmount,
+      paymentMethod: "bank_transfer",
+      paymentDetails: {
+        email: validatedEmail,
+        requestType: "bank_transfer_instructions",
+      },
+    };
 
-      // ランダムな振込コードを生成
-      const code = Math.random().toString(36).substring(2, 10).toUpperCase();
-      setTransferCode(code);
-      setEmailSent(true);
-    } catch {
-      setError("メールの送信に失敗しました。もう一度お試しください。");
-    } finally {
-      setIsLoading(false);
-    }
+    const result = await chargeBalance(chargeRequest);
+
+    result.match(
+      (response) => {
+        // 成功時の処理
+        setTransferCode(response.transactionId);
+        setEmailSent(true);
+        console.log("Bank transfer request successful:", response);
+      },
+      (apiError) => {
+        // エラー時の処理
+        setError(getErrorMessage(apiError));
+        console.error("Bank transfer request failed:", apiError);
+      },
+    );
+
+    setIsLoading(false);
   };
 
-  // 銀行振込通知処理
+  // 銀行振込通知処理（Result型対応）
   const handleNotifyBankTransfer = async () => {
+    if (!transferCode) {
+      setError("振込コードが見つかりません。再度メール送信を行ってください。");
+      return;
+    }
+
     setProcessingVerification(true);
     setError(null);
 
-    try {
-      // 実際のAPIリクエストの代わりにモックの処理
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+    // チャージステータス確認API呼び出し（Result型対応）
+    const result = await chargeBalance({
+      amount: amountValidationResult.isOk() ? amountValidationResult.value : 0,
+      paymentMethod: "bank_transfer",
+      paymentDetails: {
+        transactionId: transferCode,
+        requestType: "verification_request",
+      },
+    });
 
-      // モック：50%の確率で成功、50%の確率で失敗
-      if (Math.random() > 0.5) {
-        throw new Error("確認に失敗しました");
-      }
+    result.match(
+      (response) => {
+        // 成功時の処理
+        if (response.status === "completed") {
+          setError("振込が確認されました。チャージが完了しました。");
+        } else if (response.status === "pending") {
+          setError(
+            "振込確認リクエストを受け付けました。通常1営業日以内に確認します。",
+          );
+        } else {
+          setError("振込の確認ができませんでした。もう一度お試しください。");
+        }
+        console.log("Bank transfer verification response:", response);
+      },
+      (apiError) => {
+        // エラー時の処理
+        setError(getErrorMessage(apiError));
+        console.error("Bank transfer verification failed:", apiError);
+      },
+    );
 
-      setError(
-        "振込確認リクエストを受け付けました。通常1営業日以内に確認します。",
-      );
-    } catch {
-      setError(
-        "振込確認に失敗しました。カスタマーサポートにお問い合わせください。",
-      );
-    } finally {
-      setProcessingVerification(false);
-    }
+    setProcessingVerification(false);
   };
 
   return (
