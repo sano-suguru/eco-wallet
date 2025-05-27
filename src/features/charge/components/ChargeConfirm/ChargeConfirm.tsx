@@ -9,13 +9,15 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Leaf } from "lucide-react";
 import { Session } from "next-auth";
+import { ErrorDisplay } from "@/components/ui/error-display";
+import type { AppError } from "@/shared/types/errors";
 
 interface ChargeConfirmProps {
   amount: string;
   paymentMethod: "credit-card" | "bank";
   session: Session | null;
   isLoading: boolean;
-  error: string | null;
+  error: AppError | null;
   handleConfirmCharge: () => Promise<void>;
   handleBackToInput: () => void;
 }
@@ -87,11 +89,7 @@ export function ChargeConfirm({
           </div>
         </div>
 
-        {error && (
-          <div className="text-red-600 text-sm bg-red-50 p-2 rounded-md">
-            {error}
-          </div>
-        )}
+        {error && <ErrorDisplay error={error} variant="inline" />}
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
         <Button

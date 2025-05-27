@@ -9,6 +9,9 @@ import { ChargeInputContainer } from "@/features/charge/components/ChargeInput";
 import { ChargeConfirm } from "@/features/charge/components/ChargeConfirm";
 import { ChargeComplete } from "@/features/charge/components/ChargeComplete";
 import { PageContainer } from "@/features/layout";
+import { processCharge, type ChargeParams } from "@/lib/business/balance";
+import { showAppErrorNotification } from "@/shared/stores/app.slice";
+import type { AppError } from "@/shared/types/errors";
 
 type ChargeStep = "input" | "confirm" | "complete";
 
@@ -21,7 +24,7 @@ export default function ChargePage() {
   const [paymentMethod] = useState<"credit-card" | "bank">("credit-card");
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
   const [transactionId, setTransactionId] = useState<string>("");
 
   // 銀行振込関連の状態
@@ -40,7 +43,13 @@ export default function ChargePage() {
       isNaN(Number(amountToCheck)) ||
       Number(amountToCheck) <= 0
     ) {
-      setError("有効な金額を入力してください");
+      const validationError: AppError = {
+        type: "INVALID_AMOUNT",
+        message: "有効な金額を入力してください",
+        field: "amount",
+      };
+      setError(validationError);
+      showAppErrorNotification(validationError);
       return;
     }
     setError(null);
@@ -52,34 +61,41 @@ export default function ChargePage() {
     setCurrentStep("input");
   };
 
-  // クレジットカードチャージ処理
+  // チャージ処理
   const handleConfirmCharge = async () => {
     setIsLoading(true);
     setError(null);
 
-    try {
-      // モック処理として遅延を入れる
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+    const chargeParams: ChargeParams = {
+      amount: Number(amount),
+      paymentMethod:
+        paymentMethod === "credit-card" ? "credit_card" : "bank_transfer",
+      description: "Eco Walletチャージ",
+    };
 
-      // モックのトランザクションID生成
-      const mockTransactionId = `TXN${Date.now().toString().slice(-8)}`;
-      setTransactionId(mockTransactionId);
+    const result = await processCharge(chargeParams);
 
-      // セッションの残高を更新 (モック)
-      if (session?.user) {
-        const newBalance = (session.user.balance || 0) + Number(amount);
-        // 本来はバックエンドからのレスポンスに基づいて更新する
-        await update({ balance: newBalance });
-      }
+    result.match(
+      async (success) => {
+        // チャージ成功
+        setTransactionId(success.transactionId);
 
-      setCurrentStep("complete");
-    } catch {
-      setError(
-        "チャージ処理中にエラーが発生しました。時間をおいて再度お試しください。",
-      );
-    } finally {
-      setIsLoading(false);
-    }
+        // セッションの残高を更新
+        if (session?.user) {
+          const newBalance = (session.user.balance || 0) + success.amount;
+          await update({ balance: newBalance });
+        }
+
+        setCurrentStep("complete");
+      },
+      (chargeError) => {
+        // チャージ失敗
+        setError(chargeError);
+        showAppErrorNotification(chargeError, "チャージエラー");
+      },
+    );
+
+    setIsLoading(false);
   };
 
   const handleBack = () => {
