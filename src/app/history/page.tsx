@@ -15,6 +15,9 @@ import { TransactionFilters, TransactionList } from "@/features/transactions";
 import { EcoContributionSummary } from "@/features/eco-impact";
 import { ArrowLeft, TrendingUp, Leaf } from "lucide-react";
 import Link from "next/link";
+import { AppError } from "@/shared/types/errors";
+import { ErrorDisplay } from "@/components/ui/error-display";
+import { showAppErrorNotification } from "@/shared/stores/app.slice";
 
 export default function TransactionHistoryPage() {
   // タブの選択状態
@@ -26,112 +29,210 @@ export default function TransactionHistoryPage() {
   const [startDate, setStartDate] = useState<Date>(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState<Date>(new Date());
 
-  // Zustand ストアからデータを取得
-  const transactions = useTransactionStore((state) => state.transactions);
+  // エラーステート管理（Result型対応）
+  const [error, setError] = useState<AppError | null>(null);
 
-  // タブの変更ハンドラ
+  // Zustand ストアからデータとメソッドを取得（Result型対応）
+  const transactions = useTransactionStore((state) => state.transactions);
+  const getTransactionsByType = useTransactionStore(
+    (state) => state.getTransactionsByType,
+  );
+  const getTransactionsWithEcoContribution = useTransactionStore(
+    (state) => state.getTransactionsWithEcoContribution,
+  );
+  const getTotalEcoContribution = useTransactionStore(
+    (state) => state.getTotalEcoContribution,
+  );
+
+  // エラー再試行ハンドラ（Result型対応）
+  const handleRetry = () => {
+    setError(null);
+    // フィルタリングを再実行（特にAPIアクセスが必要な場合）
+    handleTabChange(selectedTab);
+  };
+
+  // タブの変更ハンドラ（Result型対応エラーハンドリング）
   const handleTabChange = (
     value: "all" | "in" | "out" | "campaign" | "eco",
   ) => {
     setSelectedTab(value);
+    setError(null); // タブ変更時にエラーをクリア
+
+    // 特定のタブでResult型メソッドを活用
+    if (value === "eco") {
+      const ecoResult = getTransactionsWithEcoContribution();
+      ecoResult.match(
+        () => {
+          // 成功時は特に何もしない（フィルタリングはuseMemoで処理）
+        },
+        (error) => {
+          setError(error);
+          showAppErrorNotification(error, "環境貢献取引の取得エラー");
+        },
+      );
+    }
   };
 
-  // フィルタリングされた取引リストを計算
+  // フィルタリングされた取引リストを計算（Result型統合）
   const filteredTransactions = useMemo(() => {
-    // タイプでフィルタリング
-    let result = transactions;
+    try {
+      // タイプでフィルタリング（Result型メソッド活用）
+      let result = transactions;
 
-    switch (selectedTab) {
-      case "in":
-        // 入金: charge と receive タイプの取引
-        result = result.filter(
-          (tx) => tx.type === "charge" || tx.type === "receive",
-        );
-        break;
-      case "out":
-        // 支払い: payment タイプの取引
-        result = result.filter((tx) => tx.type === "payment");
-        break;
-      case "campaign":
-        // 特典: 特典バッジを持つ取引
-        result = result.filter((tx) => tx.badges && tx.badges.includes("特典"));
-        break;
-      case "eco":
-        // 環境貢献: 環境貢献のある取引
-        result = result.filter((tx) => tx.ecoContribution?.enabled);
-        break;
-    }
+      switch (selectedTab) {
+        case "in":
+          // 入金: charge と receive タイプの取引
+          const chargeResult = getTransactionsByType("charge");
+          const receiveResult = getTransactionsByType("receive");
 
-    // 日付でフィルタリング
-    result = result.filter((tx) => {
-      try {
-        // 文字列形式の日付をDateオブジェクトに変換
-        // "2025/04/15" 形式か "2025年4月15日" 形式かチェック
-        let txDate: Date;
+          if (chargeResult.isOk() && receiveResult.isOk()) {
+            const chargeTransactions = chargeResult.value;
+            const receiveTransactions = receiveResult.value;
+            result = [...chargeTransactions, ...receiveTransactions];
+          } else {
+            // フォールバック: 従来のフィルタリング
+            result = result.filter(
+              (tx) => tx.type === "charge" || tx.type === "receive",
+            );
+          }
+          break;
+        case "out":
+          // 支払い: payment タイプの取引
+          const paymentResult = getTransactionsByType("payment");
+          if (paymentResult.isOk()) {
+            result = paymentResult.value;
+          } else {
+            // フォールバック: 従来のフィルタリング
+            result = result.filter((tx) => tx.type === "payment");
+          }
+          break;
+        case "campaign":
+          // 特典: 特典バッジを持つ取引
+          result = result.filter(
+            (tx) => tx.badges && tx.badges.includes("特典"),
+          );
+          break;
+        case "eco":
+          // 環境貢献: 環境貢献のある取引（Result型メソッド活用）
+          const ecoResult = getTransactionsWithEcoContribution();
+          if (ecoResult.isOk()) {
+            result = ecoResult.value;
+          } else {
+            // フォールバック: 従来のフィルタリング
+            result = result.filter((tx) => tx.ecoContribution?.enabled);
+          }
+          break;
+        default:
+          // "all": すべての取引を表示
+          break;
+      }
 
-        if (typeof tx.date === "string") {
-          if (tx.date.includes("/")) {
-            // yyyy/mm/dd 形式
-            txDate = parseISO(tx.date.replace(/\//g, "-"));
-          } else if (tx.date.includes("年")) {
-            // yyyy年mm月dd日 形式
-            const matched = tx.date.match(/(\d+)年(\d+)月(\d+)日/);
-            if (matched) {
-              txDate = new Date(
-                parseInt(matched[1]),
-                parseInt(matched[2]) - 1,
-                parseInt(matched[3]),
-              );
+      // 日付でフィルタリング
+      result = result.filter((tx) => {
+        try {
+          // 文字列形式の日付をDateオブジェクトに変換
+          // "2025/04/15" 形式か "2025年4月15日" 形式かチェック
+          let txDate: Date;
+
+          if (typeof tx.date === "string") {
+            if (tx.date.includes("/")) {
+              // yyyy/mm/dd 形式
+              txDate = parseISO(tx.date.replace(/\//g, "-"));
+            } else if (tx.date.includes("年")) {
+              // yyyy年mm月dd日 形式
+              const matched = tx.date.match(/(\d+)年(\d+)月(\d+)日/);
+              if (matched) {
+                txDate = new Date(
+                  parseInt(matched[1]),
+                  parseInt(matched[2]) - 1,
+                  parseInt(matched[3]),
+                );
+              } else {
+                txDate = new Date(tx.date);
+              }
             } else {
+              // その他の形式
               txDate = new Date(tx.date);
             }
+          } else if (tx.date && typeof tx.date === "object") {
+            // 日付オブジェクトとして扱う
+            txDate = new Date(tx.date as Date);
           } else {
-            // その他の形式
-            txDate = new Date(tx.date);
+            // 日付として解釈できない場合はフィルタから除外しない
+            return true;
           }
-        } else if (tx.date && typeof tx.date === "object") {
-          // 日付オブジェクトとして扱う
-          txDate = new Date(tx.date as Date);
-        } else {
-          // 日付として解釈できない場合はフィルタから除外しない
+
+          // 開始日の00:00:00から終了日の23:59:59までの範囲でフィルタリング
+          return isWithinInterval(txDate, {
+            start: startOfDay(startDate),
+            end: endOfDay(endDate),
+          });
+        } catch (e) {
+          // 日付解析エラーの場合は表示する（フィルタから除外しない）
+          console.error("Date parsing error:", e);
           return true;
         }
+      });
 
-        // 開始日の00:00:00から終了日の23:59:59までの範囲でフィルタリング
-        return isWithinInterval(txDate, {
-          start: startOfDay(startDate),
-          end: endOfDay(endDate),
-        });
-      } catch (e) {
-        // 日付解析エラーの場合は表示する（フィルタから除外しない）
-        console.error("Date parsing error:", e);
-        return true;
-      }
-    });
+      return result;
+    } catch (error) {
+      // フィルタリング処理でエラーが発生した場合
+      console.error("Transaction filtering error:", error);
+      const appError: AppError = {
+        type: "NETWORK_ERROR",
+        message: "取引データの処理中にエラーが発生しました",
+      };
+      setError(appError);
+      showAppErrorNotification(appError, "取引履歴エラー");
+      return []; // 空の配列を返してアプリケーションの継続を許可
+    }
+  }, [
+    transactions,
+    selectedTab,
+    startDate,
+    endDate,
+    getTransactionsByType,
+    getTransactionsWithEcoContribution,
+  ]);
 
-    return result;
-  }, [transactions, selectedTab, startDate, endDate]);
-
-  // 統計情報の計算
+  // 統計情報の計算（Result型対応）
   const statistics = useMemo(() => {
-    const totalIncome = filteredTransactions
-      .filter((tx) => tx.amount > 0)
-      .reduce((sum, tx) => sum + tx.amount, 0);
+    try {
+      const totalIncome = filteredTransactions
+        .filter((tx) => tx.amount > 0)
+        .reduce((sum, tx) => sum + tx.amount, 0);
 
-    const totalExpense = filteredTransactions
-      .filter((tx) => tx.amount < 0)
-      .reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
+      const totalExpense = filteredTransactions
+        .filter((tx) => tx.amount < 0)
+        .reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
 
-    const totalEcoContribution = filteredTransactions
-      .filter((tx) => tx.ecoContribution?.enabled)
-      .reduce((sum, tx) => sum + (tx.ecoContribution?.amount || 0), 0);
+      // 環境貢献合計をResult型メソッドで計算
+      const ecoContributionResult = getTotalEcoContribution();
+      let totalEcoContribution = 0;
 
-    return {
-      totalIncome,
-      totalExpense,
-      totalEcoContribution,
-    };
-  }, [filteredTransactions]);
+      if (ecoContributionResult.isOk()) {
+        totalEcoContribution = ecoContributionResult.value;
+      } else {
+        // フォールバック: 従来の計算方法
+        totalEcoContribution = filteredTransactions
+          .filter((tx) => tx.ecoContribution?.enabled)
+          .reduce((sum, tx) => sum + (tx.ecoContribution?.amount || 0), 0);
+      }
+
+      return {
+        totalIncome,
+        totalExpense,
+        totalEcoContribution,
+      };
+    } catch (error) {
+      console.error("Statistics calculation error:", error);
+      return {
+        totalIncome: 0,
+        totalExpense: 0,
+        totalEcoContribution: 0,
+      };
+    }
+  }, [filteredTransactions, getTotalEcoContribution]);
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -153,6 +254,11 @@ export default function TransactionHistoryPage() {
       </header>
 
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+        {/* エラー表示（Result型対応） */}
+        {error && (
+          <ErrorDisplay error={error} onRetry={handleRetry} className="mb-4" />
+        )}
+
         {/* 統計サマリー */}
         <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-100">
           <div className="grid grid-cols-3 gap-4">

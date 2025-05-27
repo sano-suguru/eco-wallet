@@ -345,6 +345,39 @@ export function validateNumberRange(
   return ok(value);
 }
 
+/**
+ * 電話番号の検証（Result型版）
+ * @param phone 電話番号
+ * @returns Result型での検証結果
+ */
+export function validatePhoneResult(
+  phone: string,
+): Result<string, ValidationError> {
+  if (!phone || phone.trim() === "") {
+    return err({
+      type: "REQUIRED_FIELD",
+      message: "電話番号は必須です",
+      field: "phone",
+    });
+  }
+
+  // 日本の電話番号の基本的なパターンをチェック
+  // 090-XXXX-XXXX、080-XXXX-XXXX、070-XXXX-XXXX、03-XXXX-XXXX など
+  const phoneRegex = /^(\d{2,4}-\d{4}-\d{4}|\d{10,11})$/;
+  const cleanPhone = phone.replace(/[-\s]/g, "");
+
+  if (!phoneRegex.test(phone) && !/^\d{10,11}$/.test(cleanPhone)) {
+    return err({
+      type: "INVALID_FORMAT",
+      message: "有効な電話番号を入力してください（例: 090-1234-5678）",
+      field: "phone",
+      expected: "XXX-XXXX-XXXX形式",
+    });
+  }
+
+  return ok(phone);
+}
+
 if (import.meta.vitest) {
   const { test, expect, describe } = import.meta.vitest;
 

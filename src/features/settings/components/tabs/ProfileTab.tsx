@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,14 +15,153 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import { SettingSection } from "@/features/settings/components/SettingSection";
+import { AppError } from "@/shared/types/errors";
+import { ErrorDisplay } from "@/components/ui/error-display";
+import { showAppErrorNotification } from "@/shared/stores/app.slice";
+import {
+  validateEmailResult,
+  validatePhoneResult,
+} from "@/lib/utils/validation";
 
 interface ProfileTabProps {
   user?: Session["user"];
 }
 
+interface ProfileData {
+  name: string;
+  email: string;
+  phone: string;
+  location: string;
+}
+
 export function ProfileTab({ user }: ProfileTabProps) {
+  // フォームデータの状態管理
+  const [profileData, setProfileData] = useState<ProfileData>({
+    name: user?.name || "山田 太郎",
+    email: user?.email || "eco_user@example.com",
+    phone: "090-1234-5678",
+    location: "tokyo",
+  });
+
+  // エラーステート管理（Result型対応）
+  const [error, setError] = useState<AppError | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // バリデーション結果（Result型対応）
+  const emailValidationResult = useMemo(() => {
+    if (!profileData.email) return validateEmailResult("");
+    return validateEmailResult(profileData.email);
+  }, [profileData.email]);
+
+  const phoneValidationResult = useMemo(() => {
+    if (!profileData.phone) return validatePhoneResult("");
+    return validatePhoneResult(profileData.phone);
+  }, [profileData.phone]);
+
+  // 全体のバリデーション状態
+  const isFormValid = useMemo(() => {
+    return (
+      profileData.name.trim() !== "" &&
+      emailValidationResult.isOk() &&
+      phoneValidationResult.isOk() &&
+      profileData.location !== ""
+    );
+  }, [profileData, emailValidationResult, phoneValidationResult]);
+
+  // エラー再試行ハンドラ（Result型対応）
+  const handleRetry = () => {
+    setError(null);
+  };
+
+  // フォームデータ更新ハンドラ
+  const handleInputChange = (field: keyof ProfileData, value: string) => {
+    setProfileData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+    // 入力時にエラーをクリア
+    if (error) {
+      setError(null);
+    }
+  };
+
+  // プロフィール更新処理（Result型対応）
+  const handleProfileUpdate = async () => {
+    try {
+      setIsSubmitting(true);
+      setError(null);
+
+      // 基本バリデーション
+      if (!isFormValid) {
+        const validationError: AppError = {
+          type: "INVALID_FORMAT",
+          message: "入力内容に不備があります。各項目を確認してください。",
+          field: "profile",
+          expected: "有効な形式",
+        };
+        setError(validationError);
+        showAppErrorNotification(validationError, "入力エラー");
+        return;
+      }
+
+      // 各フィールドのバリデーション結果をチェック
+      const validationResults = [emailValidationResult, phoneValidationResult];
+
+      for (const result of validationResults) {
+        result.match(
+          () => {
+            // 成功時は何もしない
+          },
+          (validationError: AppError) => {
+            setError(validationError);
+            showAppErrorNotification(validationError, "バリデーションエラー");
+            return;
+          },
+        );
+      }
+
+      // エラーがある場合は処理を中断
+      if (error) return;
+
+      // TODO: 実際のAPI呼び出し処理
+      // const updateResult = await updateProfileAsync(profileData);
+      // updateResult.match(
+      //   (updatedProfile) => {
+      //     showAppErrorNotification(
+      //       { type: "success", message: "プロフィールを更新しました" } as any,
+      //       "更新完了"
+      //     );
+      //   },
+      //   (updateError) => {
+      //     setError(updateError);
+      //     showAppErrorNotification(updateError, "更新エラー");
+      //   }
+      // );
+
+      // 現在はモックの成功処理
+      setTimeout(() => {
+        // showAppErrorNotification の代わりに成功通知を表示
+        console.log("Profile updated successfully:", profileData);
+      }, 1000);
+    } catch {
+      const appError: AppError = {
+        type: "NETWORK_ERROR",
+        message: "プロフィールの更新中にエラーが発生しました",
+      };
+      setError(appError);
+      showAppErrorNotification(appError, "更新エラー");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
+      {/* エラー表示（Result型対応） */}
+      {error && (
+        <ErrorDisplay error={error} onRetry={handleRetry} className="mb-4" />
+      )}
+
       {/* 基本情報セクション */}
       <SettingSection
         title="基本情報"
@@ -31,9 +173,14 @@ export function ProfileTab({ user }: ProfileTabProps) {
           </Label>
           <Input
             id="name"
-            defaultValue={user?.name || "山田 太郎"}
+            value={profileData.name}
+            onChange={(e) => handleInputChange("name", e.target.value)}
             className="border-stone-200"
+            placeholder="山田 太郎"
           />
+          {profileData.name.trim() === "" && (
+            <p className="text-xs text-red-600">氏名は必須です</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -42,9 +189,17 @@ export function ProfileTab({ user }: ProfileTabProps) {
           </Label>
           <Input
             id="email"
-            defaultValue={user?.email || "eco_user@example.com"}
+            type="email"
+            value={profileData.email}
+            onChange={(e) => handleInputChange("email", e.target.value)}
             className="border-stone-200"
+            placeholder="eco_user@example.com"
           />
+          {emailValidationResult.isErr() && (
+            <p className="text-xs text-red-600">
+              {emailValidationResult.error.message}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -53,9 +208,17 @@ export function ProfileTab({ user }: ProfileTabProps) {
           </Label>
           <Input
             id="phone"
-            defaultValue="090-1234-5678"
+            type="tel"
+            value={profileData.phone}
+            onChange={(e) => handleInputChange("phone", e.target.value)}
             className="border-stone-200"
+            placeholder="090-1234-5678"
           />
+          {phoneValidationResult.isErr() && (
+            <p className="text-xs text-red-600">
+              {phoneValidationResult.error.message}
+            </p>
+          )}
         </div>
       </SettingSection>
 
@@ -73,7 +236,10 @@ export function ProfileTab({ user }: ProfileTabProps) {
           </Label>
           <div className="flex items-center space-x-2">
             <MapPin className="h-4 w-4 text-stone-400" />
-            <Select defaultValue="tokyo">
+            <Select
+              value={profileData.location}
+              onValueChange={(value) => handleInputChange("location", value)}
+            >
               <SelectTrigger className="border-stone-200">
                 <SelectValue placeholder="地域を選択" />
               </SelectTrigger>
@@ -108,7 +274,7 @@ export function ProfileTab({ user }: ProfileTabProps) {
             <Button
               variant="outline"
               size="sm"
-              className="text-xs text-teal-700 border-teal-200"
+              className="text-xs text-teal-700 border-teal-200 hover:bg-teal-50"
             >
               友達を招待する
             </Button>
@@ -116,8 +282,19 @@ export function ProfileTab({ user }: ProfileTabProps) {
         </div>
       </SettingSection>
 
-      <Button className="w-full bg-teal-700 hover:bg-teal-800 text-white mt-2">
-        変更を保存
+      <Button
+        onClick={handleProfileUpdate}
+        disabled={!isFormValid || isSubmitting}
+        className="w-full bg-teal-700 hover:bg-teal-800 text-white mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isSubmitting ? (
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            更新中...
+          </div>
+        ) : (
+          "変更を保存"
+        )}
       </Button>
     </div>
   );
