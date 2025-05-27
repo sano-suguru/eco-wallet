@@ -4,10 +4,15 @@
 
 import { create } from "zustand";
 import { Result, ok, err } from "neverthrow";
-import { AppError, BusinessError } from "../types/errors";
+import { AppError, BusinessError, ErrorSeverity } from "../types/errors";
+import {
+  getErrorMessage,
+  getErrorSeverity,
+  isRetryableError,
+} from "@/lib/utils/error-utils";
 
 /**
- * アプリケーション通知の型定義
+ * アプリケーション通知の型定義（AppError対応）
  */
 export interface AppNotification {
   id: string;
@@ -20,6 +25,10 @@ export interface AppNotification {
     onClick: () => void;
   };
   timestamp: Date;
+  // AppError情報
+  error?: AppError;
+  severity?: ErrorSeverity;
+  canRetry?: boolean;
 }
 
 /**
@@ -314,8 +323,11 @@ export const createErrorNotification = (
 ): Omit<AppNotification, "id" | "timestamp"> => ({
   type: "error",
   title,
-  message: message || error?.message,
+  message: message || (error ? getErrorMessage(error) : undefined),
   duration: 8000,
+  error,
+  severity: error ? getErrorSeverity(error) : "high",
+  canRetry: error ? isRetryableError(error) : false,
 });
 
 export const createWarningNotification = (
@@ -337,6 +349,202 @@ export const createInfoNotification = (
   message,
   duration: 4000,
 });
+
+/**
+ * AppError型から適切な通知を自動生成
+ */
+export const createAppErrorNotification = (
+  error: AppError,
+  customTitle?: string,
+  customMessage?: string,
+): Omit<AppNotification, "id" | "timestamp"> => {
+  const severity = getErrorSeverity(error);
+  const message = customMessage || getErrorMessage(error);
+  const canRetry = isRetryableError(error);
+
+  // 重要度に基づいてタイプと期間を決定
+  const getTypeAndDuration = (severity: ErrorSeverity) => {
+    switch (severity) {
+      case "low":
+        return { type: "info" as const, duration: 4000 };
+      case "medium":
+        return { type: "warning" as const, duration: 6000 };
+      case "high":
+        return { type: "error" as const, duration: 8000 };
+      case "critical":
+        return { type: "error" as const, duration: 12000 };
+      default:
+        return { type: "error" as const, duration: 8000 };
+    }
+  };
+
+  const { type, duration } = getTypeAndDuration(severity);
+
+  // カスタムタイトルがない場合はエラータイプから生成
+  const title = customTitle || getDefaultErrorTitle(error);
+
+  return {
+    type,
+    title,
+    message,
+    duration,
+    error,
+    severity,
+    canRetry,
+  };
+};
+
+/**
+ * エラータイプから適切なタイトルを生成
+ */
+const getDefaultErrorTitle = (error: AppError): string => {
+  switch (error.type) {
+    // ValidationError
+    case "INVALID_EMAIL":
+    case "INVALID_AMOUNT":
+    case "REQUIRED_FIELD":
+    case "INVALID_FORMAT":
+    case "INVALID_PASSWORD":
+    case "PASSWORD_MISMATCH":
+    case "INVALID_RANGE":
+      return "入力エラー";
+
+    // ApiError
+    case "NETWORK_ERROR":
+      return "ネットワークエラー";
+    case "SERVER_ERROR":
+      return "サーバーエラー";
+    case "TIMEOUT_ERROR":
+      return "タイムアウトエラー";
+    case "UNAUTHORIZED":
+      return "認証エラー";
+    case "FORBIDDEN":
+      return "アクセス権限エラー";
+    case "NOT_FOUND":
+      return "リソースが見つかりません";
+    case "CONFLICT":
+      return "データ競合エラー";
+    case "RATE_LIMIT_EXCEEDED":
+      return "リクエスト制限";
+    case "BAD_REQUEST":
+      return "リクエストエラー";
+
+    // BusinessError
+    case "INSUFFICIENT_BALANCE":
+      return "残高不足";
+    case "PAYMENT_FAILED":
+      return "決済エラー";
+    case "TRANSACTION_LIMIT_EXCEEDED":
+      return "取引限度額超過";
+    case "CAMPAIGN_NOT_ACTIVE":
+      return "キャンペーンエラー";
+    case "DONATION_LIMIT_EXCEEDED":
+      return "寄付限度額超過";
+    case "ACCOUNT_SUSPENDED":
+      return "アカウント停止";
+    case "KYC_REQUIRED":
+      return "本人確認が必要";
+    case "CHARGE_MINIMUM_NOT_MET":
+      return "チャージエラー";
+    case "INVALID_QR_CODE":
+      return "QRコードエラー";
+    case "TRANSFER_TO_SELF":
+      return "送金エラー";
+
+    default:
+      return "エラーが発生しました";
+  }
+};
+
+/**
+ * 複数のAppErrorから通知を一括作成
+ */
+export const createMultipleAppErrorNotifications = (
+  errors: AppError[],
+  customTitle?: string,
+): Omit<AppNotification, "id" | "timestamp">[] => {
+  if (errors.length === 0) return [];
+
+  // 単一エラーの場合
+  if (errors.length === 1) {
+    return [createAppErrorNotification(errors[0], customTitle)];
+  }
+
+  // 複数エラーの場合は重要度で統合
+  const highestSeverity = errors.reduce((highest, error) => {
+    const severity = getErrorSeverity(error);
+    const severityOrder = { low: 1, medium: 2, high: 3, critical: 4 };
+    return severityOrder[severity] > severityOrder[highest]
+      ? severity
+      : highest;
+  }, "low" as ErrorSeverity);
+
+  const errorMessages = errors.map((error) => getErrorMessage(error));
+  const combinedMessage = `以下のエラーが発生しました:\n${errorMessages.map((msg, index) => `${index + 1}. ${msg}`).join("\n")}`;
+
+  const { type, duration } = (() => {
+    switch (highestSeverity) {
+      case "low":
+        return { type: "info" as const, duration: 6000 };
+      case "medium":
+        return { type: "warning" as const, duration: 8000 };
+      case "high":
+        return { type: "error" as const, duration: 10000 };
+      case "critical":
+        return { type: "error" as const, duration: 15000 };
+      default:
+        return { type: "error" as const, duration: 10000 };
+    }
+  })();
+
+  return [
+    {
+      type,
+      title: customTitle || `${errors.length}件のエラーが発生しました`,
+      message: combinedMessage,
+      duration,
+      severity: highestSeverity,
+      canRetry: errors.some(isRetryableError),
+    },
+  ];
+};
+
+/**
+ * AppStoreと連携した便利な通知関数
+ */
+export const showAppErrorNotification = (
+  error: AppError,
+  customTitle?: string,
+  customMessage?: string,
+): Result<string, BusinessError> => {
+  const notification = createAppErrorNotification(
+    error,
+    customTitle,
+    customMessage,
+  );
+  return useAppStore.getState().addNotification(notification);
+};
+
+export const showMultipleAppErrorNotifications = (
+  errors: AppError[],
+  customTitle?: string,
+): Result<string[], BusinessError> => {
+  const notifications = createMultipleAppErrorNotifications(
+    errors,
+    customTitle,
+  );
+  const results = notifications.map((notification) =>
+    useAppStore.getState().addNotification(notification),
+  );
+
+  // すべて成功した場合のみ成功とする
+  const failedResults = results.filter((result) => result.isErr());
+  if (failedResults.length > 0) {
+    return err(failedResults[0]._unsafeUnwrapErr());
+  }
+
+  return ok(results.map((result) => result._unsafeUnwrap()));
+};
 
 // In Source Testing
 if (import.meta.vitest) {
