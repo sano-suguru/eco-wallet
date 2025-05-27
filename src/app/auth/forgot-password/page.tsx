@@ -6,36 +6,55 @@ import { AuthLayout } from "@/features/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ErrorDisplay } from "@/components/ui/error-display";
 import { CheckCircle } from "lucide-react";
+import { useAuthForm } from "@/features/auth/hooks/useAuthForm";
+import { validateForgotPasswordForm } from "@/features/auth/utils/validation";
+import { requestPasswordReset } from "@/services/api/user";
+import { Result, err } from "neverthrow";
+import { AppError } from "@/shared/types/errors";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-
+  // パスワードリセット処理
+  const handlePasswordResetSubmit = async (
+    values: Record<string, string>,
+  ): Promise<Result<void, AppError>> => {
     try {
-      // 実際の実装では、パスワードリセットAPIを呼び出す
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const result = await requestPasswordReset(values.email);
 
-      // 簡易的なバリデーション
-      if (!email) {
-        throw new Error("メールアドレスを入力してください");
-      }
-
-      // 成功したとみなす
-      setIsSubmitted(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "リクエストに失敗しました");
-    } finally {
-      setIsLoading(false);
+      return result.map(() => {
+        // 成功時の処理
+        setSubmittedEmail(values.email);
+        setIsSubmitted(true);
+      });
+    } catch (error) {
+      return err({
+        type: "SERVER_ERROR",
+        message:
+          error instanceof Error ? error.message : "リクエストに失敗しました",
+        statusCode: 500,
+      });
     }
   };
+
+  const {
+    values,
+    fieldErrors,
+    isLoading,
+    error,
+    handleChange,
+    handleSubmit,
+    clearFieldError,
+  } = useAuthForm({
+    initialValues: {
+      email: "",
+    },
+    validateForm: validateForgotPasswordForm,
+    onSubmit: handlePasswordResetSubmit,
+  });
 
   return (
     <AuthLayout
@@ -52,19 +71,17 @@ export default function ForgotPasswordPage() {
             <Label htmlFor="email">メールアドレス</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              value={values.email}
+              onChange={handleChange}
+              onFocus={() => clearFieldError("email")}
             />
+            {fieldErrors.email && <ErrorDisplay error={fieldErrors.email} />}
           </div>
 
-          {error && (
-            <div className="bg-red-50 text-red-700 p-2 rounded text-sm">
-              {error}
-            </div>
-          )}
+          {error && <ErrorDisplay error={error} />}
 
           <Button
             type="submit"
@@ -90,7 +107,7 @@ export default function ForgotPasswordPage() {
               メールを送信しました
             </h3>
             <p className="text-sm text-stone-600 mt-2">
-              {email}{" "}
+              {submittedEmail}{" "}
               宛にパスワードリセットリンクを送信しました。メールをご確認ください。
             </p>
           </div>

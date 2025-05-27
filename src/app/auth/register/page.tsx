@@ -1,87 +1,105 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, Suspense } from "react"; // Suspenseをインポート
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AuthLayout } from "@/features/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ErrorDisplay } from "@/components/ui/error-display";
 import { Leaf, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuthForm } from "@/features/auth/hooks/useAuthForm";
+import { validateRegisterForm } from "@/features/auth/utils/validation";
+import { registerUser } from "@/services/api/user";
+import { Result, err } from "neverthrow";
+import { AppError } from "@/shared/types/errors";
 
 function RegisterFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [referralCode, setReferralCode] = useState("");
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [referrerInfo, setReferrerInfo] = useState<{ name: string } | null>(
     null,
   );
+
+  // 登録処理
+  const handleRegisterSubmit = async (
+    values: Record<string, string>,
+  ): Promise<Result<void, AppError>> => {
+    try {
+      const result = await registerUser({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+      });
+
+      return result.map(() => {
+        // 登録成功時の処理
+        router.push(
+          `/auth/register-success?email=${encodeURIComponent(values.email)}`,
+        );
+      });
+    } catch (error) {
+      return err({
+        type: "SERVER_ERROR",
+        message: error instanceof Error ? error.message : "登録に失敗しました",
+        statusCode: 500,
+      });
+    }
+  };
+
+  const {
+    values,
+    setValues,
+    fieldErrors,
+    isLoading,
+    error,
+    handleChange,
+    handleSubmit,
+    clearFieldError,
+  } = useAuthForm({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      referralCode: "",
+      agreeTerms: "",
+    },
+    validateForm: validateRegisterForm,
+    onSubmit: handleRegisterSubmit,
+  });
 
   // URLからリファラルコードを取得
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
-      // 実際の実装ではAPIを呼び出して参照者情報を取得
       console.log("Referral from:", ref);
-
       // モック実装：リファラルコードがある場合の処理
       if (ref.startsWith("ECO")) {
-        setReferralCode(ref);
+        setValues((prev) => ({ ...prev, referralCode: ref }));
       } else {
         // ユーザーIDからリファラル情報を取得する処理（モック）
         setReferrerInfo({ name: "招待したユーザー" });
       }
     }
-  }, [searchParams]);
+  }, [searchParams, setValues]);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-
-    try {
-      // 実際の実装では、認証APIを呼び出す
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // 簡易的なバリデーション
-      if (!name || !email || !password) {
-        throw new Error("すべての項目を入力してください");
-      }
-
-      if (password !== confirmPassword) {
-        throw new Error("パスワードが一致しません");
-      }
-
-      if (!agreeTerms) {
-        throw new Error("利用規約とプライバシーポリシーに同意してください");
-      }
-
-      // 招待コードの処理（実際の実装ではAPIで検証）
-      if (referralCode) {
-        console.log("Referral code used:", referralCode);
-        // 招待コードの検証と処理
-      }
-
-      // 登録成功したとみなす
-      router.push(`/auth/register-success?email=${encodeURIComponent(email)}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "登録に失敗しました");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleCheckboxChange = (checked: boolean) => {
+    const event = {
+      target: {
+        name: "agreeTerms",
+        value: checked ? "true" : "",
+      },
+    } as React.ChangeEvent<HTMLInputElement>;
+    handleChange(event);
   };
 
   return (
-    <form onSubmit={handleRegister} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {referrerInfo && (
         <div className="bg-teal-50 p-3 rounded-md border border-teal-100 mb-4 text-center">
           <div className="flex items-center justify-center mb-2">
@@ -101,50 +119,60 @@ function RegisterFormContent() {
         <Label htmlFor="name">お名前</Label>
         <Input
           id="name"
+          name="name"
           placeholder="山田 太郎"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
+          value={values.name}
+          onChange={handleChange}
+          onFocus={() => clearFieldError("name")}
         />
+        {fieldErrors.name && <ErrorDisplay error={fieldErrors.name} />}
       </div>
 
       <div className="space-y-2 text-left">
         <Label htmlFor="email">メールアドレス</Label>
         <Input
           id="email"
+          name="email"
           type="email"
           placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          value={values.email}
+          onChange={handleChange}
+          onFocus={() => clearFieldError("email")}
         />
+        {fieldErrors.email && <ErrorDisplay error={fieldErrors.email} />}
       </div>
 
       <div className="space-y-2 text-left">
         <Label htmlFor="password">パスワード</Label>
         <Input
           id="password"
+          name="password"
           type="password"
           placeholder="********"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          value={values.password}
+          onChange={handleChange}
+          onFocus={() => clearFieldError("password")}
         />
         <p className="text-xs text-stone-500">
           8文字以上で、英数字と記号を含めてください
         </p>
+        {fieldErrors.password && <ErrorDisplay error={fieldErrors.password} />}
       </div>
 
       <div className="space-y-2 text-left">
         <Label htmlFor="confirmPassword">パスワード（確認）</Label>
         <Input
           id="confirmPassword"
+          name="confirmPassword"
           type="password"
           placeholder="********"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
+          value={values.confirmPassword}
+          onChange={handleChange}
+          onFocus={() => clearFieldError("confirmPassword")}
         />
+        {fieldErrors.confirmPassword && (
+          <ErrorDisplay error={fieldErrors.confirmPassword} />
+        )}
       </div>
 
       <div className="space-y-2 text-left">
@@ -153,23 +181,23 @@ function RegisterFormContent() {
         </Label>
         <Input
           id="referralCode"
+          name="referralCode"
           placeholder="例：ECO1234"
-          value={referralCode}
-          onChange={(e) => setReferralCode(e.target.value)}
+          value={values.referralCode}
+          onChange={handleChange}
+          onFocus={() => clearFieldError("referralCode")}
           className="border-stone-200"
         />
-        {referralCode && !referralCode.startsWith("ECO") && (
-          <p className="text-xs text-amber-600">
-            招待コードはECOから始まる英数字です
-          </p>
+        {fieldErrors.referralCode && (
+          <ErrorDisplay error={fieldErrors.referralCode} />
         )}
       </div>
 
       <div className="flex items-start space-x-2 text-left">
         <Checkbox
           id="terms"
-          checked={agreeTerms}
-          onCheckedChange={(checked) => setAgreeTerms(checked as boolean)}
+          checked={values.agreeTerms === "true"}
+          onCheckedChange={handleCheckboxChange}
           className="mt-1"
         />
         <Label htmlFor="terms" className="text-sm text-stone-700">
@@ -185,12 +213,11 @@ function RegisterFormContent() {
           </span>
         </Label>
       </div>
-
-      {error && (
-        <div className="bg-red-50 text-red-700 p-2 rounded text-sm">
-          {error}
-        </div>
+      {fieldErrors.agreeTerms && (
+        <ErrorDisplay error={fieldErrors.agreeTerms} />
       )}
+
+      {error && <ErrorDisplay error={error} />}
 
       <Button
         type="submit"

@@ -1,56 +1,54 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { AuthForm } from "../AuthForm/LegacyAuthForm";
 import { AuthField } from "../AuthField/LegacyAuthField";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Leaf, Mail, Lock } from "lucide-react";
 import { useAuthForm } from "@/features/auth/hooks/useAuthForm";
+import { validateLoginForm } from "@/features/auth/utils/validation";
+import { loginUser } from "@/services/api/user";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
-import { isValidEmail, validatePassword } from "@/lib/utils/validation";
+import { Result, err } from "neverthrow";
+import { AppError } from "@/shared/types/errors";
 
 export function LoginForm() {
   const router = useRouter();
 
-  const { values, errors, isLoading, error, handleChange, handleSubmit } =
+  // ログイン処理
+  const handleLoginSubmit = async (
+    values: Record<string, string>,
+  ): Promise<Result<void, AppError>> => {
+    try {
+      const result = await loginUser({
+        email: values.email,
+        password: values.password,
+      });
+
+      return result.map(() => {
+        // 成功時の処理
+        router.push("/");
+        router.refresh();
+      });
+    } catch (error) {
+      return err({
+        type: "SERVER_ERROR",
+        message:
+          error instanceof Error ? error.message : "ログインに失敗しました",
+        statusCode: 500,
+      });
+    }
+  };
+
+  const { values, fieldErrors, isLoading, error, handleChange, handleSubmit } =
     useAuthForm({
       initialValues: {
         email: "",
         password: "",
       },
-      validationRules: {
-        email: { required: true, email: true },
-        password: { required: true, minLength: 8 },
-      },
-      onSubmit: async (values) => {
-        // カスタムバリデーション
-        if (!isValidEmail(values.email)) {
-          throw new Error("有効なメールアドレスを入力してください");
-        }
-
-        const passwordValidation = validatePassword(values.password);
-        if (!passwordValidation.isValid) {
-          throw new Error(passwordValidation.reason || "パスワードが無効です");
-        }
-
-        const result = await signIn("credentials", {
-          redirect: false,
-          email: values.email,
-          password: values.password,
-        });
-
-        if (result?.error) {
-          throw new Error("メールアドレスまたはパスワードが正しくありません");
-        }
-
-        if (result?.ok) {
-          router.push("/");
-          router.refresh();
-        }
-      },
+      validateForm: validateLoginForm,
+      onSubmit: handleLoginSubmit,
     });
 
   const [rememberMe, setRememberMe] = useState(false);
@@ -59,7 +57,7 @@ export function LoginForm() {
     <AuthForm
       onSubmit={handleSubmit}
       isLoading={isLoading}
-      error={error}
+      error={error?.message}
       submitLabel="ログイン"
       loadingLabel="ログイン中..."
       footer={
@@ -129,7 +127,7 @@ export function LoginForm() {
         onChange={handleChange}
         disabled={isLoading}
         required
-        error={errors.email}
+        error={fieldErrors.email?.message}
         icon={<Mail className="h-4 w-4" />}
       />
 
@@ -143,7 +141,7 @@ export function LoginForm() {
         onChange={handleChange}
         disabled={isLoading}
         required
-        error={errors.password}
+        error={fieldErrors.password?.message}
         icon={<Lock className="h-4 w-4" />}
         action={
           <Link
