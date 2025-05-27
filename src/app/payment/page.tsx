@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CheckCircle, Leaf, ArrowLeft } from "lucide-react";
+import { ErrorDisplay } from "@/components/ui/error-display";
 import {
   usePaymentStore,
   ProductInfo,
@@ -16,18 +17,26 @@ import {
   mockPaymentMethods,
   defaultPaymentOptions,
 } from "@/features/payment";
+import { processPayment } from "@/lib/business/payment";
+import type { ProcessPaymentParams } from "@/lib/business/payment";
+import type { AppError } from "@/shared/types/errors";
+import { showAppErrorNotification } from "@/shared/stores/app.slice";
 
 export default function PaymentPage() {
   const router = useRouter();
   const {
     paymentInfo,
-    paymentStatus,
     setPaymentInfo,
     setPaymentMethod,
     setPaymentOptions,
-    processPayment,
     resetPayment,
   } = usePaymentStore();
+
+  // Result型対応のstate
+  const [error, setError] = useState<AppError | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [transactionId, setTransactionId] = useState<string | null>(null);
 
   // 初期化
   useEffect(() => {
@@ -47,25 +56,91 @@ export default function PaymentPage() {
     // クリーンアップ
     return () => {
       resetPayment();
+      setError(null);
+      setIsProcessing(false);
+      setIsSuccess(false);
+      setTransactionId(null);
     };
   }, [setPaymentInfo, resetPayment]);
 
   // キャンセルボタンのクリックハンドラー
   const handleCancel = () => {
-    if (paymentStatus !== "processing") {
+    if (!isProcessing) {
       router.back();
     }
   };
 
-  // 決済確定ボタンのクリックハンドラー
+  // 決済確定ボタンのクリックハンドラー（Result型対応版）
   const handleConfirmPayment = async () => {
-    const result = await processPayment();
+    if (!paymentInfo) return;
 
-    if (result.success && result.transactionId) {
-      // 成功表示を少し見せた後に遷移
-      setTimeout(() => {
-        router.push(`/history/${result.transactionId}`);
-      }, 1000);
+    // エラーとフラグをリセット
+    setError(null);
+    setIsProcessing(true);
+
+    try {
+      // 決済方法をProcessPaymentParamsの形式にマッピング
+      let paymentMethod: ProcessPaymentParams["paymentMethod"];
+      switch (paymentInfo.selectedPaymentMethod) {
+        case "card":
+          paymentMethod = "credit_card";
+          break;
+        case "bank":
+          paymentMethod = "bank_transfer";
+          break;
+        case "wallet":
+          paymentMethod = "bank_transfer"; // walletはbank_transferとして処理
+          break;
+        default:
+          paymentMethod = "credit_card"; // デフォルト
+      }
+
+      // 決済パラメータの作成
+      const paymentParams: ProcessPaymentParams = {
+        amount: paymentInfo.total,
+        paymentMethod,
+        description: `${paymentInfo.product.name}の購入`,
+        metadata: {
+          productId: paymentInfo.product.id,
+          productName: paymentInfo.product.name,
+          donationAmount: paymentInfo.donationAmount,
+          includeDonation: paymentInfo.options.includeDonation,
+        },
+      };
+
+      // ビジネスロジック層のprocessPayment関数を呼び出し
+      const result = await processPayment(paymentParams);
+
+      // .match()パターンで成功・失敗を明示的に処理
+      result.match(
+        (paymentState) => {
+          // 成功時の処理
+          setTransactionId(paymentState.transactionId);
+          setIsSuccess(true);
+
+          // 成功表示を少し見せた後に遷移
+          setTimeout(() => {
+            router.push(`/history/${paymentState.transactionId}`);
+          }, 1000);
+        },
+        (paymentError) => {
+          // 失敗時の処理
+          setError(paymentError);
+          showAppErrorNotification(paymentError, "決済エラー");
+        },
+      );
+    } catch (unexpectedError) {
+      // 予期しないエラーの処理
+      const errorToSet: AppError = {
+        type: "PAYMENT_FAILED",
+        message: "決済処理中に予期しないエラーが発生しました",
+        reason: String(unexpectedError),
+        paymentId: undefined,
+      };
+      setError(errorToSet);
+      showAppErrorNotification(errorToSet, "決済エラー");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -82,9 +157,7 @@ export default function PaymentPage() {
           size="sm"
           onClick={handleCancel}
           className="mb-4 -ml-2 text-stone-600 hover:text-stone-800"
-          disabled={
-            paymentStatus === "processing" || paymentStatus === "success"
-          }
+          disabled={isProcessing || isSuccess}
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           戻る
@@ -99,8 +172,13 @@ export default function PaymentPage() {
       </div>
 
       <div className="max-w-md mx-auto space-y-4">
+        {/* エラー表示 */}
+        {error && (
+          <ErrorDisplay error={error} variant="inline" className="mb-4" />
+        )}
+
         {/* 成功メッセージ */}
-        {paymentStatus === "success" && (
+        {isSuccess && (
           <Card className="border-0 shadow-sm bg-gradient-to-r from-teal-50 to-green-50">
             <CardContent className="flex items-center p-6">
               <div className="bg-teal-100 rounded-full p-3 mr-4">
@@ -113,12 +191,17 @@ export default function PaymentPage() {
                 <p className="text-sm text-teal-700 mt-1">
                   取引履歴に移動しています...
                 </p>
+                {transactionId && (
+                  <p className="text-xs text-teal-600 mt-2">
+                    取引ID: {transactionId}
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
         )}
 
-        {paymentStatus !== "success" && (
+        {!isSuccess && (
           <>
             {/* 商品情報カード */}
             <Card className="border border-stone-100 shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -201,11 +284,9 @@ export default function PaymentPage() {
           <Button
             className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 text-base font-medium shadow-sm transition-all duration-200"
             onClick={handleConfirmPayment}
-            disabled={
-              paymentStatus === "processing" || paymentStatus === "success"
-            }
+            disabled={isProcessing || isSuccess}
           >
-            {paymentStatus === "processing" ? (
+            {isProcessing ? (
               <>
                 <LoadingSpinner size="sm" light className="mr-2" />
                 決済処理中...
@@ -220,7 +301,7 @@ export default function PaymentPage() {
             )}
           </Button>
 
-          {paymentStatus !== "success" && (
+          {!isSuccess && (
             <p className="text-xs text-center text-stone-500">
               決済を確定すると、売上の1%が環境保護団体に寄付されます
             </p>
