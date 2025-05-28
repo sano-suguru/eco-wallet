@@ -16,6 +16,8 @@ import { convertProjectItemToDonationProject } from "@/features/donation/utils/p
 import { DonationProject } from "@/features/donation/types/donation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
+import { AppError } from "@/shared/types/errors";
+import { showAppErrorNotification } from "@/shared/stores/app.slice";
 
 type DonateStep = "input" | "confirm" | "complete";
 
@@ -35,7 +37,7 @@ export default function DonateProjectPage() {
   const [currentStep, setCurrentStep] = useState<DonateStep>("input");
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
   const [transactionId, setTransactionId] = useState<string>("");
   const [project, setProject] = useState<DonationProject | null>(null);
 
@@ -124,9 +126,13 @@ export default function DonateProjectPage() {
       setCurrentStep("complete");
     } catch (error) {
       console.error("寄付処理中にエラーが発生しました", error);
-      setError(
-        "処理中にエラーが発生しました。時間をおいて再度お試しください。",
-      );
+      const donationError: AppError = {
+        type: "NETWORK_ERROR",
+        message:
+          "処理中にエラーが発生しました。時間をおいて再度お試しください。",
+      };
+      setError(donationError);
+      showAppErrorNotification(donationError, "寄付エラー");
     } finally {
       setIsLoading(false);
     }

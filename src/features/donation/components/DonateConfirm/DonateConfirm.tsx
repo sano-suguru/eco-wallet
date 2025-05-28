@@ -12,13 +12,15 @@ import { Session } from "next-auth";
 import { formatCurrency } from "@/shared/utils/formats";
 import { DonationProject } from "@/features/donation/types/donation";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { AppError } from "@/shared/types/errors";
+import { ErrorDisplay } from "@/components/ui/error-display";
 
 interface DonateConfirmProps {
   project: DonationProject;
   amount: string;
   session: Session | null;
   isLoading: boolean;
-  error: string | null;
+  error: AppError | null;
   handleConfirmDonation: () => Promise<void>;
   handleBackToInput: () => void;
 }
@@ -115,9 +117,7 @@ export function DonateConfirm({
         </div>
 
         {error && (
-          <div className="text-red-600 text-sm bg-red-50 p-2 rounded-md">
-            {error}
-          </div>
+          <ErrorDisplay error={error} variant="inline" className="mb-2" />
         )}
       </CardContent>
 
