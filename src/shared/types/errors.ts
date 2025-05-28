@@ -165,6 +165,22 @@ export type BusinessError =
   | {
       type: "TRANSFER_TO_SELF";
       message: string;
+    }
+  | {
+      type: "TRANSFER_CODE_NOT_FOUND";
+      message: string;
+    }
+  | {
+      type: "TRANSFER_COMPLETED";
+      message: string;
+    }
+  | {
+      type: "TRANSFER_PENDING";
+      message: string;
+    }
+  | {
+      type: "TRANSFER_VERIFICATION_FAILED";
+      message: string;
     };
 
 /**

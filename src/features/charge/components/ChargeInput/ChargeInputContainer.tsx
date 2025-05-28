@@ -7,7 +7,7 @@ import {
 } from "@/lib/utils/validation";
 import { validateChargeAmount } from "@/lib/business/balance";
 import { chargeBalance, ChargeRequest } from "@/services/api/balance";
-import { getErrorMessage } from "@/lib/utils/error-utils";
+import { AppError } from "@/shared/types/errors";
 import { ChargeInputForm } from "./ChargeInputForm";
 
 /**
@@ -34,7 +34,7 @@ export function ChargeInputContainer({
   );
   const [emailSent, setEmailSent] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
   const [transferCode, setTransferCode] = useState<string>("");
   const [processingVerification, setProcessingVerification] =
     useState<boolean>(false);
@@ -65,7 +65,7 @@ export function ChargeInputContainer({
     // Result型バリデーション
     if (amountValidationResult.isErr()) {
       const validationError = amountValidationResult.error;
-      setError(getErrorMessage(validationError));
+      setError(validationError);
       console.log("Amount validation failed:", validationError);
       return;
     }
@@ -76,7 +76,7 @@ export function ChargeInputContainer({
     const chargeValidationResult = validateChargeAmount(validatedAmount);
     if (chargeValidationResult.isErr()) {
       const businessError = chargeValidationResult.error;
-      setError(getErrorMessage(businessError));
+      setError(businessError);
       console.log("Charge validation failed:", businessError);
       return;
     }
@@ -98,14 +98,14 @@ export function ChargeInputContainer({
     // メールアドレスのバリデーション
     if (emailValidationResult.isErr()) {
       const validationError = emailValidationResult.error;
-      setError(getErrorMessage(validationError));
+      setError(validationError);
       return;
     }
 
     // 金額のバリデーション
     if (amountValidationResult.isErr()) {
       const validationError = amountValidationResult.error;
-      setError(getErrorMessage(validationError));
+      setError(validationError);
       return;
     }
 
@@ -116,7 +116,7 @@ export function ChargeInputContainer({
     const chargeValidationResult = validateChargeAmount(validatedAmount);
     if (chargeValidationResult.isErr()) {
       const businessError = chargeValidationResult.error;
-      setError(getErrorMessage(businessError));
+      setError(businessError);
       return;
     }
 
@@ -144,7 +144,7 @@ export function ChargeInputContainer({
       },
       (apiError) => {
         // エラー時の処理
-        setError(getErrorMessage(apiError));
+        setError(apiError);
         console.error("Bank transfer request failed:", apiError);
       },
     );
@@ -155,7 +155,10 @@ export function ChargeInputContainer({
   // 銀行振込通知処理（Result型対応）
   const handleNotifyBankTransfer = async () => {
     if (!transferCode) {
-      setError("振込コードが見つかりません。再度メール送信を行ってください。");
+      setError({
+        type: "TRANSFER_CODE_NOT_FOUND",
+        message: "振込コードが見つかりません。再度メール送信を行ってください。",
+      });
       return;
     }
 
@@ -176,19 +179,27 @@ export function ChargeInputContainer({
       (response) => {
         // 成功時の処理
         if (response.status === "completed") {
-          setError("振込が確認されました。チャージが完了しました。");
+          setError({
+            type: "TRANSFER_COMPLETED",
+            message: "振込が確認されました。チャージが完了しました。",
+          });
         } else if (response.status === "pending") {
-          setError(
-            "振込確認リクエストを受け付けました。通常1営業日以内に確認します。",
-          );
+          setError({
+            type: "TRANSFER_PENDING",
+            message:
+              "振込確認リクエストを受け付けました。通常1営業日以内に確認します。",
+          });
         } else {
-          setError("振込の確認ができませんでした。もう一度お試しください。");
+          setError({
+            type: "TRANSFER_VERIFICATION_FAILED",
+            message: "振込の確認ができませんでした。もう一度お試しください。",
+          });
         }
         console.log("Bank transfer verification response:", response);
       },
       (apiError) => {
         // エラー時の処理
-        setError(getErrorMessage(apiError));
+        setError(apiError);
         console.error("Bank transfer verification failed:", apiError);
       },
     );

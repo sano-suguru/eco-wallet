@@ -1,3 +1,5 @@
+import { AppError } from "../../../shared/types/errors";
+
 // 寄付プロジェクトの型定義
 export interface DonationProject {
   id: string;
@@ -28,13 +30,13 @@ export interface DonationInfo {
   paymentMethod: "balance" | "credit" | "bank";
 }
 
-// 寄付の状態
+// 寄付の状態（AppError型対応）
 export interface DonationState {
   currentProject: DonationProject | null;
   donationAmount: number;
   step: "input" | "confirm" | "complete";
   isLoading: boolean;
-  error: string | null;
+  error: AppError | null;
 }
 
 // 寄付フォームのデータ

@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, Leaf } from "lucide-react";
+import { AppError } from "@/shared/types/errors";
+import { ErrorDisplay } from "@/components/ui/error-display";
 
 /**
- * 銀行振込入力フォームのプロパティ
+ * 銀行振込入力フォームのプロパティ（AppError型対応）
  */
 export interface BankTransferInputProps {
   /** メールアドレス */
@@ -27,8 +29,8 @@ export interface BankTransferInputProps {
   isValidEmail: boolean;
   /** 金額有効性 */
   isValidAmount: boolean;
-  /** エラーメッセージ */
-  error: string | null;
+  /** エラー状態 */
+  error: AppError | null;
   /** 金額選択ハンドラー */
   handleSelectAmount: (value: string) => void;
   /** 銀行振込メール送信ハンドラー */
@@ -126,11 +128,7 @@ export const BankTransferInput = React.memo(
             </div>
           </div>
 
-          {error && (
-            <div className="text-red-600 text-sm bg-red-50 p-2 rounded-md">
-              {error}
-            </div>
-          )}
+          {error && <ErrorDisplay error={error} />}
         </div>
 
         <Button
@@ -187,11 +185,7 @@ export const BankTransferInput = React.memo(
         <div className="text-sm text-stone-700">
           <p>振込完了後、通常1-2営業日以内に自動的に残高に反映されます。</p>
 
-          {error && (
-            <div className="text-red-600 text-sm bg-red-50 p-2 rounded-md mt-2">
-              {error}
-            </div>
-          )}
+          {error && <ErrorDisplay error={error} />}
         </div>
 
         <Button

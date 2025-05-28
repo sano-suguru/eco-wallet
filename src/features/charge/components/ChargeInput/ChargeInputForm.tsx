@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Leaf, CreditCard, Building } from "lucide-react";
+import { AppError } from "@/shared/types/errors";
 import { AmountInput } from "./AmountInput";
 import { BankTransferInput } from "./BankTransferInput";
 
 /**
- * チャージ入力フォームのプロパティ
+ * チャージ入力フォームのプロパティ（AppError型対応）
  */
 export interface ChargeInputFormProps {
   /** チャージ金額 */
@@ -27,8 +28,8 @@ export interface ChargeInputFormProps {
   setPaymentMethod: (value: "credit-card" | "bank") => void;
   /** メール送信済みフラグ */
   emailSent: boolean;
-  /** エラーメッセージ */
-  error: string | null;
+  /** エラー状態 */
+  error: AppError | null;
   /** 金額選択ハンドラー */
   handleSelectAmount: (value: string) => void;
   /** 確認ステップ遷移ハンドラー */

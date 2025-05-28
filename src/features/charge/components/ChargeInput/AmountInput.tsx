@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
+import { AppError } from "@/shared/types/errors";
+import { ErrorDisplay } from "@/components/ui/error-display";
 
 /**
- * 金額入力フォームのプロパティ
+ * 金額入力フォームのプロパティ（AppError型対応）
  */
 export interface AmountInputProps {
   /** チャージ金額 */
@@ -16,8 +18,8 @@ export interface AmountInputProps {
   setAmount: (value: string) => void;
   /** 金額選択ハンドラー */
   handleSelectAmount: (value: string) => void;
-  /** エラーメッセージ */
-  error: string | null;
+  /** エラー状態 */
+  error: AppError | null;
 }
 
 /**
@@ -87,12 +89,8 @@ export const AmountInput = React.memo(
           </div>
         </div>
 
-        {/* エラーメッセージ */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg">
-            {error}
-          </div>
-        )}
+        {/* エラー表示 */}
+        {error && <ErrorDisplay error={error} />}
       </div>
     );
   },

@@ -1,7 +1,9 @@
 import { StateCreator } from "zustand";
 import { create } from "zustand";
+import { Result, ok, err } from "neverthrow";
 import { ecoImpactData } from "../data/eco-impact-data";
 import { EcoRank, ContributionParams } from "../types/eco-impact";
+import { BusinessError, AppError } from "../../../shared/types/errors";
 import {
   calculateContribution,
   calculateEcoProgress,
@@ -9,7 +11,7 @@ import {
 } from "../utils/calculations";
 
 /**
- * EcoImpact スライスの型定義
+ * EcoImpact スライスの型定義（Result型対応）
  */
 export interface EcoImpactSlice {
   // 環境貢献データ
@@ -25,16 +27,22 @@ export interface EcoImpactSlice {
   targetWaterSaved: number;
   targetCo2Reduction: number;
 
-  // アクション
-  addContribution: (params: ContributionParams) => void;
-  updateProgress: () => void;
+  // エラー状態
+  error: AppError | null;
 
-  // 派生データ
-  getEcoRank: () => EcoRank;
+  // アクション（Result型対応）
+  addContribution: (params: ContributionParams) => Result<void, BusinessError>;
+  updateProgress: () => Result<number, BusinessError>;
+
+  // 派生データ（Result型対応）
+  getEcoRank: () => Result<EcoRank, BusinessError>;
+
+  // ユーティリティ
+  clearError: () => void;
 }
 
 /**
- * EcoImpact スライスの作成関数
+ * EcoImpact スライスの作成関数（Result型対応）
  */
 export const createEcoImpactSlice: StateCreator<
   EcoImpactSlice,
@@ -52,16 +60,44 @@ export const createEcoImpactSlice: StateCreator<
   targetCo2Reduction: ecoImpactData.targetCo2Reduction,
   totalDonation: ecoImpactData.totalDonation,
   monthlyDonation: ecoImpactData.monthlyDonation,
+  error: null,
 
-  // 環境貢献を追加 - ユーティリティ関数を使用
-  addContribution: (params) =>
-    set((state) => {
-      return calculateContribution(state, params);
-    }),
+  // 環境貢献を追加（Result型対応）
+  addContribution: (params) => {
+    try {
+      // パラメータバリデーション
+      if (!params || params.amount <= 0) {
+        return err({
+          type: "PAYMENT_FAILED",
+          message: "無効な環境貢献パラメータです",
+          reason: `amount: ${params?.amount}`,
+          paymentId: undefined,
+        });
+      }
 
-  // 進捗率の更新 - ユーティリティ関数を使用
-  updateProgress: () =>
-    set((state) => {
+      set((state) => {
+        const newState = calculateContribution(state, params);
+        return { ...newState, error: null };
+      });
+
+      return ok(undefined);
+    } catch (error) {
+      const errorResult: BusinessError = {
+        type: "PAYMENT_FAILED",
+        message: "環境貢献の追加に失敗しました",
+        reason: String(error),
+        paymentId: undefined,
+      };
+
+      set({ error: errorResult });
+      return err(errorResult);
+    }
+  },
+
+  // 進捗率の更新（Result型対応）
+  updateProgress: () => {
+    try {
+      const state = get();
       const progress = calculateEcoProgress(
         state.forestArea,
         state.waterSaved,
@@ -71,12 +107,60 @@ export const createEcoImpactSlice: StateCreator<
         state.targetCo2Reduction,
       );
 
-      return { progressPercent: progress };
-    }),
+      // 進捗率の妥当性チェック
+      if (progress < 0 || progress > 100) {
+        return err({
+          type: "PAYMENT_FAILED",
+          message: "進捗率の計算結果が無効です",
+          reason: `progress: ${progress}`,
+          paymentId: undefined,
+        });
+      }
 
-  // エコランクの取得 - ユーティリティ関数を使用
+      set({ progressPercent: progress, error: null });
+      return ok(progress);
+    } catch (error) {
+      const errorResult: BusinessError = {
+        type: "PAYMENT_FAILED",
+        message: "進捗率の更新に失敗しました",
+        reason: String(error),
+        paymentId: undefined,
+      };
+
+      set({ error: errorResult });
+      return err(errorResult);
+    }
+  },
+
+  // エコランクの取得（Result型対応）
   getEcoRank: () => {
-    return getEcoRankFromDonation(get().totalDonation);
+    try {
+      const totalDonation = get().totalDonation;
+
+      if (totalDonation < 0) {
+        return err({
+          type: "PAYMENT_FAILED",
+          message: "寄付総額が無効です",
+          reason: `totalDonation: ${totalDonation}`,
+          paymentId: undefined,
+        });
+      }
+
+      const rank = getEcoRankFromDonation(totalDonation);
+      return ok(rank);
+    } catch (error) {
+      return err({
+        type: "PAYMENT_FAILED",
+        message: "エコランクの取得に失敗しました",
+        reason: String(error),
+        paymentId: undefined,
+      });
+    }
+  },
+
+  // エラーをクリア
+  clearError: () => {
+    set({ error: null });
   },
 });
 
