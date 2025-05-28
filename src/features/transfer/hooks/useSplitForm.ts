@@ -12,6 +12,7 @@ import {
   calculateReceivableAmount,
 } from "../utils/validation";
 import { defaultParticipants } from "../data/recipients-data";
+import { AppError } from "@/shared/types/errors";
 
 export const useSplitForm = () => {
   const router = useRouter();
@@ -30,7 +31,7 @@ export const useSplitForm = () => {
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
   // フォームフィールドの更新
@@ -69,7 +70,11 @@ export const useSplitForm = () => {
       isNaN(Number(formData.totalAmount)) ||
       Number(formData.totalAmount) <= 0
     ) {
-      setError("有効な合計金額を入力してください");
+      setError({
+        type: "INVALID_AMOUNT",
+        message: "有効な合計金額を入力してください",
+        field: "amount",
+      });
       return;
     }
 
@@ -114,7 +119,12 @@ export const useSplitForm = () => {
 
     const validation = validateSplitForm(formData);
     if (!validation.isValid) {
-      setError(validation.error || "バリデーションエラー");
+      setError({
+        type: "INVALID_FORMAT",
+        message: validation.error || "バリデーションエラー",
+        field: "form",
+        expected: "valid split form",
+      });
       return;
     }
 
@@ -179,10 +189,19 @@ export const useSplitForm = () => {
       return;
     } catch (error) {
       console.error("割り勘処理中にエラーが発生しました", error);
-      setError("割り勘処理に失敗しました。時間をおいて再度お試しください。");
+      setError({
+        type: "NETWORK_ERROR",
+        message: "割り勘処理に失敗しました。時間をおいて再度お試しください。",
+        cause: error instanceof Error ? error : undefined,
+      });
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  // エラー再試行ハンドラ
+  const clearError = () => {
+    setError(null);
   };
 
   // 計算値
@@ -201,6 +220,7 @@ export const useSplitForm = () => {
     handleSplitRequest,
     isProcessing,
     error,
+    clearError,
     isSuccess,
     totalAmount,
     receivableAmount,

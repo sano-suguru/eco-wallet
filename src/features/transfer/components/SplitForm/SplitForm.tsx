@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ErrorMessage } from "@/components/ui/error-message";
+import { ErrorDisplay } from "@/components/ui/error-display";
 import { useSplitForm } from "../../hooks/useSplitForm";
 import { SuccessMessage } from "../SuccessMessage";
 import { formatCurrency } from "@/shared/utils/formats";
@@ -93,6 +93,7 @@ export const SplitForm: React.FC = () => {
     handleSplitRequest,
     isProcessing,
     error,
+    clearError,
     isSuccess,
     totalAmount,
     donationAmount,
@@ -308,7 +309,7 @@ export const SplitForm: React.FC = () => {
       </Card>
 
       {/* エラーメッセージ */}
-      {error && <ErrorMessage message={error} />}
+      {error && <ErrorDisplay error={error} onRetry={clearError} />}
 
       {/* 送信ボタン */}
       <Button
