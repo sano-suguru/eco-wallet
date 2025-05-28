@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { ErrorDisplay } from "@/components/ui/error-display";
 import { RecipientSelectorModal } from "../RecipientSelector";
 import { SuccessMessage } from "../SuccessMessage";
 import { useTransferForm } from "../../hooks/useTransferForm";
@@ -22,6 +23,7 @@ export const TransferForm = () => {
     handleTransfer,
     isProcessing,
     error,
+    fieldErrors,
     isSuccess,
     transferAmount,
     donationAmount,
@@ -96,6 +98,9 @@ export const TransferForm = () => {
                     : "外部ユーザー"}
                 </p>
               )}
+              {fieldErrors.recipient && (
+                <ErrorDisplay error={fieldErrors.recipient} />
+              )}
             </div>
 
             {/* 金額入力 */}
@@ -116,6 +121,9 @@ export const TransferForm = () => {
                   required
                 />
               </div>
+              {fieldErrors.amount && (
+                <ErrorDisplay error={fieldErrors.amount} />
+              )}
             </div>
 
             {/* メッセージ入力 */}
@@ -179,12 +187,8 @@ export const TransferForm = () => {
               </div>
             )}
 
-            {/* エラー表示 */}
-            {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
-            )}
+            {/* グローバルエラー表示 */}
+            {error && <ErrorDisplay error={error} variant="banner" />}
 
             {/* 送金ボタン */}
             <Button

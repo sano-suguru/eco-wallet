@@ -21,8 +21,8 @@ import {
 import { SettingSection } from "@/features/settings/components/SettingSection";
 import { AppError } from "@/shared/types/errors";
 import { ErrorDisplay } from "@/components/ui/error-display";
-import { showAppErrorNotification } from "@/shared/stores/app.slice";
 import { validatePasswordResult } from "@/lib/utils/validation";
+import { showAppErrorNotification } from "@/shared/stores/app.slice";
 
 interface SecurityTabProps {
   user?: Session["user"];
