@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,26 +19,15 @@ import {
   Fingerprint,
 } from "lucide-react";
 import { SettingSection } from "@/features/settings/components/SettingSection";
-import { AppError } from "@/shared/types/errors";
 import { ErrorDisplay } from "@/components/ui/error-display";
-import { validatePasswordResult } from "@/lib/utils/validation";
-import { showAppErrorNotification } from "@/shared/stores/app.slice";
+import { useAuthForm } from "@/features/auth/hooks/useAuthForm";
+import { validateChangePasswordForm } from "@/features/auth/utils/validation";
+import { ok, err } from "neverthrow";
+import { AppError } from "@/shared/types/errors";
 
 interface SecurityTabProps {
   user?: Session["user"];
 }
-
-interface PasswordForm {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
-}
-
-type ValidationResult = {
-  isOk: () => boolean;
-  isErr: () => boolean;
-  error?: AppError;
-};
 
 export function SecurityTab({ user }: SecurityTabProps) {
   // パスワードの表示/非表示を管理する状態
@@ -46,185 +35,65 @@ export function SecurityTab({ user }: SecurityTabProps) {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // フォーム状態（Result型対応）
-  const [passwordForm, setPasswordForm] = useState<PasswordForm>({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
+  // useAuthFormフックを使用してパスワード変更フォームを管理
+  const passwordForm = useAuthForm({
+    initialValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    },
+    validateForm: validateChangePasswordForm,
+    onSubmit: async (values) => {
+      try {
+        // TODO: 実際のAPI呼び出し処理
+        // const updateResult = await updatePasswordAsync({
+        //   currentPassword: values.currentPassword,
+        //   newPassword: values.newPassword,
+        // });
+        // return updateResult;
 
-  // エラーステート管理（Result型対応）
-  const [error, setError] = useState<AppError | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+        // 現在はモックの成功処理
+        console.log("Password updated successfully:", values);
 
-  // バリデーション結果（Result型対応）
-  const newPasswordValidationResult = useMemo(() => {
-    if (!passwordForm.newPassword) return validatePasswordResult("");
-    return validatePasswordResult(passwordForm.newPassword);
-  }, [passwordForm.newPassword]);
+        // 成功時はコンソールログのみ（実際のAPIでは通知を追加可能）
+        console.log("Password change successful");
 
-  // 確認パスワードのバリデーション
-  const confirmPasswordValidationResult = useMemo((): ValidationResult => {
-    if (!passwordForm.confirmPassword) {
-      const validationError: AppError = {
-        type: "REQUIRED_FIELD",
-        message: "確認パスワードを入力してください",
-        field: "confirmPassword",
-      };
-      return { isOk: () => false, isErr: () => true, error: validationError };
-    }
-
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      const validationError: AppError = {
-        type: "PASSWORD_MISMATCH",
-        message: "パスワードが一致しません",
-        fields: ["password", "confirmPassword"],
-      };
-      return { isOk: () => false, isErr: () => true, error: validationError };
-    }
-
-    return { isOk: () => true, isErr: () => false };
-  }, [passwordForm.newPassword, passwordForm.confirmPassword]);
-
-  // 全体のバリデーション状態
-  const isFormValid = useMemo(() => {
-    return (
-      passwordForm.currentPassword.trim() !== "" &&
-      newPasswordValidationResult.isOk() &&
-      confirmPasswordValidationResult.isOk()
-    );
-  }, [
-    passwordForm,
-    newPasswordValidationResult,
-    confirmPasswordValidationResult,
-  ]);
-
-  // エラー再試行ハンドラ（Result型対応）
-  const handleRetry = () => {
-    setError(null);
-  };
-
-  // フォームデータ更新ハンドラ
-  const handlePasswordInputChange = (
-    field: keyof PasswordForm,
-    value: string,
-  ) => {
-    setPasswordForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-    // 入力時にエラーをクリア
-    if (error) {
-      setError(null);
-    }
-  };
-
-  // パスワード変更処理（Result型対応）
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      setIsSubmitting(true);
-      setError(null);
-
-      // 基本バリデーション
-      if (!passwordForm.currentPassword) {
-        const validationError: AppError = {
-          type: "REQUIRED_FIELD",
-          message: "現在のパスワードを入力してください",
-          field: "currentPassword",
-        };
-        setError(validationError);
-        showAppErrorNotification(validationError, "入力エラー");
-        return;
-      }
-
-      if (!isFormValid) {
-        const validationError: AppError = {
-          type: "INVALID_FORMAT",
-          message: "入力内容に不備があります。各項目を確認してください。",
-          field: "password",
-          expected: "有効な形式",
-        };
-        setError(validationError);
-        showAppErrorNotification(validationError, "入力エラー");
-        return;
-      }
-
-      // 新しいパスワードのバリデーション結果をチェック
-      if (newPasswordValidationResult.isErr()) {
-        const validationError = newPasswordValidationResult.error;
-        setError(validationError);
-        showAppErrorNotification(validationError, "バリデーションエラー");
-        return;
-      }
-
-      // 確認パスワードのバリデーション結果をチェック
-      if (
-        confirmPasswordValidationResult.isErr() &&
-        confirmPasswordValidationResult.error
-      ) {
-        const validationError = confirmPasswordValidationResult.error;
-        setError(validationError);
-        showAppErrorNotification(validationError, "バリデーションエラー");
-        return;
-      }
-
-      // TODO: 実際のAPI呼び出し処理
-      // const updateResult = await updatePasswordAsync({
-      //   currentPassword: passwordForm.currentPassword,
-      //   newPassword: passwordForm.newPassword,
-      // });
-      // updateResult.match(
-      //   (updatedUser) => {
-      //     showAppErrorNotification(
-      //       { type: "success", message: "パスワードを変更しました" } as any,
-      //       "変更完了"
-      //     );
-      //     // フォームをリセット
-      //     setPasswordForm({
-      //       currentPassword: "",
-      //       newPassword: "",
-      //       confirmPassword: "",
-      //     });
-      //   },
-      //   (updateError) => {
-      //     setError(updateError);
-      //     showAppErrorNotification(updateError, "変更エラー");
-      //   }
-      // );
-
-      // 現在はモックの成功処理
-      setTimeout(() => {
-        console.log("Password updated successfully:", passwordForm);
         // フォームをリセット
-        setPasswordForm({
+        passwordForm.setValues({
           currentPassword: "",
           newPassword: "",
-          confirmPassword: "",
+          confirmNewPassword: "",
         });
-      }, 1000);
-    } catch {
-      const appError: AppError = {
-        type: "NETWORK_ERROR",
-        message: "パスワードの変更中にエラーが発生しました",
-      };
-      setError(appError);
-      showAppErrorNotification(appError, "変更エラー");
-    } finally {
-      setIsSubmitting(false);
-    }
+
+        return ok(undefined);
+      } catch {
+        const appError: AppError = {
+          type: "NETWORK_ERROR",
+          message: "パスワードの変更中にエラーが発生しました",
+        };
+        return err(appError);
+      }
+    },
+  });
+
+  // エラー再試行ハンドラ
+  const handleRetry = () => {
+    passwordForm.clearError();
   };
 
   return (
     <div className="space-y-6">
       {/* エラー表示（Result型対応） */}
-      {error && (
-        <ErrorDisplay error={error} onRetry={handleRetry} className="mb-4" />
+      {passwordForm.error && (
+        <ErrorDisplay
+          error={passwordForm.error}
+          onRetry={handleRetry}
+          className="mb-4"
+        />
       )}
 
       {/* パスワード変更セクション */}
-      <form onSubmit={handlePasswordChange}>
+      <form onSubmit={passwordForm.handleSubmit}>
         <SettingSection
           title="パスワード変更"
           icon={<Shield className="h-4 w-4 text-teal-700" />}
@@ -234,21 +103,25 @@ export function SecurityTab({ user }: SecurityTabProps) {
             {/* 現在のパスワード */}
             <div className="space-y-2">
               <Label
-                htmlFor="current-password"
+                htmlFor="currentPassword"
                 className="text-sm text-stone-700"
               >
                 現在のパスワード
               </Label>
               <div className="relative">
                 <Input
-                  id="current-password"
+                  id="currentPassword"
+                  name="currentPassword"
                   type={showPassword ? "text" : "password"}
                   className="border-stone-200 pr-10"
-                  value={passwordForm.currentPassword}
-                  onChange={(e) =>
-                    handlePasswordInputChange("currentPassword", e.target.value)
-                  }
+                  value={passwordForm.values.currentPassword}
+                  onChange={passwordForm.handleChange}
                   aria-required="true"
+                  aria-describedby={
+                    passwordForm.fieldErrors.currentPassword
+                      ? "currentPassword-error"
+                      : undefined
+                  }
                 />
                 <button
                   type="button"
@@ -265,28 +138,32 @@ export function SecurityTab({ user }: SecurityTabProps) {
                   )}
                 </button>
               </div>
-              {passwordForm.currentPassword.trim() === "" && (
-                <p className="text-xs text-red-600">
-                  現在のパスワードは必須です
+              {passwordForm.fieldErrors.currentPassword && (
+                <p id="currentPassword-error" className="text-xs text-red-600">
+                  {passwordForm.fieldErrors.currentPassword.message}
                 </p>
               )}
             </div>
 
             {/* 新しいパスワード */}
             <div className="space-y-2">
-              <Label htmlFor="new-password" className="text-sm text-stone-700">
+              <Label htmlFor="newPassword" className="text-sm text-stone-700">
                 新しいパスワード
               </Label>
               <div className="relative">
                 <Input
-                  id="new-password"
+                  id="newPassword"
+                  name="newPassword"
                   type={showNewPassword ? "text" : "password"}
                   className="border-stone-200 pr-10"
-                  value={passwordForm.newPassword}
-                  onChange={(e) =>
-                    handlePasswordInputChange("newPassword", e.target.value)
-                  }
+                  value={passwordForm.values.newPassword}
+                  onChange={passwordForm.handleChange}
                   aria-required="true"
+                  aria-describedby={
+                    passwordForm.fieldErrors.newPassword
+                      ? "newPassword-error"
+                      : "newPassword-help"
+                  }
                 />
                 <button
                   type="button"
@@ -303,12 +180,12 @@ export function SecurityTab({ user }: SecurityTabProps) {
                   )}
                 </button>
               </div>
-              <p className="text-xs text-stone-500 mt-1">
+              <p id="newPassword-help" className="text-xs text-stone-500 mt-1">
                 8文字以上で、数字と記号を含めてください
               </p>
-              {newPasswordValidationResult.isErr() && (
-                <p className="text-xs text-red-600">
-                  {newPasswordValidationResult.error.message}
+              {passwordForm.fieldErrors.newPassword && (
+                <p id="newPassword-error" className="text-xs text-red-600">
+                  {passwordForm.fieldErrors.newPassword.message}
                 </p>
               )}
             </div>
@@ -316,21 +193,25 @@ export function SecurityTab({ user }: SecurityTabProps) {
             {/* 新しいパスワード（確認） */}
             <div className="space-y-2">
               <Label
-                htmlFor="confirm-password"
+                htmlFor="confirmNewPassword"
                 className="text-sm text-stone-700"
               >
                 新しいパスワード（確認）
               </Label>
               <div className="relative">
                 <Input
-                  id="confirm-password"
+                  id="confirmNewPassword"
+                  name="confirmNewPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   className="border-stone-200 pr-10"
-                  value={passwordForm.confirmPassword}
-                  onChange={(e) =>
-                    handlePasswordInputChange("confirmPassword", e.target.value)
-                  }
+                  value={passwordForm.values.confirmNewPassword}
+                  onChange={passwordForm.handleChange}
                   aria-required="true"
+                  aria-describedby={
+                    passwordForm.fieldErrors.confirmNewPassword
+                      ? "confirmNewPassword-error"
+                      : undefined
+                  }
                 />
                 <button
                   type="button"
@@ -349,21 +230,23 @@ export function SecurityTab({ user }: SecurityTabProps) {
                   )}
                 </button>
               </div>
-              {confirmPasswordValidationResult.isErr() &&
-                confirmPasswordValidationResult.error && (
-                  <p className="text-xs text-red-600">
-                    {confirmPasswordValidationResult.error.message}
-                  </p>
-                )}
+              {passwordForm.fieldErrors.confirmNewPassword && (
+                <p
+                  id="confirmNewPassword-error"
+                  className="text-xs text-red-600"
+                >
+                  {passwordForm.fieldErrors.confirmNewPassword.message}
+                </p>
+              )}
             </div>
           </div>
 
           <Button
             type="submit"
-            disabled={!isFormValid || isSubmitting}
+            disabled={passwordForm.isLoading}
             className="w-full bg-teal-700 hover:bg-teal-800 text-white mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? (
+            {passwordForm.isLoading ? (
               <div className="flex items-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                 変更中...

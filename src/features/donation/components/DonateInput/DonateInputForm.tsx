@@ -24,6 +24,7 @@ interface DonateInputFormProps {
   handleSelectAmount: (value: string) => void;
   handleProceedToConfirm: () => void;
   balance: number;
+  isLoading?: boolean;
 }
 
 // プレゼンテーションコンポーネント: フォームUIのみを担当
@@ -36,6 +37,7 @@ export const DonateInputForm = React.memo(
     handleSelectAmount,
     handleProceedToConfirm,
     balance,
+    isLoading = false,
   }: DonateInputFormProps) => {
     return (
       <>
@@ -98,10 +100,18 @@ export const DonateInputForm = React.memo(
 
           {/* 送信ボタン */}
           <Button
-            className="w-full bg-teal-700 hover:bg-teal-800 text-white"
+            className="w-full bg-teal-700 hover:bg-teal-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleProceedToConfirm}
+            disabled={isLoading}
           >
-            次へ進む
+            {isLoading ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                処理中...
+              </div>
+            ) : (
+              "次へ進む"
+            )}
           </Button>
         </CardContent>
       </>

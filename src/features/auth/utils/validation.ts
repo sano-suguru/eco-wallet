@@ -8,6 +8,8 @@ import {
   validatePasswordResult,
   validateRequiredField,
   validatePasswordConfirmation,
+  validatePhoneResult,
+  validateAmountResult,
 } from "@/lib/utils/validation";
 import { ValidationResult } from "../hooks/useAuthForm";
 
@@ -39,6 +41,27 @@ export function validateLoginForm(
     isValid = false;
   } else {
     errors.password = null;
+  }
+
+  return { isValid, errors };
+}
+
+/**
+ * 寄付フォームのバリデーション
+ */
+export function validateDonationForm(
+  values: Record<string, string>,
+): ValidationResult {
+  const errors: Record<string, AppError | null> = {};
+  let isValid = true;
+
+  // 金額の検証
+  const amountResult = validateAmountResult(values.amount || "", 1, 1000000);
+  if (amountResult.isErr()) {
+    errors.amount = amountResult.error;
+    isValid = false;
+  } else {
+    errors.amount = null;
   }
 
   return { isValid, errors };
@@ -185,6 +208,54 @@ export function validateChangePasswordForm(
     isValid = false;
   } else {
     errors.confirmNewPassword = null;
+  }
+
+  return { isValid, errors };
+}
+
+/**
+ * プロフィール更新フォームのバリデーション
+ */
+export function validateProfileForm(
+  values: Record<string, string>,
+): ValidationResult {
+  const errors: Record<string, AppError | null> = {};
+  let isValid = true;
+
+  // 名前の検証
+  const nameResult = validateRequiredField(values.name || "", "氏名");
+  if (nameResult.isErr()) {
+    errors.name = nameResult.error;
+    isValid = false;
+  } else {
+    errors.name = null;
+  }
+
+  // メールアドレスの検証
+  const emailResult = validateEmailResult(values.email || "");
+  if (emailResult.isErr()) {
+    errors.email = emailResult.error;
+    isValid = false;
+  } else {
+    errors.email = null;
+  }
+
+  // 電話番号の検証
+  const phoneResult = validatePhoneResult(values.phone || "");
+  if (phoneResult.isErr()) {
+    errors.phone = phoneResult.error;
+    isValid = false;
+  } else {
+    errors.phone = null;
+  }
+
+  // 地域の検証
+  const locationResult = validateRequiredField(values.location || "", "地域");
+  if (locationResult.isErr()) {
+    errors.location = locationResult.error;
+    isValid = false;
+  } else {
+    errors.location = null;
   }
 
   return { isValid, errors };
